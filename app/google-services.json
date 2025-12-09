@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1090772296348",
+    "project_id": "touristnotify-db",
+    "storage_bucket": "touristnotify-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090772296348:android:255e0b89f3d38c80998359",
+        "android_client_info": {
+          "package_name": "com.joseibarra.touristnotify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

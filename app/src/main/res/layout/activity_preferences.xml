@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="16dp"
+    tools:context=".PreferencesActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Personaliza tu ruta"
+        android:textSize="24sp"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/budget_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Presupuesto (MXN)"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/time_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Tiempo disponible (horas)"
+        android:inputType="number" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Intereses"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"/>
+
+    <CheckBox
+        android:id="@+id/chk_comida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comida" />
+
+    <CheckBox
+        android:id="@+id/chk_cultura"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cultura" />
+
+    <CheckBox
+        android:id="@+id/chk_historia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historia" />
+
+    <CheckBox
+        android:id="@+id/chk_aire_libre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aire Libre" />
+
+    <Button
+        android:id="@+id/generate_route_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Generar Ruta Personalizada" />
+
+</LinearLayout>

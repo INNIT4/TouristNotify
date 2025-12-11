@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.registerTextView.setOnClickListener {
-            registerUser()
+            navigateToRegister()
         }
 
         // El botón "Saltar" ahora funciona como atajo de desarrollador al menú
@@ -52,24 +52,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun registerUser() {
-        val email = binding.emailEditText.text.toString()
-        val password = binding.passwordEditText.text.toString()
-
-        if (email.isNotBlank() && password.isNotBlank()) {
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        navigateToMenu()
-                    } else {
-                        Toast.makeText(baseContext, "Fallo en el registro: ${task.exception?.message}",
-                            Toast.LENGTH_LONG).show()
-                    }
-                }
-        } else {
-            Toast.makeText(this, "Por favor, rellena todos los campos para registrarte", Toast.LENGTH_SHORT).show()
-        }
+    private fun navigateToRegister() {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToMenu() {

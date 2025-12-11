@@ -30,6 +30,10 @@
         </activity>
 
         <activity
+            android:name=".RegisterActivity"
+            android:label="Registro" />
+
+        <activity
             android:name=".MenuActivity"
             android:label="Menu" />
 

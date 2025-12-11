@@ -7,6 +7,7 @@ data class TouristSpot(
     val nombre: String = "",
     val descripcion: String = "",
     val categoria: String = "General",
+    val reviews: List<String> = emptyList(),
     val ubicacion: GeoPoint? = null,
     val imagenUrl: String = "",
     val rating: Double = 0.0,

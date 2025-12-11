@@ -63,7 +63,8 @@ class PreferencesActivity : AppCompatActivity() {
     }
 
     private fun generateRouteWithAI(budget: String, time: String, interests: List<String>, knownPlaceNames: List<String>, placesForPrompt: String) {
-        val apiKey = "AIzaSyAQSJt2UTeq5dnR52dOrUKswNH76gBPcgE"
+        // Corregido: Se usa la clave de API completa que proporcionaste y el nombre de modelo correcto.
+        val apiKey = "AIzaSyBb63FoPSJklQZpOPern2NsPz1q0bYDK1U"
 
         val generativeModel = GenerativeModel(
             modelName = "gemini-2.5-flash",

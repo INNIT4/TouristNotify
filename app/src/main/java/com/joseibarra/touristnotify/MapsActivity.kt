@@ -266,7 +266,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun calculateAndDrawRoute(origin: LatLng, destination: LatLng) {
-        val geoApiContext = GeoApiContext.Builder().apiKey("AIzaSyAQSJt2UTeq5dnR52dOrUKswNH76gBPcgE").build()
+        val geoApiContext = GeoApiContext.Builder().apiKey("AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI").build()
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val directionsResult = DirectionsApi.newRequest(geoApiContext)
@@ -295,6 +295,63 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun drawRoutePolyline(spots: List<TouristSpot>) {
+        if (spots.size < 2) return
+
+        routePolyline?.remove()
+
+        val waypoints = spots.mapNotNull { spot ->
+            spot.ubicacion?.let { com.google.maps.model.LatLng(it.latitude, it.longitude) }
+        }
+
+        if (waypoints.size < 2) return
+
+        val origin = waypoints.first()
+        val destination = waypoints.last()
+        val intermediateWaypoints = if (waypoints.size > 2) {
+            waypoints.subList(1, waypoints.size - 1).toTypedArray()
+        } else {
+            emptyArray()
+        }
+
+        val geoApiContext = GeoApiContext.Builder()
+            .apiKey("AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI")
+            .build()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val directionsResult = DirectionsApi.newRequest(geoApiContext)
+                    .mode(TravelMode.DRIVING)
+                    .origin(origin)
+                    .destination(destination)
+                    .waypoints(*intermediateWaypoints)
+                    .optimizeWaypoints(true)
+                    .await()
+
+                withContext(Dispatchers.Main) {
+                    if (directionsResult.routes.isNotEmpty() && directionsResult.routes[0].overviewPolyline != null) {
+                        val decodedPath = PolyUtil.decode(directionsResult.routes[0].overviewPolyline.encodedPath)
+                        routePolyline = mMap.addPolyline(PolylineOptions()
+                            .addAll(decodedPath)
+                            .color(Color.BLUE)
+                            .width(10f))
+                    } else {
+                        Log.w(TAG, "Directions API returned no routes.")
+                        drawStraightRoutePolyline(spots)
+                        Toast.makeText(this@MapsActivity, "No se pudo encontrar una ruta. Mostrando líneas rectas.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching directions", e)
+                withContext(Dispatchers.Main) {
+                    drawStraightRoutePolyline(spots)
+                    Toast.makeText(this@MapsActivity, "Error al obtener direcciones. Mostrando líneas rectas.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun drawStraightRoutePolyline(spots: List<TouristSpot>) {
+        routePolyline?.remove()
         val polylineOptions = PolylineOptions().color(Color.BLUE).width(10f)
         spots.forEach { spot ->
             spot.ubicacion?.let {

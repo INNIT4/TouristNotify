@@ -23,6 +23,10 @@ class LoginActivity : AppCompatActivity() {
             signInUser()
         }
 
+        binding.forgotPasswordTextView.setOnClickListener {
+            navigateToForgotPassword()
+        }
+
         binding.registerTextView.setOnClickListener {
             navigateToRegister()
         }
@@ -50,6 +54,11 @@ class LoginActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun navigateToForgotPassword() {
+        val intent = Intent(this, ForgotPasswordActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToRegister() {

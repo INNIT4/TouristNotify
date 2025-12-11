@@ -32,6 +32,10 @@
         <activity
             android:name=".RegisterActivity"
             android:label="Registro" />
+        
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:label="Restablecer contraseña" />
 
         <activity
             android:name=".MenuActivity"

@@ -1,48 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
+    android:fillViewport="true"
     tools:context=".RegisterActivity">
 
-    <EditText
-        android:id="@+id/email_edit_text"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Correo electrónico"
-        android:inputType="textEmailAddress" />
+        android:background="@color/md_theme_light_background">
 
-    <EditText
-        android:id="@+id/password_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="Contraseña"
-        android:inputType="textPassword" />
+        <!-- Header con gradiente -->
+        <View
+            android:id="@+id/header_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_gradient_primary"
+            app:layout_constraintBottom_toBottomOf="@+id/subtitle_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/confirm_password_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="Confirmar Contraseña"
-        android:inputType="textPassword" />
+        <!-- Icono -->
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="40dp"
+            android:contentDescription="Crear cuenta"
+            android:padding="14dp"
+            android:src="@drawable/ic_travel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
 
-    <Button
-        android:id="@+id/register_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Registrarse" />
+        <!-- Título -->
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Crear Cuenta"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_icon" />
 
-    <TextView
-        android:id="@+id/login_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="¿Ya tienes cuenta? Inicia Sesión aquí" />
+        <!-- Subtítulo -->
+        <TextView
+            android:id="@+id/subtitle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="28dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Únete y descubre lugares increíbles"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_text" />
 
-</LinearLayout>
+        <!-- Card de registro -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/register_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="-20dp"
+            android:layout_marginEnd="24dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/subtitle_text">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Email Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/email_input_layout"
+                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Correo electrónico"
+                    app:endIconMode="clear_text"
+                    app:helperText="Usaremos tu email para iniciar sesión"
+                    app:helperTextTextColor="?attr/colorOnSurfaceVariant"
+                    app:startIconDrawable="@android:drawable/sym_action_email"
+                    app:startIconTint="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/password_input_layout"
+                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Contraseña"
+                    app:endIconMode="password_toggle"
+                    app:helperText="Mínimo 6 caracteres, incluye letra y número"
+                    app:helperTextTextColor="?attr/colorOnSurfaceVariant"
+                    app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                    app:startIconTint="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/password_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Confirm Password Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/confirm_password_input_layout"
+                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:hint="Confirmar contraseña"
+                    app:endIconMode="password_toggle"
+                    app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                    app:startIconTint="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/confirm_password_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Botón de Registro -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/register_button"
+                    style="@style/Widget.TouristNotify.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Crear Cuenta"
+                    android:textSize="16sp"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textEnd" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:alpha="0.3"
+                    android:background="?attr/colorOutline" />
+
+                <!-- Texto de login -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="¿Ya tienes una cuenta?"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp" />
+
+                <!-- Botón de Login -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/login_text_view"
+                    style="@style/Widget.TouristNotify.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Iniciar Sesión"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

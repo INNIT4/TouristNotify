@@ -143,7 +143,7 @@ class BlogActivity : AppCompatActivity() {
                 title = "10 Lugares Imperdibles en Álamos",
                 content = "Descubre los rincones más hermosos de nuestro Pueblo Mágico. Desde la Plaza de Armas hasta el Mirador de La Colorada, cada lugar tiene una historia que contar.",
                 category = "Consejos",
-                authorName = "TouristNotify",
+                authorName = "Oficina de Turismo de Álamos",
                 imageUrl = "",
                 isFeatured = true,
                 likes = 45,
@@ -154,7 +154,7 @@ class BlogActivity : AppCompatActivity() {
                 title = "Historia del Templo de la Purísima Concepción",
                 content = "Conoce la fascinante historia de este emblemático templo construido en el siglo XVIII, joya arquitectónica del barroco novohispano.",
                 category = "Historia",
-                authorName = "TouristNotify",
+                authorName = "Oficina de Turismo de Álamos",
                 imageUrl = "",
                 isFeatured = true,
                 likes = 38,
@@ -165,7 +165,7 @@ class BlogActivity : AppCompatActivity() {
                 title = "Dónde Comer: Los Mejores Restaurantes",
                 content = "Una guía completa de los restaurantes más deliciosos de Álamos. Desde comida tradicional sonorense hasta cocina internacional.",
                 category = "Gastronomía",
-                authorName = "TouristNotify",
+                authorName = "Oficina de Turismo de Álamos",
                 imageUrl = "",
                 isFeatured = false,
                 likes = 62,
@@ -176,7 +176,7 @@ class BlogActivity : AppCompatActivity() {
                 title = "Festivales Culturales de Álamos",
                 content = "Álamos es sede de eventos culturales durante todo el año. Descubre el Festival Alfonso Ortiz Tirado, el Festival del Cine y muchos más.",
                 category = "Cultura",
-                authorName = "TouristNotify",
+                authorName = "Oficina de Turismo de Álamos",
                 imageUrl = "",
                 isFeatured = false,
                 likes = 29,
@@ -187,7 +187,7 @@ class BlogActivity : AppCompatActivity() {
                 title = "Consejos para Tu Primera Visita",
                 content = "¿Primera vez en Álamos? Aquí te compartimos tips esenciales: mejor época para visitar, qué empacar, transporte, y más.",
                 category = "Consejos",
-                authorName = "TouristNotify",
+                authorName = "Oficina de Turismo de Álamos",
                 imageUrl = "",
                 isFeatured = false,
                 likes = 51,
@@ -255,9 +255,9 @@ class BlogActivity : AppCompatActivity() {
     }
 
     private fun checkAdminAccess() {
-        // Mostrar FAB solo si es admin
-        val userEmail = auth.currentUser?.email ?: ""
-        binding.fabAddPost.visibility = if (userEmail.contains("admin", ignoreCase = true)) {
+        // Mostrar FAB solo para personal autorizado de la Oficina de Turismo
+        val userEmail = auth.currentUser?.email
+        binding.fabAddPost.visibility = if (AdminConfig.canCreateBlogPosts(userEmail)) {
             View.VISIBLE
         } else {
             View.GONE

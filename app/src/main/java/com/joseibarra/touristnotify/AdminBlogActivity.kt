@@ -18,10 +18,21 @@ class AdminBlogActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar autorización - Solo personal de la Oficina de Turismo
+        if (!AdminConfig.canCreateBlogPosts(auth.currentUser?.email)) {
+            NotificationHelper.error(
+                window.decorView.rootView,
+                "Acceso denegado. Solo personal autorizado de la Oficina de Turismo puede crear posts."
+            )
+            finish()
+            return
+        }
+
         binding = ActivityAdminBlogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.title = "Crear Post"
+        supportActionBar?.title = "Crear Post - Oficina de Turismo"
 
         setupUI()
     }
@@ -61,7 +72,8 @@ class AdminBlogActivity : AppCompatActivity() {
 
         binding.publishButton.isEnabled = false
 
-        val authorName = auth.currentUser?.email?.substringBefore("@") ?: "Admin"
+        // El autor siempre será la Oficina de Turismo para posts oficiales
+        val authorName = "Oficina de Turismo de Álamos"
 
         val post = BlogPost(
             id = "",

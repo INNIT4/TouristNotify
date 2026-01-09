@@ -133,6 +133,11 @@
             android:name=".AdminPhotoUploadActivity"
             android:label="Subir Foto" />
 
+        <activity
+            android:name=".ChatActivity"
+            android:label="Chat con IA"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Receiver para geofencing -->
         <receiver
             android:name=".GeofenceBroadcastReceiver"

@@ -167,3 +167,12 @@ data class PlacePhoto(
     val width: Int = 0,
     val height: Int = 0
 )
+
+/**
+ * Modelo para mensajes del chat con IA
+ */
+data class ChatMessage(
+    val text: String = "",
+    val isFromUser: Boolean = true,
+    val timestamp: Long = System.currentTimeMillis()
+)

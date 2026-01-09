@@ -186,20 +186,30 @@
 
 ---
 
-## 📋 FUNCIONALIDADES PENDIENTES DE IMPLEMENTACIÓN
-*(Requieren desarrollo completo)*
-
 ### 11. Notificaciones de Proximidad 🔔
-**Complejidad: Media**
-**Tiempo estimado: 4-5 horas**
+**Estado: 100% Funcional**
 
-Pendiente:
-- Servicio de ubicación en background
-- Detección de geofencing
-- Notificaciones push locales
-- Configuración de radio de proximidad
+- ✅ ProximityNotificationsActivity con configuración completa
+- ✅ ProximityNotificationManager con geofencing
+- ✅ GeofenceBroadcastReceiver para eventos
+- ✅ 4 radios configurables: 100m, 250m, 500m, 1km
+- ✅ Hasta 100 lugares monitoreados
+- ✅ Notificaciones con app cerrada (background)
+- ✅ Solicitud de permisos paso a paso
+- ✅ Click en notificación abre detalles del lugar
+- ✅ SharedPreferences para persistencia
+
+**Cómo usar:**
+- Accede desde el menú principal
+- Activa el switch de notificaciones
+- Concede permisos de ubicación y notificaciones
+- Selecciona el radio de proximidad deseado
+- Recibe avisos automáticos al acercarte a lugares
 
 ---
+
+## 📋 FUNCIONALIDADES PENDIENTES DE IMPLEMENTACIÓN
+*(Requieren desarrollo completo)*
 
 ### 12. Galería de Fotos 📸
 **Complejidad: Alta**
@@ -279,10 +289,10 @@ Requiere:
 
 | Categoría | Completas | Parciales | Pendientes | Total |
 |-----------|-----------|-----------|------------|-------|
-| Funcionalidades | 10 | 0 | 7 | 17 |
-| Porcentaje | 59% | 0% | 41% | 100% |
+| Funcionalidades | 11 | 0 | 6 | 17 |
+| Porcentaje | 65% | 0% | 35% | 100% |
 
-**Funcionalidades Usables Ahora: 10** (todas al 100%)
+**Funcionalidades Usables Ahora: 11** (todas al 100%)
 
 ---
 
@@ -299,9 +309,9 @@ Requiere:
 - ✅ Comparador de lugares
 - ✅ Modo viajero de negocios
 - ✅ Blog de consejos
+- ✅ Notificaciones de proximidad
 
 ### Fase 2 (Siguiente - 1-2 días)
-- Notificaciones de proximidad
 - Galería de fotos
 
 ### Fase 3 (Features complejas - 3-5 días)
@@ -355,6 +365,7 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - `FavoritesManager.kt` - Gestión de favoritos
 - `CheckInManager.kt` - Gestión de check-ins y stats
 - `WeatherManager.kt` - Gestión de clima y recomendaciones
+- `ProximityNotificationManager.kt` - Gestión de geofences y notificaciones
 - `FavoritesActivity.kt` - UI de favoritos
 - `StatsActivity.kt` - UI de estadísticas con gráficos
 - `EventsActivity.kt` - UI de eventos con categorías
@@ -365,13 +376,17 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - `BlogActivity.kt` - UI de blog con categorías
 - `BlogPostDetailActivity.kt` - Vista detalle de post
 - `AdminBlogActivity.kt` - Panel admin para crear posts
+- `ProximityNotificationsActivity.kt` - Configuración de notificaciones
+- `GeofenceBroadcastReceiver.kt` - Receiver para geofencing
+- `AdminConfig.kt` - Sistema de permisos para Oficina de Turismo
 - `MapsActivity.kt` - Mejorado con filtros por categoría
 - Adapters: FavoritePlacesAdapter, EventsAdapter, ThemedRoutesAdapter, PlaceSelectionAdapter, BusinessPlacesAdapter, BlogPostAdapter
 - Layouts: activity_favorites.xml, activity_stats.xml, activity_events.xml,
   activity_themed_routes.xml, activity_comparator.xml, activity_place_comparison.xml,
   comparison_table_two_places.xml, comparison_table_three_places.xml, activity_business_traveler.xml,
   list_item_business_place.xml, activity_blog.xml, list_item_blog_post.xml, activity_blog_post_detail.xml,
-  activity_admin_blog.xml, activity_menu.xml (mejorado), activity_maps.xml (mejorado)
+  activity_admin_blog.xml, activity_proximity_notifications.xml,
+  activity_menu.xml (mejorado), activity_maps.xml (mejorado)
 
 **Commits realizados:**
 - ✅ Fase 1: Sistema de Favoritos, Check-ins y Estadísticas
@@ -382,13 +397,14 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - ✅ Fase 6: Comparador de Lugares
 - ✅ Fase 7: Modo Viajero de Negocios
 - ✅ Fase 8: Blog de Consejos
+- ✅ Fase 9: Notificaciones de Proximidad
 
 **Próximos pasos sugeridos:**
-1. Implementar notificaciones de proximidad (geofencing)
-2. Galería de fotos (Firebase Storage)
-3. Chat con IA (OpenAI/Anthropic integration)
-4. Recomendaciones IA personalizadas
+1. Galería de fotos (Firebase Storage)
+2. Chat con IA (OpenAI/Anthropic integration)
+3. Recomendaciones IA personalizadas
+4. Modo grupo (Realtime Database)
 
 ---
 
-**Última actualización:** 2026-01-09 (Fase 8 completada - 10/17 funcionalidades al 59%)
+**Última actualización:** 2026-01-09 (Fase 9 completada - 11/17 funcionalidades al 65%)

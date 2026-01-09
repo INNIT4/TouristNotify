@@ -21,6 +21,76 @@
         android:iconifiedByDefault="false"
         android:background="@android:color/white" />
 
+    <!-- Filter Chips -->
+    <HorizontalScrollView
+        android:id="@+id/filter_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_view"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filter_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="false"
+            app:selectionRequired="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Todos"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_museo"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Museos" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_restaurante"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restaurantes" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_hotel"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoteles" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_iglesia"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Iglesias" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_parque"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parques" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_tienda"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiendas" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_route_button"
         android:layout_width="wrap_content"

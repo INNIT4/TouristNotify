@@ -50,6 +50,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var currentRouteSpots = listOf<TouristSpot>()
     private var routePolyline: Polyline? = null
     private var navigationPolyline: Polyline? = null
+    private val selectedCategories = mutableSetOf<String>()
+    private var allSpots = listOf<TouristSpot>()
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -118,13 +120,68 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             loadPersonalizedRoute(routePlaceNames)
         } else {
             setupSearchView()
+            setupFilterChips()
             cargarLugaresDesdeFirestore()
         }
 
         enableMyLocation()
         setupSaveRouteButton()
     }
-    
+
+    private fun setupFilterChips() {
+        val categoryMap = mapOf(
+            binding.chipMuseo to "museo",
+            binding.chipRestaurante to "restaurante",
+            binding.chipHotel to "hotel",
+            binding.chipIglesia to "iglesia",
+            binding.chipParque to "parque",
+            binding.chipTienda to "tienda"
+        )
+
+        binding.chipAll.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                selectedCategories.clear()
+                categoryMap.keys.forEach { it.isChecked = false }
+                applyFilters()
+            }
+        }
+
+        categoryMap.forEach { (chip, category) ->
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    binding.chipAll.isChecked = false
+                    selectedCategories.add(category)
+                } else {
+                    selectedCategories.remove(category)
+                    if (selectedCategories.isEmpty()) {
+                        binding.chipAll.isChecked = true
+                    }
+                }
+                applyFilters()
+            }
+        }
+    }
+
+    private fun applyFilters() {
+        clearAllMarkers()
+
+        val filteredSpots = if (selectedCategories.isEmpty()) {
+            allSpots
+        } else {
+            allSpots.filter { spot ->
+                selectedCategories.any { category ->
+                    spot.categoria.lowercase().contains(category.lowercase())
+                }
+            }
+        }
+
+        filteredSpots.forEach { addMarkerForTouristSpot(it) }
+
+        if (filteredSpots.isEmpty() && allSpots.isNotEmpty()) {
+            NotificationHelper.info(binding.root, "No se encontraron lugares con estos filtros")
+        }
+    }
+
     private fun loadRouteByIds(placeIds: List<String>) {
         binding.searchView.visibility = View.GONE
         binding.saveRouteButton.visibility = View.GONE
@@ -413,14 +470,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         db.collection("lugares").orderBy("nombre").startAt(query).endAt(query + '\uf8ff').get()
             .addOnSuccessListener { documents ->
                 clearAllMarkers()
-                if (documents.isEmpty) { Toast.makeText(this, "No se encontraron lugares", Toast.LENGTH_SHORT).show() }
-                for (document in documents) {
+                if (documents.isEmpty) {
+                    Toast.makeText(this, "No se encontraron lugares", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                val searchResults = documents.mapNotNull { document ->
                     try {
-                        val spot = document.toObject(TouristSpot::class.java).copy(id = document.id)
-                        addMarkerForTouristSpot(spot)
+                        document.toObject(TouristSpot::class.java).copy(id = document.id)
                     } catch (e: Exception) {
                         Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
+                        null
                     }
+                }
+
+                // Apply current filters to search results
+                val filteredResults = if (selectedCategories.isEmpty()) {
+                    searchResults
+                } else {
+                    searchResults.filter { spot ->
+                        selectedCategories.any { category ->
+                            spot.categoria.lowercase().contains(category.lowercase())
+                        }
+                    }
+                }
+
+                filteredResults.forEach { addMarkerForTouristSpot(it) }
+
+                if (filteredResults.isEmpty()) {
+                    NotificationHelper.info(binding.root, "No se encontraron lugares con estos filtros")
                 }
             }.addOnFailureListener { e ->
                 Log.e("Firestore", "Error en la búsqueda", e)
@@ -455,15 +533,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         clearAllMarkers()
         db.collection("lugares").get()
             .addOnSuccessListener { documents ->
-                if (documents.isEmpty) { Toast.makeText(this, "No hay lugares en la base de datos.", Toast.LENGTH_SHORT).show() }
-                for (document in documents) {
+                if (documents.isEmpty) {
+                    Toast.makeText(this, "No hay lugares en la base de datos.", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                allSpots = documents.mapNotNull { document ->
                     try {
-                        val spot = document.toObject(TouristSpot::class.java).copy(id = document.id)
-                        addMarkerForTouristSpot(spot)
+                        document.toObject(TouristSpot::class.java).copy(id = document.id)
                     } catch (e: Exception) {
                         Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
+                        null
                     }
                 }
+
+                applyFilters()
             }.addOnFailureListener { e ->
                 Log.e("Firestore", "Error obteniendo documentos", e)
                 Toast.makeText(this, "Error leyendo Firestore: ${e.message}", Toast.LENGTH_LONG).show()

@@ -1,0 +1,103 @@
+package com.joseibarra.touristnotify
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.joseibarra.touristnotify.databinding.ActivityAdminBlogBinding
+import java.util.*
+
+/**
+ * Activity para que admins creen/editen posts del blog
+ */
+class AdminBlogActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityAdminBlogBinding
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAdminBlogBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        supportActionBar?.title = "Crear Post"
+
+        setupUI()
+    }
+
+    private fun setupUI() {
+        binding.publishButton.setOnClickListener {
+            publishPost()
+        }
+
+        // Category selection
+        binding.categoryChipGroup.setOnCheckedStateChangeListener { _, _ ->
+            // Category selected
+        }
+    }
+
+    private fun publishPost() {
+        val title = binding.titleEditText.text.toString().trim()
+        val content = binding.contentEditText.text.toString().trim()
+        val category = getSelectedCategory()
+        val isFeatured = binding.featuredSwitch.isChecked
+
+        // Validation
+        if (title.isEmpty()) {
+            NotificationHelper.error(binding.root, "El título es requerido")
+            return
+        }
+
+        if (content.isEmpty()) {
+            NotificationHelper.error(binding.root, "El contenido es requerido")
+            return
+        }
+
+        if (category.isEmpty()) {
+            NotificationHelper.error(binding.root, "Selecciona una categoría")
+            return
+        }
+
+        binding.publishButton.isEnabled = false
+
+        val authorName = auth.currentUser?.email?.substringBefore("@") ?: "Admin"
+
+        val post = BlogPost(
+            id = "",
+            title = title,
+            content = content,
+            category = category,
+            authorName = authorName,
+            authorId = auth.currentUser?.uid ?: "",
+            imageUrl = "",
+            isFeatured = isFeatured,
+            publishedAt = Date(),
+            likes = 0,
+            views = 0
+        )
+
+        db.collection("blog_posts")
+            .add(post)
+            .addOnSuccessListener {
+                NotificationHelper.success(binding.root, "Post publicado exitosamente")
+                finish()
+            }
+            .addOnFailureListener { e ->
+                binding.publishButton.isEnabled = true
+                NotificationHelper.error(binding.root, "Error al publicar: ${e.message}")
+            }
+    }
+
+    private fun getSelectedCategory(): String {
+        return when (binding.categoryChipGroup.checkedChipId) {
+            R.id.category_tips_chip -> "Consejos"
+            R.id.category_history_chip -> "Historia"
+            R.id.category_food_chip -> "Gastronomía"
+            R.id.category_culture_chip -> "Cultura"
+            R.id.category_nature_chip -> "Naturaleza"
+            R.id.category_events_chip -> "Eventos"
+            else -> ""
+        }
+    }
+}

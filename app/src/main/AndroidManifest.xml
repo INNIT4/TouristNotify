@@ -99,6 +99,18 @@
             android:name=".BusinessTravelerActivity"
             android:label="Modo Viajero de Negocios" />
 
+        <activity
+            android:name=".BlogActivity"
+            android:label="Blog de Consejos" />
+
+        <activity
+            android:name=".BlogPostDetailActivity"
+            android:label="Detalle del Post" />
+
+        <activity
+            android:name=".AdminBlogActivity"
+            android:label="Crear Post - Admin" />
+
     </application>
 
 </manifest>

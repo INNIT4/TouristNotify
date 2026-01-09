@@ -29,32 +29,56 @@ class PreferencesActivity : AppCompatActivity() {
             val budget = binding.budgetEditText.text.toString()
             val time = binding.timeEditText.text.toString()
             val interests = getSelectedInterests()
+            val travelType = getSelectedTravelType()
+            val pace = getSelectedPace()
+            val mobility = getSelectedMobility()
+            val customRequest = binding.customRequestEditText.text.toString().trim()
 
-            if (budget.isBlank() || time.isBlank() || interests.isEmpty()) {
-                Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
+            if (budget.isBlank() || time.isBlank()) {
+                Toast.makeText(this, "Por favor, ingresa presupuesto y tiempo disponible", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            fetchPlacesAndThenGenerateRoute(budget, time, interests)
+            if (interests.isEmpty() && customRequest.isBlank()) {
+                Toast.makeText(this, "Selecciona al menos un interés o describe lo que buscas", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
         }
     }
 
-    private fun fetchPlacesAndThenGenerateRoute(budget: String, time: String, interests: List<String>) {
+    private fun fetchPlacesAndThenGenerateRoute(
+        budget: String,
+        time: String,
+        interests: List<String>,
+        travelType: String,
+        pace: String,
+        mobility: String,
+        customRequest: String
+    ) {
         Toast.makeText(this, "Consultando lugares disponibles...", Toast.LENGTH_SHORT).show()
         db.collection("lugares")
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    // --- CORRECCIÓN: Si no hay datos, los creamos aquí ---
                     Toast.makeText(this, "Base de datos vacía. Creando datos de ejemplo...", Toast.LENGTH_LONG).show()
                     seedDatabaseWithSampleData(budget, time, interests)
                     return@addOnSuccessListener
                 }
 
-                val placeNamesFromDb = documents.mapNotNull { it.getString("nombre") }
-                val placesForPrompt = placeNamesFromDb.joinToString(", ")
+                // Obtener detalles completos de los lugares
+                val placesDetails = documents.mapNotNull { doc ->
+                    val nombre = doc.getString("nombre") ?: return@mapNotNull null
+                    val descripcion = doc.getString("descripcion") ?: ""
+                    val categoria = doc.getString("categoria") ?: ""
+                    "$nombre (Categoría: $categoria - $descripcion)"
+                }
 
-                generateRouteWithAI(budget, time, interests, placeNamesFromDb, placesForPrompt)
+                val placeNamesFromDb = documents.mapNotNull { it.getString("nombre") }
+                val placesForPrompt = placesDetails.joinToString("\n- ")
+
+                generateRouteWithAI(budget, time, interests, travelType, pace, mobility, customRequest, placeNamesFromDb, placesForPrompt)
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al cargar lugares", e)
@@ -62,8 +86,17 @@ class PreferencesActivity : AppCompatActivity() {
             }
     }
 
-    private fun generateRouteWithAI(budget: String, time: String, interests: List<String>, knownPlaceNames: List<String>, placesForPrompt: String) {
-        // Usar API key desde BuildConfig para mayor seguridad
+    private fun generateRouteWithAI(
+        budget: String,
+        time: String,
+        interests: List<String>,
+        travelType: String,
+        pace: String,
+        mobility: String,
+        customRequest: String,
+        knownPlaceNames: List<String>,
+        placesForPrompt: String
+    ) {
         val apiKey = BuildConfig.GEMINI_API_KEY
 
         if (apiKey.isEmpty()) {
@@ -76,13 +109,69 @@ class PreferencesActivity : AppCompatActivity() {
             apiKey = apiKey
         )
 
-        val interestsString = interests.joinToString()
-        val prompt = "A partir de la siguiente lista de lugares reales en Álamos, Sonora: ${placesForPrompt}. " +
-                "Sugiere 3 lugares para un turista con presupuesto de $${budget} pesos, $time horas de tiempo, y con intereses en ${interestsString}. " +
-                "Describe tu sugerencia en un párrafo natural. Ejemplo: Para tu viaje, te recomiendo visitar la Plaza de Armas, el Museo Costumbrista de Sonora y el Mirador El Perico."
+        // ============ PROMPT MEJORADO CON TÉCNICAS PROFESIONALES ============
+        val prompt = buildString {
+            appendLine("# ROL")
+            appendLine("Eres un guía turístico experto en Álamos, Sonora, México, con amplio conocimiento de la historia, cultura y geografía local.")
+            appendLine()
 
+            appendLine("# CONTEXTO")
+            appendLine("Álamos es un Pueblo Mágico colonial en Sonora, conocido por su arquitectura del siglo XVIII, calles empedradas, y rica historia minera.")
+            appendLine("Los turistas buscan experiencias auténticas que combinen historia, cultura y belleza natural.")
+            appendLine()
 
-        Toast.makeText(this, "Generando ruta con IA...", Toast.LENGTH_SHORT).show()
+            appendLine("# TAREA")
+            appendLine("Crea una ruta turística PERSONALIZADA basada en las siguientes preferencias del usuario:")
+            appendLine()
+
+            appendLine("## Perfil del Viajero:")
+            appendLine("- Presupuesto: $${budget} MXN")
+            appendLine("- Tiempo disponible: ${time} horas")
+            if (interests.isNotEmpty()) {
+                appendLine("- Intereses: ${interests.joinToString(", ")}")
+            }
+            appendLine("- Tipo de viaje: $travelType")
+            appendLine("- Ritmo preferido: $pace")
+            appendLine("- Movilidad: $mobility")
+            if (customRequest.isNotBlank()) {
+                appendLine()
+                appendLine("## Petición Específica del Usuario:")
+                appendLine("\"$customRequest\"")
+            }
+            appendLine()
+
+            appendLine("## Lugares Disponibles en Álamos:")
+            appendLine("- $placesForPrompt")
+            appendLine()
+
+            appendLine("# INSTRUCCIONES")
+            appendLine("1. Analiza cuidadosamente el presupuesto, tiempo y preferencias del usuario")
+            appendLine("2. Selecciona entre 3 y 6 lugares que mejor se adapten a sus necesidades")
+            appendLine("3. Ordena los lugares de forma lógica (proximidad geográfica, horarios, flujo natural)")
+            appendLine("4. Asegúrate de que el tiempo total se ajuste a las ${time} horas disponibles")
+            appendLine("5. Considera el presupuesto de $${budget} MXN (entradas, comidas, transporte)")
+            appendLine("6. Si el usuario mencionó algo específico, prioriza cumplir esa petición")
+            appendLine("7. Varía el tipo de actividades (no todo museos, ni todo aire libre)")
+            appendLine()
+
+            appendLine("# FORMATO DE RESPUESTA")
+            appendLine("Responde en un párrafo natural y entusiasta, mencionando EXACTAMENTE los nombres de los lugares tal como aparecen en la lista.")
+            appendLine("Explica brevemente por qué cada lugar es ideal para este viajero.")
+            appendLine()
+
+            appendLine("Ejemplo de respuesta:")
+            appendLine("\"Para tu experiencia de ${time} horas en Álamos, te recomiendo comenzar en la Plaza de Armas para sentir el corazón colonial de la ciudad, luego visitar el Museo Costumbrista de Sonora donde conocerás la rica historia regional, y finalizar en el Mirador El Perico para capturar vistas espectaculares al atardecer. Esta ruta se ajusta perfectamente a tu presupuesto de $${budget} MXN y combina historia con naturaleza.\"")
+            appendLine()
+
+            appendLine("# RESTRICCIONES")
+            appendLine("- USA ÚNICAMENTE los nombres exactos de la lista de lugares disponibles")
+            appendLine("- NO inventes lugares que no estén en la lista")
+            appendLine("- NO uses formato de lista numerada, escribe en párrafo natural")
+            appendLine("- SÉ ESPECÍFICO sobre por qué recomiendas cada lugar")
+            appendLine("- Menciona los lugares en el orden lógico de visita")
+        }
+
+        Toast.makeText(this, "Generando ruta personalizada con IA...", Toast.LENGTH_SHORT).show()
 
         lifecycleScope.launch {
             try {
@@ -94,6 +183,7 @@ class PreferencesActivity : AppCompatActivity() {
                     throw Exception("La respuesta de la IA está vacía.")
                 }
 
+                // Buscar lugares mencionados en la respuesta
                 val foundPlaceNames = ArrayList<String>()
                 knownPlaceNames.forEach { placeName ->
                     if (responseText.contains(placeName, ignoreCase = true)) {
@@ -103,15 +193,25 @@ class PreferencesActivity : AppCompatActivity() {
 
                 if (foundPlaceNames.isNotEmpty()) {
                     Log.d("AI_Parsed_Places", "Lugares encontrados en la respuesta: $foundPlaceNames")
+
+                    // Mostrar la respuesta de la IA al usuario
+                    Toast.makeText(this@PreferencesActivity,
+                        "✨ Ruta creada con ${foundPlaceNames.size} destinos",
+                        Toast.LENGTH_LONG).show()
+
                     navigateToMapWithRoute(foundPlaceNames)
                 } else {
                     Log.w("AI_Response_Error", "No se encontró ninguno de los lugares conocidos en la respuesta de la IA: $responseText")
-                    Toast.makeText(this@PreferencesActivity, "La IA no pudo generar una ruta con esos criterios. Inténtalo de nuevo.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@PreferencesActivity,
+                        "La IA no pudo generar una ruta con esos criterios. Intenta con diferentes preferencias.",
+                        Toast.LENGTH_LONG).show()
                 }
 
             } catch (e: Exception) {
                 Log.e("AI_Error", "Error al generar contenido: ${e.message}", e)
-                Toast.makeText(this@PreferencesActivity, "Error de IA: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@PreferencesActivity,
+                    "Error de IA: ${e.message}",
+                    Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -190,10 +290,42 @@ class PreferencesActivity : AppCompatActivity() {
 
     private fun getSelectedInterests(): List<String> {
         val interests = ArrayList<String>()
-        if (binding.chkComida.isChecked) interests.add("Comida")
-        if (binding.chkCultura.isChecked) interests.add("Cultura")
-        if (binding.chkHistoria.isChecked) interests.add("Historia")
-        if (binding.chkAireLibre.isChecked) interests.add("Aire Libre")
+        if (binding.chkComida.isChecked) interests.add("Comida y Gastronomía")
+        if (binding.chkCultura.isChecked) interests.add("Cultura y Arte")
+        if (binding.chkHistoria.isChecked) interests.add("Historia y Patrimonio")
+        if (binding.chkAireLibre.isChecked) interests.add("Aire Libre y Naturaleza")
+        if (binding.chkFotografia.isChecked) interests.add("Fotografía y Paisajes")
+        if (binding.chkArquitectura.isChecked) interests.add("Arquitectura Colonial")
+        if (binding.chkCompras.isChecked) interests.add("Compras y Artesanías")
+        if (binding.chkRelax.isChecked) interests.add("Relajación y Bienestar")
         return interests
+    }
+
+    private fun getSelectedTravelType(): String {
+        return when (binding.radioGroupTravelType.checkedRadioButtonId) {
+            binding.radioSolo.id -> "Solo/a"
+            binding.radioPareja.id -> "En pareja"
+            binding.radioFamilia.id -> "Familia con niños"
+            binding.radioAmigos.id -> "Grupo de amigos"
+            else -> "No especificado"
+        }
+    }
+
+    private fun getSelectedPace(): String {
+        return when (binding.radioGroupPace.checkedRadioButtonId) {
+            binding.radioRelajado.id -> "Relajado (muchas pausas, sin prisa)"
+            binding.radioModerado.id -> "Moderado (equilibrado)"
+            binding.radioIntenso.id -> "Intenso (máximo aprovechamiento del tiempo)"
+            else -> "Moderado"
+        }
+    }
+
+    private fun getSelectedMobility(): String {
+        return when (binding.radioGroupMobility.checkedRadioButtonId) {
+            binding.radioPie.id -> "A pie (todo caminando)"
+            binding.radioAuto.id -> "Auto propio"
+            binding.radioMixto.id -> "Mixto (combinar caminata y transporte)"
+            else -> "A pie"
+        }
     }
 }

@@ -118,6 +118,158 @@
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:alpha="0.2"
+                    android:background="?attr/colorOutline" />
+
+                <!-- Tipo de Viaje -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="👥 ¿Con quién viajas?"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_travel_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_solo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Solo/a"
+                        app:buttonTint="?attr/colorPrimary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_pareja"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:padding="8dp"
+                        android:text="En pareja"
+                        app:buttonTint="?attr/colorPrimary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_familia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Familia con niños"
+                        app:buttonTint="?attr/colorPrimary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_amigos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Grupo de amigos"
+                        app:buttonTint="?attr/colorPrimary" />
+                </RadioGroup>
+
+                <!-- Ritmo del Viaje -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="⚡ Ritmo del Viaje"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_pace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_relajado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="🐢 Relajado (con pausas frecuentes)"
+                        app:buttonTint="?attr/colorSecondary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_moderado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:padding="8dp"
+                        android:text="🚶 Moderado (equilibrado)"
+                        app:buttonTint="?attr/colorSecondary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_intenso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="🏃 Intenso (máximo aprovechamiento)"
+                        app:buttonTint="?attr/colorSecondary" />
+                </RadioGroup>
+
+                <!-- Movilidad -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="🚗 Medio de Transporte"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_mobility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_pie"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:padding="8dp"
+                        android:text="A pie (todo caminando)"
+                        app:buttonTint="?attr/colorTertiary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Auto propio"
+                        app:buttonTint="?attr/colorTertiary" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radio_mixto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Mixto (caminar + transporte)"
+                        app:buttonTint="?attr/colorTertiary" />
+                </RadioGroup>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:alpha="0.2"
+                    android:background="?attr/colorOutline" />
+
                 <!-- Intereses -->
                 <TextView
                     android:layout_width="wrap_content"
@@ -133,59 +285,143 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
                     android:fontFamily="sans-serif-light"
-                    android:text="Selecciona lo que más te gusta:"
+                    android:text="Selecciona todos los que te interesen:"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
 
-                <!-- Grid de checkboxes con mejor diseño -->
-                <LinearLayout
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_comida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🍴 Comida y Gastronomía"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorPrimary" />
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/chk_comida"
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_cultura"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🎭 Cultura y Arte"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorSecondary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_historia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🏛️ Historia y Patrimonio"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorTertiary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_aire_libre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🏞️ Aire Libre y Naturaleza"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorPrimary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_fotografia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="📷 Fotografía y Paisajes"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorSecondary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_arquitectura"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🏗️ Arquitectura Colonial"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorTertiary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_compras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🛍️ Compras y Artesanías"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorPrimary" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chk_relax"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:padding="12dp"
+                    android:text="🧘 Relajación y Bienestar"
+                    android:textSize="15sp"
+                    app:buttonTint="?attr/colorSecondary" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:alpha="0.2"
+                    android:background="?attr/colorOutline" />
+
+                <!-- Campo de texto libre -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="💬 Petición Personalizada (Opcional)"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="Describe exactamente lo que buscas:"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/custom_request_input_layout"
+                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ej: Lugares románticos para pedir matrimonio"
+                    app:helperText="La IA priorizará tu petición específica"
+                    app:helperTextTextColor="?attr/colorOnSurfaceVariant">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/custom_request_edit_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="sans-serif"
-                        android:padding="12dp"
-                        android:text="🍴 Comida y Gastronomía"
-                        android:textSize="15sp"
-                        app:buttonTint="?attr/colorPrimary" />
-
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/chk_cultura"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="sans-serif"
-                        android:padding="12dp"
-                        android:text="🎭 Cultura y Arte"
-                        android:textSize="15sp"
-                        app:buttonTint="?attr/colorSecondary" />
-
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/chk_historia"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="sans-serif"
-                        android:padding="12dp"
-                        android:text="🏛️ Historia y Patrimonio"
-                        android:textSize="15sp"
-                        app:buttonTint="?attr/colorTertiary" />
-
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/chk_aire_libre"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
-                        android:padding="12dp"
-                        android:text="🏞️ Aire Libre y Naturaleza"
-                        android:textSize="15sp"
-                        app:buttonTint="?attr/colorPrimary" />
-                </LinearLayout>
+                        android:gravity="top"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="4"
+                        android:minLines="3" />
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -210,9 +446,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="🤖 Powered by Google Gemini AI"
+            android:text="🤖 Powered by Google Gemini AI\nCuantos más detalles proporciones, mejor será tu ruta"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"

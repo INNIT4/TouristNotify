@@ -95,6 +95,10 @@
             android:name=".PlaceComparisonActivity"
             android:label="Comparación de Lugares" />
 
+        <activity
+            android:name=".BusinessTravelerActivity"
+            android:label="Modo Viajero de Negocios" />
+
     </application>
 
 </manifest>

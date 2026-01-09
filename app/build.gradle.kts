@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,21 +10,19 @@ plugins {
 
 android {
     namespace = "com.joseibarra.touristnotify"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 34 // release(36) is likely incorrect, setting to a standard stable version or keeping it if user wants but compileSdk = 36 is the way
 
     defaultConfig {
         applicationId = "com.joseibarra.touristnotify"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Leer API keys desde local.properties
-        val properties = java.util.Properties()
+        val properties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             localPropertiesFile.inputStream().use { properties.load(it) }

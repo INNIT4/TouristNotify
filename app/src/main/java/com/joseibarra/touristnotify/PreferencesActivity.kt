@@ -63,7 +63,7 @@ class PreferencesActivity : AppCompatActivity() {
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     Toast.makeText(this, "Base de datos vacía. Creando datos de ejemplo...", Toast.LENGTH_LONG).show()
-                    seedDatabaseWithSampleData(budget, time, interests)
+                    seedDatabaseWithSampleData(budget, time, interests, travelType, pace, mobility, customRequest)
                     return@addOnSuccessListener
                 }
 
@@ -216,7 +216,15 @@ class PreferencesActivity : AppCompatActivity() {
         }
     }
     
-    private fun seedDatabaseWithSampleData(budget: String, time: String, interests: List<String>) {
+    private fun seedDatabaseWithSampleData(
+        budget: String,
+        time: String,
+        interests: List<String>,
+        travelType: String,
+        pace: String,
+        mobility: String,
+        customRequest: String
+    ) {
         val sampleSpots = listOf(
             TouristSpot(
                 nombre = "Plaza de Armas",
@@ -273,7 +281,7 @@ class PreferencesActivity : AppCompatActivity() {
                 Log.d("Firestore", "Datos de ejemplo añadidos con éxito.")
                 // Después de añadir los datos, volvemos a intentar generar la ruta
                 Toast.makeText(this, "Datos creados. Re-intentando generar ruta...", Toast.LENGTH_SHORT).show()
-                fetchPlacesAndThenGenerateRoute(budget, time, interests)
+                fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al añadir datos de ejemplo", e)

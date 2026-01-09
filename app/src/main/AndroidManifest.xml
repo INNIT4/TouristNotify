@@ -83,6 +83,10 @@
             android:name=".EventsActivity"
             android:label="Eventos en Álamos" />
 
+        <activity
+            android:name=".ThemedRoutesActivity"
+            android:label="Rutas Temáticas" />
+
     </application>
 
 </manifest>

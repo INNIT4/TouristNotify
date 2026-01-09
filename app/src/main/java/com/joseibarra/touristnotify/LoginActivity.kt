@@ -3,6 +3,7 @@ package com.joseibarra.touristnotify
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.joseibarra.touristnotify.databinding.ActivityLoginBinding
@@ -31,9 +32,14 @@ class LoginActivity : AppCompatActivity() {
             navigateToRegister()
         }
 
-        // El botón "Saltar" ahora funciona como atajo de desarrollador al menú
-        binding.skipButton.setOnClickListener {
-            navigateToMenu()
+        // El botón "Saltar" solo está disponible en builds debug
+        if (BuildConfig.ENABLE_SKIP_LOGIN) {
+            binding.skipButton.visibility = View.VISIBLE
+            binding.skipButton.setOnClickListener {
+                navigateToMenu()
+            }
+        } else {
+            binding.skipButton.visibility = View.GONE
         }
     }
 

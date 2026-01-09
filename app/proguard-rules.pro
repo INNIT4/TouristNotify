@@ -12,10 +12,57 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve line number information for debugging stack traces
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep data classes for Firestore
+-keepclassmembers class com.joseibarra.touristnotify.** {
+  *;
+}
+
+# Firebase Firestore
+-keep class com.google.firebase.firestore.** { *; }
+-keep class com.google.firebase.auth.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes InnerClasses
+
+# Google Play Services / Maps
+-keep class com.google.android.gms.maps.** { *; }
+-keep interface com.google.android.gms.maps.** { *; }
+-keep class com.google.android.gms.location.** { *; }
+
+# Google Places API
+-keep class com.google.android.libraries.places.** { *; }
+
+# Google Maps Services (Directions API)
+-keep class com.google.maps.** { *; }
+-dontwarn com.google.maps.**
+
+# Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep class * extends com.bumptech.glide.module.AppGlideModule {
+ <init>(...);
+}
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+-keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
+  *** rewind();
+}
+
+# Kotlin Coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Generative AI SDK
+-keep class com.google.ai.client.generativeai.** { *; }
+-dontwarn com.google.ai.client.generativeai.**
+
+# Preserve generic signatures
+-keepattributes Signature

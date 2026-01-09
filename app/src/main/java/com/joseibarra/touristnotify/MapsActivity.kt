@@ -212,7 +212,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun saveRouteToFirestore(name: String, description: String) {
-        val userId = auth.currentUser!!.uid
+        // Validación de usuario autenticado
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Validación de ruta no vacía
+        if (currentRouteSpots.isEmpty()) {
+            Toast.makeText(this, "Error: No hay lugares en la ruta para guardar", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = currentUser.uid
         val routeId = db.collection("rutas").document().id
 
         val newRoute = Route(
@@ -232,6 +245,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.saveRouteButton.visibility = View.GONE
             }
             .addOnFailureListener { e ->
+                Log.e(TAG, "Error al guardar ruta", e)
                 Toast.makeText(this, "Error al guardar la ruta: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
@@ -266,7 +280,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun calculateAndDrawRoute(origin: LatLng, destination: LatLng) {
-        val geoApiContext = GeoApiContext.Builder().apiKey("AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI").build()
+        val geoApiContext = GeoApiContext.Builder().apiKey(BuildConfig.DIRECTIONS_API_KEY).build()
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val directionsResult = DirectionsApi.newRequest(geoApiContext)
@@ -314,7 +328,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         val geoApiContext = GeoApiContext.Builder()
-            .apiKey("AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI")
+            .apiKey(BuildConfig.DIRECTIONS_API_KEY)
             .build()
 
         lifecycleScope.launch(Dispatchers.IO) {

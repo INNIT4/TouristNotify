@@ -63,8 +63,13 @@ class PreferencesActivity : AppCompatActivity() {
     }
 
     private fun generateRouteWithAI(budget: String, time: String, interests: List<String>, knownPlaceNames: List<String>, placesForPrompt: String) {
-        // Corregido: Se usa la clave de API completa que proporcionaste y el nombre de modelo correcto.
-        val apiKey = "AIzaSyBb63FoPSJklQZpOPern2NsPz1q0bYDK1U"
+        // Usar API key desde BuildConfig para mayor seguridad
+        val apiKey = BuildConfig.GEMINI_API_KEY
+
+        if (apiKey.isEmpty()) {
+            Toast.makeText(this, "Error: API key no configurada", Toast.LENGTH_LONG).show()
+            return
+        }
 
         val generativeModel = GenerativeModel(
             modelName = "gemini-2.5-flash",

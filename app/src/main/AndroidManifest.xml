@@ -67,6 +67,10 @@
             android:name=".TopPlacesActivity"
             android:label="Top 10 Lugares Más Visitados" />
 
+        <activity
+            android:name=".AdminPlacesActivity"
+            android:label="Panel Administrativo - Importar Lugares" />
+
     </application>
 
 </manifest>

@@ -71,6 +71,14 @@
             android:name=".AdminPlacesActivity"
             android:label="Panel Administrativo - Importar Lugares" />
 
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="Mis Favoritos" />
+
+        <activity
+            android:name=".StatsActivity"
+            android:label="Mis Estadísticas" />
+
     </application>
 
 </manifest>

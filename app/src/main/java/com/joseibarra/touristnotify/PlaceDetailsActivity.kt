@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.touristnotify.databinding.ActivityPlaceDetailsBinding
+import kotlinx.coroutines.launch
 
 class PlaceDetailsActivity : AppCompatActivity() {
 
@@ -25,6 +27,9 @@ class PlaceDetailsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var reviewAdapter: ReviewAdapter
     private var placeId: String? = null
+    private var isFavorite: Boolean = false
+    private var placeName: String = ""
+    private var placeCategory: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +40,8 @@ class PlaceDetailsActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         placeId = intent.getStringExtra("PLACE_ID")
+        placeName = intent.getStringExtra("PLACE_NAME") ?: ""
+        placeCategory = intent.getStringExtra("PLACE_CATEGORY") ?: ""
 
         if (placeId == null) {
             Toast.makeText(this, "Error: No se encontró el lugar.", Toast.LENGTH_LONG).show()
@@ -46,6 +53,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         loadPlaceDetails()
         setupReviews()
         loadReviews()
+        checkFavoriteStatus()
     }
 
     private fun setupUI() {
@@ -71,6 +79,81 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
         binding.submitReviewButton.setOnClickListener {
             submitReview()
+        }
+
+        binding.favoriteButton.setOnClickListener {
+            toggleFavorite()
+        }
+
+        binding.checkInButton.setOnClickListener {
+            performCheckIn()
+        }
+    }
+
+    private fun checkFavoriteStatus() {
+        val currentPlaceId = placeId ?: return
+
+        lifecycleScope.launch {
+            isFavorite = FavoritesManager.isFavorite(currentPlaceId)
+            updateFavoriteButton()
+        }
+    }
+
+    private fun updateFavoriteButton() {
+        binding.favoriteButton.text = if (isFavorite) "⭐ Favorito" else "☆ Agregar a Favoritos"
+    }
+
+    private fun toggleFavorite() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            NotificationHelper.info(binding.root, "Debes iniciar sesión para agregar favoritos")
+            return
+        }
+
+        val currentPlaceId = placeId ?: return
+
+        lifecycleScope.launch {
+            val result = if (isFavorite) {
+                FavoritesManager.removeFavorite(currentPlaceId)
+            } else {
+                FavoritesManager.addFavorite(currentPlaceId, placeName, placeCategory)
+            }
+
+            result.onSuccess {
+                isFavorite = !isFavorite
+                updateFavoriteButton()
+                val message = if (isFavorite) "Agregado a favoritos" else "Eliminado de favoritos"
+                NotificationHelper.success(binding.root, message)
+            }.onFailure { e ->
+                NotificationHelper.error(binding.root, "Error: ${e.message}")
+            }
+        }
+    }
+
+    private fun performCheckIn() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            NotificationHelper.info(binding.root, "Debes iniciar sesión para hacer check-in")
+            return
+        }
+
+        val currentPlaceId = placeId ?: return
+
+        lifecycleScope.launch {
+            // Verificar si ya hizo check-in hoy
+            val hasCheckedIn = CheckInManager.hasCheckedInToday(currentPlaceId)
+            if (hasCheckedIn) {
+                NotificationHelper.warning(binding.root, "Ya hiciste check-in aquí hoy")
+                return@launch
+            }
+
+            val result = CheckInManager.checkIn(currentPlaceId, placeName, placeCategory)
+
+            result.onSuccess {
+                NotificationHelper.success(binding.root, "✅ Check-in exitoso!")
+            }.onFailure { e ->
+                NotificationHelper.error(binding.root, "Error al hacer check-in: ${e.message}")
+            }
         }
     }
 

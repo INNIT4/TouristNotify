@@ -2,8 +2,11 @@ package com.joseibarra.touristnotify
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.joseibarra.touristnotify.databinding.ActivityMenuBinding
+import kotlinx.coroutines.launch
 
 class MenuActivity : AppCompatActivity() {
 
@@ -16,6 +19,8 @@ class MenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        loadWeather()
 
         binding.buttonGenerateRoute.setOnClickListener {
             val intent = Intent(this, PreferencesActivity::class.java)
@@ -42,6 +47,16 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.buttonFavorites.setOnClickListener {
+            val intent = Intent(this, FavoritesActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonStats.setOnClickListener {
+            val intent = Intent(this, StatsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Acceso secreto al panel administrativo (mantener presionado el footer)
         binding.footerText.setOnLongClickListener {
             showAdminAccessDialog()
@@ -61,6 +76,38 @@ class MenuActivity : AppCompatActivity() {
                 adminClickCount = 1
             }
             lastAdminClickTime = currentTime
+        }
+    }
+
+    private fun loadWeather() {
+        binding.weatherProgressBar.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            val result = WeatherManager.getCurrentWeather()
+
+            result.onSuccess { weather ->
+                binding.weatherProgressBar.visibility = View.GONE
+                binding.weatherDetailsContainer.visibility = View.VISIBLE
+                binding.weatherRecommendationsTextView.visibility = View.VISIBLE
+
+                // Actualizar UI con datos del clima
+                binding.weatherEmojiTextView.text = WeatherManager.getWeatherEmoji(weather.icon)
+                binding.weatherTempTextView.text = "${weather.temperature.toInt()}°C"
+                binding.weatherDescriptionTextView.text = weather.description
+
+                binding.weatherHumidityTextView.text = "💧 ${weather.humidity}%"
+                binding.weatherWindTextView.text = "💨 ${weather.windSpeed.toInt()} km/h"
+                binding.weatherFeelsLikeTextView.text = "🌡️ ${weather.feelsLike.toInt()}°C"
+
+                // Generar recomendaciones
+                val recommendations = WeatherManager.getWeatherRecommendations(weather)
+                binding.weatherRecommendationsTextView.text = recommendations
+            }.onFailure { e ->
+                binding.weatherProgressBar.visibility = View.GONE
+                binding.weatherTempTextView.text = "--°C"
+                binding.weatherDescriptionTextView.text = "No disponible"
+                binding.weatherEmojiTextView.text = "🌤️"
+            }
         }
     }
 

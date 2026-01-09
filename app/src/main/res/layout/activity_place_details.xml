@@ -197,6 +197,35 @@
             android:layout_marginTop="16dp"
             android:text="Cómo llegar" />
 
+        <!-- Action buttons grid -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:columnCount="2"
+            android:rowCount="1">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/favorite_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="⭐ Favorito"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/check_in_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:text="📍 Check-in"
+                android:textSize="14sp" />
+        </GridLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

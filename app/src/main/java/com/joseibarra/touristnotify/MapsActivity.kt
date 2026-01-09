@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -181,11 +182,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setupSaveRouteButton() {
         binding.saveRouteButton.setOnClickListener {
             if (auth.currentUser == null) {
-                Toast.makeText(this, "Debes iniciar sesión para guardar una ruta", Toast.LENGTH_SHORT).show()
+                NotificationHelper.info(binding.root, "Debes iniciar sesión para guardar una ruta")
                 return@setOnClickListener
             }
             if (currentRouteSpots.isNotEmpty()) {
                 showSaveRouteDialog()
+            } else {
+                NotificationHelper.warning(binding.root, "Agrega lugares a la ruta primero")
             }
         }
     }
@@ -204,7 +207,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (name.isNotBlank()) {
                     saveRouteToFirestore(name, description)
                 } else {
-                    Toast.makeText(this, "El nombre de la ruta no puede estar vacío", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.warning(binding.root, "El nombre de la ruta no puede estar vacío")
                 }
             }
             .setNegativeButton("Cancelar", null)
@@ -241,19 +244,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         db.collection("rutas").document(routeId).set(newRoute)
             .addOnSuccessListener {
-                Toast.makeText(this, "Ruta guardada con éxito", Toast.LENGTH_SHORT).show()
+                NotificationHelper.routeSaved(binding.root, name)
                 binding.saveRouteButton.visibility = View.GONE
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error al guardar ruta", e)
-                Toast.makeText(this, "Error al guardar la ruta: ${e.message}", Toast.LENGTH_SHORT).show()
+                NotificationHelper.error(binding.root, "Error al guardar la ruta: ${e.message}")
             }
     }
     
     private fun addMarkerForTouristSpot(spot: TouristSpot) {
         spot.ubicacion?.let { geoPoint ->
             val position = LatLng(geoPoint.latitude, geoPoint.longitude)
-            val markerOptions = MarkerOptions().position(position).title(spot.nombre).snippet(spot.categoria)
+
+            // Personalizar color del marcador según categoría
+            val markerColor = when (spot.categoria.lowercase()) {
+                "museo" -> BitmapDescriptorFactory.HUE_VIOLET
+                "restaurante", "gastronomía" -> BitmapDescriptorFactory.HUE_ORANGE
+                "hotel", "hospedaje" -> BitmapDescriptorFactory.HUE_BLUE
+                "iglesia", "templo" -> BitmapDescriptorFactory.HUE_CYAN
+                "parque", "naturaleza" -> BitmapDescriptorFactory.HUE_GREEN
+                "tienda", "comercio" -> BitmapDescriptorFactory.HUE_YELLOW
+                else -> BitmapDescriptorFactory.HUE_RED
+            }
+
+            val markerOptions = MarkerOptions()
+                .position(position)
+                .title(spot.nombre)
+                .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
+                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+
             val marker = mMap.addMarker(markerOptions)
             marker?.tag = spot
             if (marker != null) {

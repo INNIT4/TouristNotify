@@ -2,6 +2,7 @@ package com.joseibarra.touristnotify
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -78,13 +80,66 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         val spot = document.toObject(TouristSpot::class.java)
-                        spot?.let {
-                            binding.averageRatingBar.rating = it.rating.toFloat()
-                            binding.totalReviewsTextView.text = "(Basado en ${it.reviewCount} reseñas)"
+                        spot?.let { place ->
+                            binding.averageRatingBar.rating = place.rating.toFloat()
+                            binding.totalReviewsTextView.text = "(Basado en ${place.reviewCount} reseñas)"
+
+                            // Mostrar horarios
+                            if (place.horarios.isNotBlank()) {
+                                binding.scheduleContainer.visibility = View.VISIBLE
+                                binding.placeScheduleTextView.text = place.horarios
+                            }
+
+                            // Mostrar teléfono
+                            if (place.telefono.isNotBlank()) {
+                                binding.phoneContainer.visibility = View.VISIBLE
+                                binding.placePhoneTextView.text = place.telefono
+                                binding.phoneContainer.setOnClickListener {
+                                    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${place.telefono}"))
+                                    startActivity(intent)
+                                }
+                            }
+
+                            // Mostrar sitio web
+                            if (place.sitioWeb.isNotBlank()) {
+                                binding.websiteContainer.visibility = View.VISIBLE
+                                binding.placeWebsiteTextView.text = place.sitioWeb
+                                binding.websiteContainer.setOnClickListener {
+                                    var url = place.sitioWeb
+                                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                                        url = "https://$url"
+                                    }
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    startActivity(intent)
+                                }
+                            }
+
+                            // Mostrar dirección
+                            if (place.direccion.isNotBlank()) {
+                                binding.addressContainer.visibility = View.VISIBLE
+                                binding.placeAddressTextView.text = place.direccion
+                            }
+
+                            // Mostrar precio
+                            if (place.precioEstimado.isNotBlank()) {
+                                binding.priceContainer.visibility = View.VISIBLE
+                                binding.placePriceTextView.text = place.precioEstimado
+                            }
+
+                            // Incrementar contador de visitas
+                            incrementVisitCount(it)
                         }
                     }
                 }
         }
+    }
+
+    private fun incrementVisitCount(placeId: String) {
+        db.collection("lugares").document(placeId)
+            .update("visitCount", FieldValue.increment(1))
+            .addOnFailureListener { e ->
+                Log.w("PlaceDetails", "Error incrementando visitas", e)
+            }
     }
 
     private fun setupReviews() {
@@ -112,34 +167,54 @@ class PlaceDetailsActivity : AppCompatActivity() {
     private fun submitReview() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(this, "Debes iniciar sesión para dejar una reseña.", Toast.LENGTH_SHORT).show()
+            NotificationHelper.info(binding.root, "Debes iniciar sesión para dejar una reseña")
             return
         }
 
         val rating = binding.submitRatingBar.rating
         if (rating == 0f) {
-            Toast.makeText(this, "Por favor, selecciona una calificación.", Toast.LENGTH_SHORT).show()
+            NotificationHelper.warning(binding.root, "Por favor, selecciona una calificación")
             return
         }
 
-        // Validar que placeId no sea null
         val currentPlaceId = placeId
         if (currentPlaceId == null) {
-            Toast.makeText(this, "Error: ID del lugar no disponible.", Toast.LENGTH_SHORT).show()
+            NotificationHelper.error(binding.root, "Error: ID del lugar no disponible")
             return
         }
 
         val comment = binding.reviewEditText.text.toString()
         val placeRef = db.collection("lugares").document(currentPlaceId)
 
+        // Verificar si el usuario ya dejó una reseña
+        placeRef.collection("reviews")
+            .whereEqualTo("userId", currentUser.uid)
+            .get()
+            .addOnSuccessListener { existingReviews ->
+                if (!existingReviews.isEmpty) {
+                    NotificationHelper.show(
+                        binding.root,
+                        "Ya dejaste una reseña para este lugar",
+                        NotificationHelper.NotificationType.WARNING,
+                        Snackbar.LENGTH_LONG,
+                        "Actualizar"
+                    ) {
+                        updateExistingReview(existingReviews.documents[0].id, rating, comment)
+                    }
+                } else {
+                    submitNewReview(placeRef, currentUser.uid, currentUser.displayName ?: "Anónimo", rating, comment)
+                }
+            }
+            .addOnFailureListener { e ->
+                NotificationHelper.error(binding.root, "Error al verificar reseñas: ${e.message}")
+            }
+    }
+
+    private fun submitNewReview(placeRef: com.google.firebase.firestore.DocumentReference, userId: String, userName: String, rating: Float, comment: String) {
         db.runTransaction { transaction ->
             val snapshot = transaction.get(placeRef)
-
-            // Manejo seguro de nulos
             val spot = snapshot.toObject(TouristSpot::class.java)
-            if (spot == null) {
-                throw Exception("No se pudo cargar la información del lugar")
-            }
+                ?: throw Exception("No se pudo cargar la información del lugar")
 
             val newReviewCount = spot.reviewCount + 1
             val newRating = ((spot.rating * spot.reviewCount) + rating) / newReviewCount
@@ -148,21 +223,62 @@ class PlaceDetailsActivity : AppCompatActivity() {
             transaction.update(placeRef, "reviewCount", newReviewCount)
 
             val review = Review(
-                userId = currentUser.uid,
-                userName = currentUser.displayName ?: "Anónimo",
+                userId = userId,
+                userName = userName,
                 rating = rating,
                 comment = comment
             )
             transaction.set(placeRef.collection("reviews").document(), review)
             null
         }.addOnSuccessListener {
-            Toast.makeText(this, "Reseña enviada con éxito", Toast.LENGTH_SHORT).show()
+            NotificationHelper.reviewSubmitted(binding.root)
             binding.submitRatingBar.rating = 0f
             binding.reviewEditText.text.clear()
-            loadPlaceDetails() // Recargar datos para mostrar la nueva calificación promedio
-            loadReviews()      // Recargar las reseñas para mostrar la nueva
+            loadPlaceDetails()
+            loadReviews()
         }.addOnFailureListener { e ->
-            Toast.makeText(this, "Error al enviar la reseña: ${e.message}", Toast.LENGTH_SHORT).show()
+            NotificationHelper.error(binding.root, "Error al enviar la reseña: ${e.message}")
+        }
+    }
+
+    private fun updateExistingReview(reviewId: String, rating: Float, comment: String) {
+        val currentPlaceId = placeId ?: return
+        val placeRef = db.collection("lugares").document(currentPlaceId)
+
+        db.runTransaction { transaction ->
+            val snapshot = transaction.get(placeRef)
+            val spot = snapshot.toObject(TouristSpot::class.java)
+                ?: throw Exception("No se pudo cargar la información del lugar")
+
+            // Obtener la reseña anterior
+            val oldReviewSnapshot = transaction.get(placeRef.collection("reviews").document(reviewId))
+            val oldReview = oldReviewSnapshot.toObject(Review::class.java)
+                ?: throw Exception("No se encontró la reseña anterior")
+
+            // Recalcular rating
+            val totalRating = spot.rating * spot.reviewCount
+            val newTotalRating = totalRating - oldReview.rating + rating
+            val newRating = newTotalRating / spot.reviewCount
+
+            transaction.update(placeRef, "rating", newRating)
+
+            // Actualizar la reseña
+            transaction.update(
+                placeRef.collection("reviews").document(reviewId),
+                mapOf(
+                    "rating" to rating,
+                    "comment" to comment
+                )
+            )
+            null
+        }.addOnSuccessListener {
+            NotificationHelper.success(binding.root, "Reseña actualizada exitosamente")
+            binding.submitRatingBar.rating = 0f
+            binding.reviewEditText.text.clear()
+            loadPlaceDetails()
+            loadReviews()
+        }.addOnFailureListener { e ->
+            NotificationHelper.error(binding.root, "Error al actualizar la reseña: ${e.message}")
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.joseibarra.touristnotify
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +25,24 @@ class ContactsAdapter(private val contacts: List<Contact>) : RecyclerView.Adapte
         fun bind(contact: Contact) {
             binding.textViewContactName.text = contact.name
             binding.textViewContactPhone.text = contact.phoneNumber
+            binding.textViewContactCategory.text = contact.category
+            binding.textViewContactDescription.text = contact.description
+
+            binding.buttonCall.setOnClickListener {
+                val context = binding.root.context
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${contact.phoneNumber}")
+                }
+                context.startActivity(intent)
+            }
+
+            binding.root.setOnClickListener {
+                val context = binding.root.context
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${contact.phoneNumber}")
+                }
+                context.startActivity(intent)
+            }
         }
     }
 }

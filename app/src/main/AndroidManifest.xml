@@ -79,6 +79,10 @@
             android:name=".StatsActivity"
             android:label="Mis Estadísticas" />
 
+        <activity
+            android:name=".EventsActivity"
+            android:label="Eventos en Álamos" />
+
     </application>
 
 </manifest>

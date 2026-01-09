@@ -122,12 +122,24 @@ class PlaceDetailsActivity : AppCompatActivity() {
             return
         }
 
+        // Validar que placeId no sea null
+        val currentPlaceId = placeId
+        if (currentPlaceId == null) {
+            Toast.makeText(this, "Error: ID del lugar no disponible.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val comment = binding.reviewEditText.text.toString()
-        val placeRef = db.collection("lugares").document(placeId!!)
+        val placeRef = db.collection("lugares").document(currentPlaceId)
 
         db.runTransaction { transaction ->
             val snapshot = transaction.get(placeRef)
-            val spot = snapshot.toObject(TouristSpot::class.java)!!
+
+            // Manejo seguro de nulos
+            val spot = snapshot.toObject(TouristSpot::class.java)
+            if (spot == null) {
+                throw Exception("No se pudo cargar la información del lugar")
+            }
 
             val newReviewCount = spot.reviewCount + 1
             val newRating = ((spot.rating * spot.reviewCount) + rating) / newReviewCount

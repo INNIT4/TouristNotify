@@ -20,15 +20,32 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Leer API keys desde local.properties
+        val properties = java.util.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { properties.load(it) }
+        }
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\"")
+        buildConfigField("String", "DIRECTIONS_API_KEY", "\"${properties.getProperty("DIRECTIONS_API_KEY", "")}\"")
+
+        // Para Maps API, el Secrets Plugin lo maneja automáticamente
+        manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY", "")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("Boolean", "ENABLE_SKIP_LOGIN", "false")
+        }
+        debug {
+            buildConfigField("Boolean", "ENABLE_SKIP_LOGIN", "true")
         }
     }
     compileOptions {
@@ -40,6 +57,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

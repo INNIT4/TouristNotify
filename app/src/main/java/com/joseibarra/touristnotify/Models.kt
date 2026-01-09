@@ -148,3 +148,22 @@ data class PlaceComparison(
     val places: List<TouristSpot> = emptyList(),
     val selectedPlaceIds: List<String> = emptyList()
 )
+
+/**
+ * Modelo para fotos de lugares turísticos
+ */
+data class PlacePhoto(
+    val id: String = "",
+    val placeId: String = "",
+    val placeName: String = "",
+    val imageUrl: String = "",
+    val thumbnailUrl: String = "",
+    val uploadedBy: String = "",
+    val uploaderName: String = "",
+    val caption: String = "",
+    @ServerTimestamp
+    val uploadedAt: Date? = null,
+    val likes: Int = 0,
+    val width: Int = 0,
+    val height: Int = 0
+)

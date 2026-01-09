@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.firestore)
     implementation("com.google.firebase:firebase-auth:24.0.1")
+    implementation("com.google.firebase:firebase-storage:21.0.1")
     implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
     
     // Dependencias de Glide
@@ -81,6 +82,9 @@ dependencies {
 
     // MPAndroidChart para gráficas de estadísticas
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // ViewPager2 para galería de fotos
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

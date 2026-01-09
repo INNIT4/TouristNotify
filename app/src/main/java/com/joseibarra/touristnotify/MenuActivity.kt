@@ -82,6 +82,11 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.buttonProximityNotifications.setOnClickListener {
+            val intent = Intent(this, ProximityNotificationsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Acceso secreto al panel administrativo (mantener presionado el footer)
         binding.footerText.setOnLongClickListener {
             showAdminAccessDialog()

@@ -33,5 +33,10 @@ class MenuActivity : AppCompatActivity() {
             val intent = Intent(this, ContactsActivity::class.java)
             startActivity(intent)
         }
+
+        binding.buttonTopPlaces.setOnClickListener {
+            val intent = Intent(this, TopPlacesActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

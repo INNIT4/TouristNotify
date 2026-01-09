@@ -11,6 +11,15 @@ data class TouristSpot(
     val ubicacion: GeoPoint? = null,
     val imagenUrl: String = "",
     val rating: Double = 0.0,
-    val reviewCount: Int = 0, // Nuevo campo para el contador de reseñas
-    val googlePlaceId: String? = null
+    val reviewCount: Int = 0,
+    val googlePlaceId: String? = null,
+    // Nuevos campos mejorados
+    val horarios: String = "",
+    val sitioWeb: String = "",
+    val telefono: String = "",
+    val visitCount: Int = 0,
+    val direccion: String = "",
+    val precioEstimado: String = "",
+    val accesibilidad: String = "",
+    val servicios: List<String> = emptyList()
 )

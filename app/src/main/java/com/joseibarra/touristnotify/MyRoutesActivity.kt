@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,20 +32,55 @@ class MyRoutesActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        routeAdapter = RouteAdapter(emptyList()) { route ->
-            val intent = Intent(this, MapsActivity::class.java).apply {
-                putStringArrayListExtra("ROUTE_PLACES_IDS", ArrayList(route.pdis_incluidos))
+        routeAdapter = RouteAdapter(
+            routes = emptyList(),
+            onItemClicked = { route ->
+                val intent = Intent(this, MapsActivity::class.java).apply {
+                    putStringArrayListExtra("ROUTE_PLACES_IDS", ArrayList(route.pdis_incluidos))
+                }
+                startActivity(intent)
+            },
+            onDeleteClicked = { route, position ->
+                showDeleteConfirmation(route, position)
             }
-            startActivity(intent)
-        }
+        )
         binding.routesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.routesRecyclerView.adapter = routeAdapter
+    }
+
+    private fun showDeleteConfirmation(route: Route, position: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar ruta")
+            .setMessage("¿Estás seguro de que deseas eliminar '${route.nombre_ruta}'?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                deleteRoute(route, position)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun deleteRoute(route: Route, position: Int) {
+        db.collection("rutas").document(route.id_ruta)
+            .delete()
+            .addOnSuccessListener {
+                routeAdapter.removeRoute(position)
+                NotificationHelper.success(binding.root, "Ruta eliminada exitosamente")
+
+                // Verificar si no quedan más rutas
+                if (routeAdapter.itemCount == 0) {
+                    binding.routesRecyclerView.visibility = View.GONE
+                    binding.noRoutesTextView.visibility = View.VISIBLE
+                }
+            }
+            .addOnFailureListener { e ->
+                NotificationHelper.error(binding.root, "Error al eliminar la ruta: ${e.message}")
+            }
     }
 
     private fun loadSavedRoutes() {
         val userId = auth.currentUser?.uid
         if (userId == null) {
-            Toast.makeText(this, "No se pudo obtener el usuario", Toast.LENGTH_SHORT).show()
+            NotificationHelper.error(binding.root, "No se pudo obtener el usuario")
             binding.noRoutesTextView.visibility = View.VISIBLE
             binding.routesRecyclerView.visibility = View.GONE
             return
@@ -69,7 +105,7 @@ class MyRoutesActivity : AppCompatActivity() {
                 binding.routesRecyclerView.visibility = View.GONE
                 binding.noRoutesTextView.visibility = View.VISIBLE
                 binding.noRoutesTextView.text = "Error al cargar las rutas"
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.error(binding.root, "Error: ${e.message}")
             }
     }
 }

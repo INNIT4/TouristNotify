@@ -57,6 +57,11 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.buttonEvents.setOnClickListener {
+            val intent = Intent(this, EventsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Acceso secreto al panel administrativo (mantener presionado el footer)
         binding.footerText.setOnLongClickListener {
             showAdminAccessDialog()

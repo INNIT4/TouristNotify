@@ -123,10 +123,29 @@
 
 ---
 
+### 8. Comparador de Lugares ⚖️
+**Estado: 100% Funcional**
+
+- ✅ ComparatorActivity para selección de lugares
+- ✅ PlaceSelectionAdapter con límite de 3 lugares
+- ✅ PlaceComparisonActivity con dos layouts
+- ✅ Comparación detallada para 2 lugares
+- ✅ Comparación compacta para 3 lugares
+- ✅ Highlight de mejores valores
+- ✅ TableLayout con filas alternadas
+
+**Cómo usar:**
+- Accede desde el menú principal
+- Selecciona 2-3 lugares con checkboxes
+- Toca "Comparar" para ver tabla lado a lado
+- Los mejores valores aparecen resaltados
+
+---
+
 ## 📋 FUNCIONALIDADES PENDIENTES DE IMPLEMENTACIÓN
 *(Requieren desarrollo completo)*
 
-### 8. Notificaciones de Proximidad 🔔
+### 9. Notificaciones de Proximidad 🔔
 **Complejidad: Media**
 **Tiempo estimado: 4-5 horas**
 
@@ -138,7 +157,7 @@ Pendiente:
 
 ---
 
-### 9. Galería de Fotos 📸
+### 10. Galería de Fotos 📸
 **Complejidad: Alta**
 **Tiempo estimado: 6-8 horas**
 
@@ -150,7 +169,7 @@ Requiere:
 
 ---
 
-### 10. Chat con IA Local 🤖
+### 11. Chat con IA Local 🤖
 **Complejidad: Media-Alta**
 **Tiempo estimado: 5-6 horas**
 
@@ -159,17 +178,6 @@ Requiere:
 - Carga y compresión de imágenes
 - Gallery view con ViewPager
 - Integración con Google Photos API
-
----
-
-### 11. Comparador de Lugares ⚖️
-**Complejidad: Baja**
-**Tiempo estimado: 2-3 horas**
-
-Pendiente:
-- Selección de 2-3 lugares
-- Tabla comparativa
-- UI de comparación
 
 ---
 
@@ -251,10 +259,10 @@ Requiere:
 
 | Categoría | Completas | Parciales | Pendientes | Total |
 |-----------|-----------|-----------|------------|-------|
-| Funcionalidades | 7 | 0 | 10 | 17 |
-| Porcentaje | 41% | 0% | 59% | 100% |
+| Funcionalidades | 8 | 0 | 9 | 17 |
+| Porcentaje | 47% | 0% | 53% | 100% |
 
-**Funcionalidades Usables Ahora: 7** (todas al 100%)
+**Funcionalidades Usables Ahora: 8** (todas al 100%)
 
 ---
 
@@ -268,29 +276,22 @@ Requiere:
 - ✅ Clima widget
 - ✅ Eventos
 - ✅ Rutas temáticas
+- ✅ Comparador de lugares
 
 ### Fase 2 (Siguiente - 1-2 días)
-- Galería de fotos
-- Comparador de lugares
-- Modo viajero de negocios
-- Blog de consejos
-
-### Fase 3 (Features avanzadas - 2-3 días)
 - Notificaciones de proximidad
-- Galería de fotos
 - Modo viajero de negocios
 - Blog de consejos
+- Galería de fotos
 
-### Fase 4 (Features complejas - 3-5 días)
+### Fase 3 (Features complejas - 3-5 días)
 - Chat con IA
 - Recomendaciones IA
 - Modo grupo
 - Encuentra compañeros
 
-### Fase 5 (Features muy complejas - 5-7 días)
+### Fase 4 (Features muy complejas - 5-7 días)
 - Modo sin conexión completo
-- Audio guías
-- Realidad Aumentada
 
 ---
 
@@ -338,10 +339,14 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - `StatsActivity.kt` - UI de estadísticas con gráficos
 - `EventsActivity.kt` - UI de eventos con categorías
 - `ThemedRoutesActivity.kt` - UI de rutas temáticas (6 rutas)
+- `ComparatorActivity.kt` - UI de selección para comparación
+- `PlaceComparisonActivity.kt` - UI de comparación lado a lado
 - `MapsActivity.kt` - Mejorado con filtros por categoría
-- Adapters: FavoritePlacesAdapter, EventsAdapter, ThemedRoutesAdapter
+- Adapters: FavoritePlacesAdapter, EventsAdapter, ThemedRoutesAdapter, PlaceSelectionAdapter
 - Layouts: activity_favorites.xml, activity_stats.xml, activity_events.xml,
-  activity_themed_routes.xml, activity_menu.xml (mejorado), activity_maps.xml (mejorado)
+  activity_themed_routes.xml, activity_comparator.xml, activity_place_comparison.xml,
+  comparison_table_two_places.xml, comparison_table_three_places.xml,
+  activity_menu.xml (mejorado), activity_maps.xml (mejorado)
 
 **Commits realizados:**
 - ✅ Fase 1: Sistema de Favoritos, Check-ins y Estadísticas
@@ -349,13 +354,14 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - ✅ Fase 3: Widget de Clima y Recomendaciones IA
 - ✅ Fase 4: Sistema Completo de Eventos
 - ✅ Fase 5: Sistema de Rutas Temáticas
+- ✅ Fase 6: Comparador de Lugares
 
 **Próximos pasos sugeridos:**
-1. Implementar galería de fotos (Firebase Storage)
-2. Crear comparador de lugares (2-3 lugares side-by-side)
-3. Modo viajero de negocios (filtros especializados)
-4. Blog de consejos (admin panel + lista)
+1. Implementar notificaciones de proximidad (geofencing)
+2. Modo viajero de negocios (filtros especializados)
+3. Blog de consejos (admin panel + lista)
+4. Galería de fotos (Firebase Storage)
 
 ---
 
-**Última actualización:** 2026-01-09 (Fase 5 completada - 7/17 funcionalidades al 100%)
+**Última actualización:** 2026-01-09 (Fase 6 completada - 8/17 funcionalidades al 47%)

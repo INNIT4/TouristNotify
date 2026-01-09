@@ -87,6 +87,14 @@
             android:name=".ThemedRoutesActivity"
             android:label="Rutas Temáticas" />
 
+        <activity
+            android:name=".ComparatorActivity"
+            android:label="Comparador de Lugares" />
+
+        <activity
+            android:name=".PlaceComparisonActivity"
+            android:label="Comparación de Lugares" />
+
     </application>
 
 </manifest>

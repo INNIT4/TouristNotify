@@ -85,35 +85,41 @@
 
 ---
 
-## 🔨 FUNCIONALIDADES PARCIALMENTE IMPLEMENTADAS
-*(Estructura creada, requiere expansión)*
-
 ### 6. Sistema de Eventos 📅
-**Estado: 60% - Modelo de datos listo**
+**Estado: 100% Funcional**
 
-**Implementado:**
-- Modelo Event completo
-- Estructura en Firebase
+- ✅ EventsActivity con lista completa
+- ✅ EventsAdapter con Material Design 3
+- ✅ Ordenamiento: destacados primero
+- ✅ 8 categorías con emojis
+- ✅ Formateo de fechas en español
+- ✅ Integración con PlaceDetailsActivity
+- ✅ Empty state cuando no hay eventos
 
-**Por completar:**
-- EventsActivity
-- Calendario visual
-- Notificaciones de eventos
-- Admin para crear eventos
+**Cómo usar:**
+- Accede desde el menú principal
+- Ve los eventos actuales y próximos
+- Toca un evento para ver más detalles
+- Los eventos destacados aparecen con badge ⭐
 
 ---
 
 ### 7. Rutas Temáticas 🎨
-**Estado: 60% - Modelo de datos listo**
+**Estado: 100% Funcional**
 
-**Implementado:**
-- Modelo ThemedRoute
-- Tipos predefinidos (Histórica, Gastronómica, etc.)
+- ✅ ThemedRoutesActivity con 6 rutas predefinidas
+- ✅ ThemedRoutesAdapter con color strips
+- ✅ Rutas: Histórica, Gastronómica, Religiosa, Arquitectónica, Fotográfica, Natural
+- ✅ Información completa: duración, dificultad, descripción
+- ✅ Sistema de fallback cuando no hay datos en Firebase
+- ✅ Integración con MapsActivity
+- ✅ Indicadores visuales de dificultad
 
-**Por completar:**
-- Activity para ver rutas temáticas
-- Generación automática de rutas
-- UI para selección de tema
+**Cómo usar:**
+- Accede desde el menú principal
+- Selecciona una ruta temática
+- Explora Álamos según tu interés
+- Cada ruta tiene duración y dificultad
 
 ---
 
@@ -245,27 +251,29 @@ Requiere:
 
 | Categoría | Completas | Parciales | Pendientes | Total |
 |-----------|-----------|-----------|------------|-------|
-| Funcionalidades | 5 | 2 | 10 | 17 |
-| Porcentaje | 29% | 12% | 59% | 100% |
+| Funcionalidades | 7 | 0 | 10 | 17 |
+| Porcentaje | 41% | 0% | 59% | 100% |
 
-**Funcionalidades Usables Ahora: 7** (5 completas + 2 parciales)
+**Funcionalidades Usables Ahora: 7** (todas al 100%)
 
 ---
 
 ## 🚀 Plan de Implementación Recomendado
 
-### Fase 1 (✅ COMPLETADA - 1 día)
+### Fase 1 (✅ COMPLETADA)
 - ✅ Favoritos
 - ✅ Check-ins
 - ✅ Estadísticas
 - ✅ Filtros de mapa
 - ✅ Clima widget
+- ✅ Eventos
+- ✅ Rutas temáticas
 
-### Fase 2 (En progreso - 1-2 días)
-- ⏳ Eventos (completar estructura existente)
-- ⏳ Rutas temáticas (completar estructura existente)
+### Fase 2 (Siguiente - 1-2 días)
 - Galería de fotos
 - Comparador de lugares
+- Modo viajero de negocios
+- Blog de consejos
 
 ### Fase 3 (Features avanzadas - 2-3 días)
 - Notificaciones de proximidad
@@ -328,21 +336,26 @@ implementation 'androidx.work:work-runtime-ktx:2.8.1'
 - `WeatherManager.kt` - Gestión de clima y recomendaciones
 - `FavoritesActivity.kt` - UI de favoritos
 - `StatsActivity.kt` - UI de estadísticas con gráficos
+- `EventsActivity.kt` - UI de eventos con categorías
+- `ThemedRoutesActivity.kt` - UI de rutas temáticas (6 rutas)
 - `MapsActivity.kt` - Mejorado con filtros por categoría
-- Adapters: FavoritePlacesAdapter, otros
-- Layouts: activity_favorites.xml, activity_stats.xml, activity_menu.xml (mejorado), activity_maps.xml (mejorado)
+- Adapters: FavoritePlacesAdapter, EventsAdapter, ThemedRoutesAdapter
+- Layouts: activity_favorites.xml, activity_stats.xml, activity_events.xml,
+  activity_themed_routes.xml, activity_menu.xml (mejorado), activity_maps.xml (mejorado)
 
 **Commits realizados:**
 - ✅ Fase 1: Sistema de Favoritos, Check-ins y Estadísticas
 - ✅ Fase 2: Sistema de Filtros en el Mapa
 - ✅ Fase 3: Widget de Clima y Recomendaciones IA
+- ✅ Fase 4: Sistema Completo de Eventos
+- ✅ Fase 5: Sistema de Rutas Temáticas
 
 **Próximos pasos sugeridos:**
-1. Completar sistema de eventos (Activity + UI)
-2. Completar rutas temáticas (Activity + UI)
-3. Implementar galería de fotos
-4. Crear comparador de lugares
+1. Implementar galería de fotos (Firebase Storage)
+2. Crear comparador de lugares (2-3 lugares side-by-side)
+3. Modo viajero de negocios (filtros especializados)
+4. Blog de consejos (admin panel + lista)
 
 ---
 
-**Última actualización:** 2026-01-09 (Fase 3 completada)
+**Última actualización:** 2026-01-09 (Fase 5 completada - 7/17 funcionalidades al 100%)

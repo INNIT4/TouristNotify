@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation("com.google.firebase:firebase-auth:24.0.1")
     implementation("com.google.firebase:firebase-storage:21.0.1")
+    implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
     
     // Dependencias de Glide

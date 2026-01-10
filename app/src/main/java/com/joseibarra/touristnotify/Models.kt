@@ -176,3 +176,17 @@ data class ChatMessage(
     val isFromUser: Boolean = true,
     val timestamp: Long = System.currentTimeMillis()
 )
+
+/**
+ * Modelo para recomendaciones IA personalizadas
+ */
+data class AIRecommendation(
+    val placeId: String = "",
+    val placeName: String = "",
+    val placeCategory: String = "",
+    val reason: String = "",
+    val score: Double = 0.0,
+    val weatherSuitable: Boolean = true,
+    val estimatedDuration: String = "",
+    val bestTimeToVisit: String = ""
+)

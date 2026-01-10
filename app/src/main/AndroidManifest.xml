@@ -138,6 +138,10 @@
             android:label="Chat con IA"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".AIRecommendationsActivity"
+            android:label="Recomendaciones IA" />
+
         <!-- Receiver para geofencing -->
         <receiver
             android:name=".GeofenceBroadcastReceiver"

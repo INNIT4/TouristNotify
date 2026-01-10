@@ -67,6 +67,36 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.buttonComparator.setOnClickListener {
+            val intent = Intent(this, ComparatorActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonBusinessTraveler.setOnClickListener {
+            val intent = Intent(this, BusinessTravelerActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonBlog.setOnClickListener {
+            val intent = Intent(this, BlogActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonProximityNotifications.setOnClickListener {
+            val intent = Intent(this, ProximityNotificationsActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonChat.setOnClickListener {
+            val intent = Intent(this, ChatActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.buttonAiRecommendations.setOnClickListener {
+            val intent = Intent(this, AIRecommendationsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Acceso secreto al panel administrativo (mantener presionado el footer)
         binding.footerText.setOnLongClickListener {
             showAdminAccessDialog()

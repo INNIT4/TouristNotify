@@ -148,3 +148,45 @@ data class PlaceComparison(
     val places: List<TouristSpot> = emptyList(),
     val selectedPlaceIds: List<String> = emptyList()
 )
+
+/**
+ * Modelo para fotos de lugares turísticos
+ */
+data class PlacePhoto(
+    val id: String = "",
+    val placeId: String = "",
+    val placeName: String = "",
+    val imageUrl: String = "",
+    val thumbnailUrl: String = "",
+    val uploadedBy: String = "",
+    val uploaderName: String = "",
+    val caption: String = "",
+    @ServerTimestamp
+    val uploadedAt: Date? = null,
+    val likes: Int = 0,
+    val width: Int = 0,
+    val height: Int = 0
+)
+
+/**
+ * Modelo para mensajes del chat con IA
+ */
+data class ChatMessage(
+    val text: String = "",
+    val isFromUser: Boolean = true,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/**
+ * Modelo para recomendaciones IA personalizadas
+ */
+data class AIRecommendation(
+    val placeId: String = "",
+    val placeName: String = "",
+    val placeCategory: String = "",
+    val reason: String = "",
+    val score: Double = 0.0,
+    val weatherSuitable: Boolean = true,
+    val estimatedDuration: String = "",
+    val bestTimeToVisit: String = ""
+)

@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:name=".TouristNotifyApplication"
@@ -86,6 +91,62 @@
         <activity
             android:name=".ThemedRoutesActivity"
             android:label="Rutas Temáticas" />
+
+        <activity
+            android:name=".ComparatorActivity"
+            android:label="Comparador de Lugares" />
+
+        <activity
+            android:name=".PlaceComparisonActivity"
+            android:label="Comparación de Lugares" />
+
+        <activity
+            android:name=".BusinessTravelerActivity"
+            android:label="Modo Viajero de Negocios" />
+
+        <activity
+            android:name=".BlogActivity"
+            android:label="Blog de Consejos" />
+
+        <activity
+            android:name=".BlogPostDetailActivity"
+            android:label="Detalle del Post" />
+
+        <activity
+            android:name=".AdminBlogActivity"
+            android:label="Crear Post - Admin" />
+
+        <activity
+            android:name=".ProximityNotificationsActivity"
+            android:label="Notificaciones de Proximidad" />
+
+        <activity
+            android:name=".PhotoGalleryActivity"
+            android:label="Galería de Fotos" />
+
+        <activity
+            android:name=".FullScreenPhotoActivity"
+            android:label="Foto"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+
+        <activity
+            android:name=".AdminPhotoUploadActivity"
+            android:label="Subir Foto" />
+
+        <activity
+            android:name=".ChatActivity"
+            android:label="Chat con IA"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".AIRecommendationsActivity"
+            android:label="Recomendaciones IA" />
+
+        <!-- Receiver para geofencing -->
+        <receiver
+            android:name=".GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
     </application>
 

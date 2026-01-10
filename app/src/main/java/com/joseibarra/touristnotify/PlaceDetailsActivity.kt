@@ -88,6 +88,14 @@ class PlaceDetailsActivity : AppCompatActivity() {
         binding.checkInButton.setOnClickListener {
             performCheckIn()
         }
+
+        binding.viewGalleryButton.setOnClickListener {
+            val intent = Intent(this, PhotoGalleryActivity::class.java).apply {
+                putExtra("PLACE_ID", placeId)
+                putExtra("PLACE_NAME", placeName)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun checkFavoriteStatus() {

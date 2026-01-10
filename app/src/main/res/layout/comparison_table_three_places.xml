@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    style="@style/Widget.TouristNotify.CardView"
+    app:cardElevation="4dp">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:stretchColumns="1,2,3">
+
+        <!-- Header Row -->
+        <TableRow android:background="?attr/colorSurfaceVariant"
+            android:padding="6dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/place31_name"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Lugar 1" />
+            <TextView
+                android:id="@+id/place32_name"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Lugar 2" />
+            <TextView
+                android:id="@+id/place33_name"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Lugar 3" />
+        </TableRow>
+
+        <!-- Rating Row -->
+        <TableRow android:paddingTop="8dp" android:paddingBottom="8dp">
+            <TextView
+                android:text="Rating"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/place31_rating"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="4.5⭐" />
+            <TextView
+                android:id="@+id/place32_rating"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="4.2⭐" />
+            <TextView
+                android:id="@+id/place33_rating"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="4.8⭐" />
+        </TableRow>
+
+        <!-- Price Row -->
+        <TableRow android:background="?attr/colorSurfaceVariant"
+            android:paddingTop="8dp" android:paddingBottom="8dp">
+            <TextView
+                android:text="Precio"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/place31_price"
+                android:gravity="center"
+                android:textSize="12sp"
+                tools:text="$$" />
+            <TextView
+                android:id="@+id/place32_price"
+                android:gravity="center"
+                android:textSize="12sp"
+                tools:text="$$$" />
+            <TextView
+                android:id="@+id/place33_price"
+                android:gravity="center"
+                android:textSize="12sp"
+                tools:text="$" />
+        </TableRow>
+
+        <!-- Visits Row -->
+        <TableRow android:paddingTop="8dp" android:paddingBottom="8dp">
+            <TextView
+                android:text="Visitas"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/place31_visits"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="1234" />
+            <TextView
+                android:id="@+id/place32_visits"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="987" />
+            <TextView
+                android:id="@+id/place33_visits"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="2000" />
+        </TableRow>
+
+    </TableLayout>
+
+</com.google.android.material.card.MaterialCardView>

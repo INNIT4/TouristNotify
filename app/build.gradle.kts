@@ -87,6 +87,14 @@ dependencies {
     // ViewPager2 para galería de fotos
     implementation("androidx.viewpager2:viewpager2:1.0.0")
 
+    // Room para base de datos local (modo offline)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // WorkManager para sincronización en background
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

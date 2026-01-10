@@ -161,6 +161,10 @@
             android:label="Chat del Grupo"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".OfflineSettingsActivity"
+            android:label="Modo Sin Conexión" />
+
         <!-- Service para compartir ubicación en tiempo real -->
         <service
             android:name=".LocationSharingService"

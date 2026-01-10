@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -141,6 +143,30 @@
         <activity
             android:name=".AIRecommendationsActivity"
             android:label="Recomendaciones IA" />
+
+        <activity
+            android:name=".GroupsActivity"
+            android:label="Grupos de Viaje" />
+
+        <activity
+            android:name=".GroupDetailsActivity"
+            android:label="Detalles del Grupo" />
+
+        <activity
+            android:name=".GroupMapActivity"
+            android:label="Mapa del Grupo" />
+
+        <activity
+            android:name=".GroupChatActivity"
+            android:label="Chat del Grupo"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Service para compartir ubicación en tiempo real -->
+        <service
+            android:name=".LocationSharingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
         <!-- Receiver para geofencing -->
         <receiver

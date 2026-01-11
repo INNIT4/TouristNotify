@@ -124,8 +124,33 @@ class GroupsActivity : AppCompatActivity() {
                 val description = descriptionInput.text.toString().trim()
                 val meetingPoint = meetingPointInput.text.toString().trim()
 
+                // SEGURIDAD: Validar nombre del grupo
                 if (name.isBlank()) {
                     NotificationHelper.error(binding.root, "El nombre es requerido")
+                    return@setPositiveButton
+                }
+                if (name.length < 3) {
+                    NotificationHelper.error(binding.root, "El nombre debe tener al menos 3 caracteres")
+                    return@setPositiveButton
+                }
+                if (name.length > 50) {
+                    NotificationHelper.error(binding.root, "El nombre no puede exceder 50 caracteres")
+                    return@setPositiveButton
+                }
+                if (!name.matches(Regex("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$"))) {
+                    NotificationHelper.error(binding.root, "El nombre solo puede contener letras, números y espacios")
+                    return@setPositiveButton
+                }
+
+                // SEGURIDAD: Validar descripción
+                if (description.length > 200) {
+                    NotificationHelper.error(binding.root, "La descripción no puede exceder 200 caracteres")
+                    return@setPositiveButton
+                }
+
+                // SEGURIDAD: Validar punto de encuentro
+                if (meetingPoint.length > 100) {
+                    NotificationHelper.error(binding.root, "El punto de encuentro no puede exceder 100 caracteres")
                     return@setPositiveButton
                 }
 
@@ -191,8 +216,17 @@ class GroupsActivity : AppCompatActivity() {
             .setPositiveButton("Unirse") { dialog, _ ->
                 val code = codeInput.text.toString().trim().uppercase()
 
+                // SEGURIDAD: Validar código del grupo
                 if (code.isBlank()) {
                     NotificationHelper.error(binding.root, "El código es requerido")
+                    return@setPositiveButton
+                }
+                if (code.length != 8) {
+                    NotificationHelper.error(binding.root, "El código debe tener exactamente 8 caracteres")
+                    return@setPositiveButton
+                }
+                if (!code.matches(Regex("^[A-Z0-9]+$"))) {
+                    NotificationHelper.error(binding.root, "Código inválido. Solo letras mayúsculas y números")
                     return@setPositiveButton
                 }
 
@@ -254,8 +288,9 @@ class GroupsActivity : AppCompatActivity() {
     }
 
     private fun generateGroupCode(): String {
+        // SEGURIDAD: Código de 8 caracteres para mayor seguridad (36^8 combinaciones)
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..6)
+        return (1..8)
             .map { chars.random() }
             .joinToString("")
     }

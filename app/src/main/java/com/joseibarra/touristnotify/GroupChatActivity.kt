@@ -76,7 +76,18 @@ class GroupChatActivity : AppCompatActivity() {
     private fun sendMessage() {
         val messageText = binding.messageEditText.text.toString().trim()
 
+        // Validación de mensaje vacío
         if (messageText.isEmpty()) {
+            return
+        }
+
+        // SEGURIDAD: Validar longitud máxima del mensaje
+        val MAX_MESSAGE_LENGTH = 500
+        if (messageText.length > MAX_MESSAGE_LENGTH) {
+            NotificationHelper.error(
+                binding.root,
+                "Mensaje muy largo. Máximo $MAX_MESSAGE_LENGTH caracteres"
+            )
             return
         }
 
@@ -86,6 +97,11 @@ class GroupChatActivity : AppCompatActivity() {
             return
         }
 
+        // SEGURIDAD: Sanitizar el mensaje (remover caracteres de control y limitar espacios)
+        val sanitizedMessage = messageText
+            .replace(Regex("\\p{C}"), "") // Remover caracteres de control
+            .replace(Regex("\\s+"), " ") // Normalizar espacios múltiples
+
         // Crear mensaje
         val messageId = messagesRef.push().key ?: return
         val message = GroupChatMessage(
@@ -93,7 +109,7 @@ class GroupChatActivity : AppCompatActivity() {
             groupId = groupId!!,
             senderId = currentUser.uid,
             senderName = currentUser.displayName ?: "Usuario",
-            message = messageText,
+            message = sanitizedMessage,
             timestamp = System.currentTimeMillis()
         )
 
@@ -102,8 +118,9 @@ class GroupChatActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 binding.messageEditText.text?.clear()
             }
-            .addOnFailureListener { e ->
-                NotificationHelper.error(binding.root, "Error al enviar mensaje: ${e.message}")
+            .addOnFailureListener {
+                // SEGURIDAD: Mensaje de error genérico sin detalles
+                NotificationHelper.error(binding.root, "Error al enviar mensaje. Intenta de nuevo")
             }
     }
 

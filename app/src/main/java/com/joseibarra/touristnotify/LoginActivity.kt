@@ -3,6 +3,7 @@ package com.joseibarra.touristnotify
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -53,8 +54,17 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         navigateToMenu()
                     } else {
-                        Toast.makeText(baseContext, "Fallo en la autenticación: ${task.exception?.message}",
-                            Toast.LENGTH_LONG).show()
+                        // SEGURIDAD: Mensaje de error genérico para no revelar información
+                        Toast.makeText(
+                            baseContext,
+                            "Error de autenticación. Verifica tus credenciales",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Log detallado solo en modo debug
+                        if (BuildConfig.DEBUG) {
+                            Log.e("LoginActivity", "Auth error: ${task.exception?.message}")
+                        }
                     }
                 }
         } else {

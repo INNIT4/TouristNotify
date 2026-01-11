@@ -116,11 +116,13 @@ data class BlogPost(
     val category: String = "", // Tips, Historia, Gastronomía, etc.
     val imageUrl: String = "",
     val authorName: String = "",
+    val authorId: String = "", // ID del usuario que creó el post
     val tags: List<String> = emptyList(),
     @ServerTimestamp
     val publishedAt: Date? = null,
     val viewCount: Int = 0,
-    val likes: Int = 0
+    val likes: Int = 0,
+    val isFeatured: Boolean = false // Post destacado en la página principal
 )
 
 /**

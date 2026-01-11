@@ -111,8 +111,8 @@ class AdminBlogActivity : AppCompatActivity() {
             imageUrl = "",
             isFeatured = isFeatured,
             publishedAt = Date(),
-            likes = 0,
-            views = 0
+            viewCount = 0,
+            likes = 0
         )
 
         db.collection("blog_posts")

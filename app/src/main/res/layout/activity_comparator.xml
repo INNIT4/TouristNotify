@@ -133,7 +133,7 @@
         android:text="Comparar Lugares"
         android:textSize="16sp"
         android:visibility="gone"
-        app:icon="@android:drawable/ic_menu_compare"
+        app:icon="@drawable/ic_compare"
         app:iconGravity="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

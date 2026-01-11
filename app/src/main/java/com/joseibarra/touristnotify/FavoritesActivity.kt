@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.touristnotify.databinding.ActivityFavoritesBinding
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class FavoritesActivity : AppCompatActivity() {
 
@@ -124,9 +125,4 @@ class FavoritesActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
-}
-
-// Añadir suspend function para await
-suspend fun <T> com.google.android.gms.tasks.Task<T>.await(): T {
-    return kotlinx.coroutines.tasks.await(this)
 }

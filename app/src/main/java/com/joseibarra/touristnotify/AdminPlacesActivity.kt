@@ -155,7 +155,7 @@ class AdminPlacesActivity : AppCompatActivity() {
                         website = place.websiteUri?.toString() ?: "",
                         rating = place.rating ?: 0.0,
                         userRatingsTotal = place.userRatingsTotal ?: 0,
-                        types = place.types ?: emptyList(),
+                        types = place.types?.map { it.name } ?: emptyList(),
                         openingHours = place.openingHours?.weekdayText?.joinToString("\n") ?: "",
                         priceLevel = place.priceLevel ?: 0,
                         hasPhotos = !place.photoMetadatas.isNullOrEmpty()

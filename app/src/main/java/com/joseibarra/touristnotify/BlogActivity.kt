@@ -147,7 +147,7 @@ class BlogActivity : AppCompatActivity() {
                 imageUrl = "",
                 isFeatured = true,
                 likes = 45,
-                views = 320
+                viewCount = 320
             ),
             BlogPost(
                 id = "sample2",
@@ -158,7 +158,7 @@ class BlogActivity : AppCompatActivity() {
                 imageUrl = "",
                 isFeatured = true,
                 likes = 38,
-                views = 215
+                viewCount = 215
             ),
             BlogPost(
                 id = "sample3",
@@ -169,7 +169,7 @@ class BlogActivity : AppCompatActivity() {
                 imageUrl = "",
                 isFeatured = false,
                 likes = 62,
-                views = 450
+                viewCount = 450
             ),
             BlogPost(
                 id = "sample4",
@@ -180,7 +180,7 @@ class BlogActivity : AppCompatActivity() {
                 imageUrl = "",
                 isFeatured = false,
                 likes = 29,
-                views = 180
+                viewCount = 180
             ),
             BlogPost(
                 id = "sample5",
@@ -191,7 +191,7 @@ class BlogActivity : AppCompatActivity() {
                 imageUrl = "",
                 isFeatured = false,
                 likes = 51,
-                views = 390
+                viewCount = 390
             )
         )
 

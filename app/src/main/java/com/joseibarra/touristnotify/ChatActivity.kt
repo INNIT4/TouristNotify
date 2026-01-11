@@ -94,6 +94,21 @@ class ChatActivity : AppCompatActivity() {
             return
         }
 
+        // SEGURIDAD: Validar longitud máxima del mensaje
+        val MAX_MESSAGE_LENGTH = 1000 // Más largo para preguntas complejas a IA
+        if (messageText.length > MAX_MESSAGE_LENGTH) {
+            NotificationHelper.error(
+                binding.root,
+                "Pregunta muy larga. Máximo $MAX_MESSAGE_LENGTH caracteres"
+            )
+            return
+        }
+
+        // SEGURIDAD: Sanitizar el mensaje
+        val sanitizedMessage = messageText
+            .replace(Regex("\\p{C}"), "") // Remover caracteres de control
+            .replace(Regex("\\s+"), " ") // Normalizar espacios
+
         // Deshabilitar input mientras se procesa
         binding.messageEditText.isEnabled = false
         binding.sendButton.isEnabled = false
@@ -101,7 +116,7 @@ class ChatActivity : AppCompatActivity() {
 
         // Agregar mensaje del usuario
         val userMessage = ChatMessage(
-            text = messageText,
+            text = sanitizedMessage,
             isFromUser = true,
             timestamp = System.currentTimeMillis()
         )
@@ -114,7 +129,7 @@ class ChatActivity : AppCompatActivity() {
 
         // Enviar mensaje a Gemini
         lifecycleScope.launch {
-            val result = GeminiChatManager.sendMessage(messageText)
+            val result = GeminiChatManager.sendMessage(sanitizedMessage)
 
             result.onSuccess { aiResponse ->
                 // Agregar respuesta de la IA

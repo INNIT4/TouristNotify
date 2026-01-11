@@ -54,7 +54,7 @@ class AdminBlogActivity : AppCompatActivity() {
         val category = getSelectedCategory()
         val isFeatured = binding.featuredSwitch.isChecked
 
-        // Validation
+        // SEGURIDAD: Validación básica
         if (title.isEmpty()) {
             NotificationHelper.error(binding.root, "El título es requerido")
             return
@@ -70,6 +70,32 @@ class AdminBlogActivity : AppCompatActivity() {
             return
         }
 
+        // SEGURIDAD: Validar longitud máxima
+        val MAX_TITLE_LENGTH = 200
+        val MAX_CONTENT_LENGTH = 10000
+
+        if (title.length > MAX_TITLE_LENGTH) {
+            NotificationHelper.error(binding.root, "Título muy largo (máx. $MAX_TITLE_LENGTH caracteres)")
+            return
+        }
+
+        if (content.length > MAX_CONTENT_LENGTH) {
+            NotificationHelper.error(binding.root, "Contenido muy largo (máx. $MAX_CONTENT_LENGTH caracteres)")
+            return
+        }
+
+        // SEGURIDAD: Sanitizar contenido para prevenir XSS
+        val sanitizedTitle = title
+            .replace(Regex("<[^>]*>"), "") // Remover tags HTML
+            .replace(Regex("\\p{C}"), "") // Remover caracteres de control
+            .replace(Regex("\\s+"), " ") // Normalizar espacios
+
+        val sanitizedContent = content
+            .replace(Regex("<script[^>]*>.*?</script>", RegexOption.IGNORE_CASE), "") // Remover scripts
+            .replace(Regex("javascript:", RegexOption.IGNORE_CASE), "") // Remover javascript:
+            .replace(Regex("on\\w+\\s*=", RegexOption.IGNORE_CASE), "") // Remover event handlers
+            .replace(Regex("\\p{C}"), "") // Remover caracteres de control
+
         binding.publishButton.isEnabled = false
 
         // El autor siempre será la Oficina de Turismo para posts oficiales
@@ -77,8 +103,8 @@ class AdminBlogActivity : AppCompatActivity() {
 
         val post = BlogPost(
             id = "",
-            title = title,
-            content = content,
+            title = sanitizedTitle,
+            content = sanitizedContent,
             category = category,
             authorName = authorName,
             authorId = auth.currentUser?.uid ?: "",
@@ -95,9 +121,10 @@ class AdminBlogActivity : AppCompatActivity() {
                 NotificationHelper.success(binding.root, "Post publicado exitosamente")
                 finish()
             }
-            .addOnFailureListener { e ->
+            .addOnFailureListener {
                 binding.publishButton.isEnabled = true
-                NotificationHelper.error(binding.root, "Error al publicar: ${e.message}")
+                // SEGURIDAD: Mensaje de error genérico
+                NotificationHelper.error(binding.root, "Error al publicar el post. Intenta de nuevo")
             }
     }
 

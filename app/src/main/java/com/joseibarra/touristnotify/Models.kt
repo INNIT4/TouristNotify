@@ -94,6 +94,18 @@ data class GroupMember(
 )
 
 /**
+ * Modelo para mensajes del chat grupal
+ */
+data class GroupChatMessage(
+    val id: String = "",
+    val groupId: String = "",
+    val senderId: String = "",
+    val senderName: String = "",
+    val message: String = "",
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/**
  * Modelo para posts del blog
  */
 data class BlogPost(

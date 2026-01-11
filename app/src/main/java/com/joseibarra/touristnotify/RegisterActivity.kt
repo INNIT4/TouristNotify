@@ -2,6 +2,7 @@ package com.joseibarra.touristnotify
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -72,10 +73,17 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                     navigateToMenu()
                 } else {
+                    // SEGURIDAD: Mensaje de error genérico
                     Toast.makeText(
-                        baseContext, "Fallo en el registro: ${task.exception?.message}",
-                        Toast.LENGTH_LONG
+                        baseContext,
+                        "Error en el registro. Verifica los datos e intenta de nuevo",
+                        Toast.LENGTH_SHORT
                     ).show()
+
+                    // Log detallado solo en modo debug
+                    if (BuildConfig.DEBUG) {
+                        Log.e("RegisterActivity", "Register error: ${task.exception?.message}")
+                    }
                 }
             }
     }

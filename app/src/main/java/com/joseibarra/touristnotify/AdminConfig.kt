@@ -33,11 +33,9 @@ object AdminConfig {
         if (email.isNullOrBlank()) return false
         val normalizedEmail = email.lowercase().trim()
 
-        // Admins de turismo tienen todos los permisos
-        if (AUTHORIZED_TOURISM_EMAILS.contains(normalizedEmail)) return true
-
-        // También permitir emails que contengan "admin" como fallback
-        return normalizedEmail.contains("admin")
+        // SOLO permitir emails explícitamente autorizados
+        // Sin fallbacks por seguridad
+        return AUTHORIZED_TOURISM_EMAILS.contains(normalizedEmail)
     }
 
     /**

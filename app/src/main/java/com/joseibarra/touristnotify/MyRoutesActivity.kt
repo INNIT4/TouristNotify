@@ -60,6 +60,18 @@ class MyRoutesActivity : AppCompatActivity() {
     }
 
     private fun deleteRoute(route: Route, position: Int) {
+        // SEGURIDAD: Validar que el usuario actual sea el dueño de la ruta
+        val currentUserId = auth.currentUser?.uid
+        if (currentUserId == null) {
+            NotificationHelper.error(binding.root, "Debes iniciar sesión para eliminar rutas")
+            return
+        }
+
+        if (route.id_usuario != currentUserId) {
+            NotificationHelper.error(binding.root, "No tienes permiso para eliminar esta ruta")
+            return
+        }
+
         db.collection("rutas").document(route.id_ruta)
             .delete()
             .addOnSuccessListener {
@@ -73,7 +85,7 @@ class MyRoutesActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                NotificationHelper.error(binding.root, "Error al eliminar la ruta: ${e.message}")
+                NotificationHelper.error(binding.root, "Error al eliminar la ruta")
             }
     }
 

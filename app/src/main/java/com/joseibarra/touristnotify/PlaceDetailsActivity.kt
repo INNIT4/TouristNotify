@@ -197,11 +197,21 @@ class PlaceDetailsActivity : AppCompatActivity() {
                                 binding.placeWebsiteTextView.text = place.sitioWeb
                                 binding.websiteContainer.setOnClickListener {
                                     var url = place.sitioWeb
-                                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+
+                                    // SEGURIDAD: Forzar HTTPS para proteger datos del usuario
+                                    if (url.startsWith("http://")) {
+                                        url = url.replaceFirst("http://", "https://")
+                                    } else if (!url.startsWith("https://")) {
                                         url = "https://$url"
                                     }
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                    startActivity(intent)
+
+                                    // Validar formato de URL
+                                    try {
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                        startActivity(intent)
+                                    } catch (e: Exception) {
+                                        NotificationHelper.error(binding.root, "URL no válida")
+                                    }
                                 }
                             }
 

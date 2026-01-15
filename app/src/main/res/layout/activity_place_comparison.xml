@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="?android:attr/colorBackground"
     tools:context=".PlaceComparisonActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +17,7 @@
             android:id="@+id/header_background"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:background="@drawable/gradient_header"
+            android:background="@drawable/bg_gradient_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +35,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
@@ -46,42 +45,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_title" />
 
-        <!-- Container for 2 places -->
-        <LinearLayout
-            android:id="@+id/comparison_container_2"
+        <!-- Tablas de comparación -->
+        <include
+            android:id="@+id/comparisonTable2"
+            layout="@layout/comparison_table_two_places"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_background"
-            tools:visibility="visible">
+            tools:visibility="visible" />
 
-            <include layout="@layout/comparison_table_two_places" />
-
-        </LinearLayout>
-
-        <!-- Container for 3 places -->
-        <LinearLayout
-            android:id="@+id/comparison_container_3"
+        <include
+            android:id="@+id/comparisonTable3"
+            layout="@layout/comparison_table_three_places"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_background">
-
-            <include layout="@layout/comparison_table_three_places" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/header_background" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

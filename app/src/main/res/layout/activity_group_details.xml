@@ -32,15 +32,33 @@
                 tools:text="Viaje a Álamos 2024" />
 
             <TextView
-                android:id="@+id/group_code_text_view"
+                android:id="@+id/group_description_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textSize="14sp"
+                tools:text="Descripción del grupo de viaje" />
+
+            <TextView
+                android:id="@+id/group_code_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:fontFamily="monospace"
                 android:gravity="center"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 tools:text="🔑 Código: ABC123" />
+
+            <TextView
+                android:id="@+id/member_count_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textSize="12sp"
+                tools:text="5 miembros" />
 
             <TextView
                 android:id="@+id/meeting_point_text_view"
@@ -125,7 +143,7 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/header_card"
-        tools:text="👥 Miembros (5)" />
+        tools:text="👥 Miembros" />
 
     <!-- Progress Bar -->
     <ProgressBar

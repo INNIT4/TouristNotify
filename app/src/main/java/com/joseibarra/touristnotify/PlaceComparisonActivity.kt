@@ -23,7 +23,8 @@ class PlaceComparisonActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        val selectedPlaceIds = intent.getStringArrayListExtra(ComparatorActivity.EXTRA_SELECTED_PLACES)
+        // Obtener IDs de la intención (ajustado a la clave correcta)
+        val selectedPlaceIds = intent.getStringArrayListExtra("SELECTED_PLACES")
 
         if (selectedPlaceIds.isNullOrEmpty()) {
             NotificationHelper.error(binding.root, "No se seleccionaron lugares")
@@ -46,8 +47,10 @@ class PlaceComparisonActivity : AppCompatActivity() {
 
                 for (document in documents) {
                     try {
-                        val place = document.toObject(TouristSpot::class.java).copy(id = document.id)
-                        places.add(place)
+                        val place = document.toObject(TouristSpot::class.java)?.copy(id = document.id)
+                        if (place != null) {
+                            places.add(place)
+                        }
                     } catch (e: Exception) {
                         android.util.Log.e("PlaceComparisonActivity", "Error: ${e.message}")
                     }
@@ -71,90 +74,90 @@ class PlaceComparisonActivity : AppCompatActivity() {
         when (places.size) {
             2 -> displayTwoPlaces()
             3 -> displayThreePlaces()
-            else -> displayTwoPlaces() // Fallback
+            else -> if (places.size >= 2) displayTwoPlaces() else finish()
         }
     }
 
     private fun displayTwoPlaces() {
-        binding.comparisonContainer2.visibility = View.VISIBLE
-        binding.comparisonContainer3.visibility = View.GONE
+        binding.comparisonTable2.root.visibility = View.VISIBLE
+        binding.comparisonTable3.root.visibility = View.GONE
 
-        val place1 = places[0]
-        val place2 = places[1]
+        val p1 = places[0]
+        val p2 = places[1]
+
+        val t2 = binding.comparisonTable2
 
         // Place 1
-        binding.place1Name.text = place1.nombre
-        binding.place1Category.text = place1.categoria
-        binding.place1Rating.text = String.format("%.1f ⭐", place1.rating)
-        binding.place1Reviews.text = "${place1.reviewCount} reseñas"
-        binding.place1Price.text = place1.precioEstimado.ifBlank { "No especificado" }
-        binding.place1Schedule.text = place1.horarios.ifBlank { "No especificado" }
-        binding.place1Phone.text = place1.telefono.ifBlank { "No especificado" }
-        binding.place1Address.text = place1.direccion.ifBlank { "No especificado" }
-        binding.place1Visits.text = "${place1.visitCount} visitas"
+        t2.place1Name.text = p1.nombre
+        t2.place1Category.text = p1.categoria
+        t2.place1Rating.text = String.format("%.1f ⭐", p1.rating)
+        t2.place1Reviews.text = "${p1.reviewCount} reseñas"
+        t2.place1Price.text = p1.precioEstimado.ifBlank { "No especificado" }
+        t2.place1Schedule.text = p1.horarios.ifBlank { "No especificado" }
+        t2.place1Phone.text = p1.telefono.ifBlank { "No especificado" }
+        t2.place1Address.text = p1.direccion.ifBlank { "No especificado" }
+        t2.place1Visits.text = "${p1.visitCount} visitas"
 
         // Place 2
-        binding.place2Name.text = place2.nombre
-        binding.place2Category.text = place2.categoria
-        binding.place2Rating.text = String.format("%.1f ⭐", place2.rating)
-        binding.place2Reviews.text = "${place2.reviewCount} reseñas"
-        binding.place2Price.text = place2.precioEstimado.ifBlank { "No especificado" }
-        binding.place2Schedule.text = place2.horarios.ifBlank { "No especificado" }
-        binding.place2Phone.text = place2.telefono.ifBlank { "No especificado" }
-        binding.place2Address.text = place2.direccion.ifBlank { "No especificado" }
-        binding.place2Visits.text = "${place2.visitCount} visitas"
+        t2.place2Name.text = p2.nombre
+        t2.place2Category.text = p2.categoria
+        t2.place2Rating.text = String.format("%.1f ⭐", p2.rating)
+        t2.place2Reviews.text = "${p2.reviewCount} reseñas"
+        t2.place2Price.text = p2.precioEstimado.ifBlank { "No especificado" }
+        t2.place2Schedule.text = p2.horarios.ifBlank { "No especificado" }
+        t2.place2Phone.text = p2.telefono.ifBlank { "No especificado" }
+        t2.place2Address.text = p2.direccion.ifBlank { "No especificado" }
+        t2.place2Visits.text = "${p2.visitCount} visitas"
 
         // Destacar el mejor rating
-        if (place1.rating > place2.rating) {
-            binding.place1Rating.setTextColor(getColor(R.color.md_theme_light_primary))
-        } else if (place2.rating > place1.rating) {
-            binding.place2Rating.setTextColor(getColor(R.color.md_theme_light_primary))
-        }
+        val primaryColor = getColor(R.color.md_theme_light_primary)
+        if (p1.rating > p2.rating) t2.place1Rating.setTextColor(primaryColor)
+        else if (p2.rating > p1.rating) t2.place2Rating.setTextColor(primaryColor)
 
         // Destacar el más visitado
-        if (place1.visitCount > place2.visitCount) {
-            binding.place1Visits.setTextColor(getColor(R.color.md_theme_light_primary))
-        } else if (place2.visitCount > place1.visitCount) {
-            binding.place2Visits.setTextColor(getColor(R.color.md_theme_light_primary))
-        }
+        if (p1.visitCount > p2.visitCount) t2.place1Visits.setTextColor(primaryColor)
+        else if (p2.visitCount > p1.visitCount) t2.place2Visits.setTextColor(primaryColor)
     }
 
     private fun displayThreePlaces() {
-        binding.comparisonContainer2.visibility = View.GONE
-        binding.comparisonContainer3.visibility = View.VISIBLE
+        binding.comparisonTable2.root.visibility = View.GONE
+        binding.comparisonTable3.root.visibility = View.VISIBLE
 
-        val place1 = places[0]
-        val place2 = places[1]
-        val place3 = places[2]
+        val p1 = places[0]
+        val p2 = places[1]
+        val p3 = places[2]
+
+        val t3 = binding.comparisonTable3
 
         // Place 1
-        binding.place31Name.text = place1.nombre
-        binding.place31Rating.text = String.format("%.1f ⭐", place1.rating)
-        binding.place31Price.text = place1.precioEstimado.ifBlank { "-" }
-        binding.place31Visits.text = "${place1.visitCount}"
+        t3.place31Name.text = p1.nombre
+        t3.place31Rating.text = String.format("%.1f ⭐", p1.rating)
+        t3.place31Price.text = p1.precioEstimado.ifBlank { "-" }
+        t3.place31Visits.text = "${p1.visitCount}"
 
         // Place 2
-        binding.place32Name.text = place2.nombre
-        binding.place32Rating.text = String.format("%.1f ⭐", place2.rating)
-        binding.place32Price.text = place2.precioEstimado.ifBlank { "-" }
-        binding.place32Visits.text = "${place2.visitCount}"
+        t3.place32Name.text = p2.nombre
+        t3.place32Rating.text = String.format("%.1f ⭐", p2.rating)
+        t3.place32Price.text = p2.precioEstimado.ifBlank { "-" }
+        t3.place32Visits.text = "${p2.visitCount}"
 
         // Place 3
-        binding.place33Name.text = place3.nombre
-        binding.place33Rating.text = String.format("%.1f ⭐", place3.rating)
-        binding.place33Price.text = place3.precioEstimado.ifBlank { "-" }
-        binding.place33Visits.text = "${place3.visitCount}"
+        t3.place33Name.text = p3.nombre
+        t3.place33Rating.text = String.format("%.1f ⭐", p3.rating)
+        t3.place33Price.text = p3.precioEstimado.ifBlank { "-" }
+        t3.place33Visits.text = "${p3.visitCount}"
 
         // Destacar el mejor rating
-        val maxRating = maxOf(place1.rating, place2.rating, place3.rating)
-        if (place1.rating == maxRating) binding.place31Rating.setTextColor(getColor(R.color.md_theme_light_primary))
-        if (place2.rating == maxRating) binding.place32Rating.setTextColor(getColor(R.color.md_theme_light_primary))
-        if (place3.rating == maxRating) binding.place33Rating.setTextColor(getColor(R.color.md_theme_light_primary))
+        val primaryColor = getColor(R.color.md_theme_light_primary)
+        val maxRating = maxOf(p1.rating, p2.rating, p3.rating)
+        if (p1.rating == maxRating) t3.place31Rating.setTextColor(primaryColor)
+        if (p2.rating == maxRating) t3.place32Rating.setTextColor(primaryColor)
+        if (p3.rating == maxRating) t3.place33Rating.setTextColor(primaryColor)
 
         // Destacar el más visitado
-        val maxVisits = maxOf(place1.visitCount, place2.visitCount, place3.visitCount)
-        if (place1.visitCount == maxVisits) binding.place31Visits.setTextColor(getColor(R.color.md_theme_light_primary))
-        if (place2.visitCount == maxVisits) binding.place32Visits.setTextColor(getColor(R.color.md_theme_light_primary))
-        if (place3.visitCount == maxVisits) binding.place33Visits.setTextColor(getColor(R.color.md_theme_light_primary))
+        val maxVisits = maxOf(p1.visitCount, p2.visitCount, p3.visitCount)
+        if (p1.visitCount == maxVisits) t3.place31Visits.setTextColor(primaryColor)
+        if (p2.visitCount == maxVisits) t3.place32Visits.setTextColor(primaryColor)
+        if (p3.visitCount == maxVisits) t3.place33Visits.setTextColor(primaryColor)
     }
 }

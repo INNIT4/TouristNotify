@@ -61,7 +61,7 @@ class BlogPostAdapter(
         }
 
         holder.likesTextView.text = "❤️ ${post.likes}"
-        holder.viewsTextView.text = "👁️ ${post.views}"
+        holder.viewsTextView.text = "👁️ ${post.viewCount}"
 
         // Featured badge
         holder.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE

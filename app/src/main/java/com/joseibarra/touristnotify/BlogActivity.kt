@@ -206,7 +206,7 @@ class BlogActivity : AppCompatActivity() {
     private fun openPostDetails(post: BlogPost) {
         // Incrementar contador de vistas
         db.collection("blog_posts").document(post.id)
-            .update("views", post.views + 1)
+            .update("views", post.viewCount + 1)
 
         val intent = Intent(this, BlogPostDetailActivity::class.java)
         intent.putExtra("POST_ID", post.id)

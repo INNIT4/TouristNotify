@@ -76,7 +76,7 @@ class BlogPostDetailActivity : AppCompatActivity() {
         }
 
         binding.postLikesTextView.text = "❤️ ${post.likes}"
-        binding.postViewsTextView.text = "👁️ ${post.views}"
+        binding.postViewsTextView.text = "👁️ ${post.viewCount}"
 
         // Featured badge
         binding.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE

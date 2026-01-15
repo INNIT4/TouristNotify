@@ -36,7 +36,9 @@ class Converters {
     @TypeConverter
     fun toGeoPoint(value: String?): GeoPoint? {
         return value?.split(",")?.let {
-            GeoPoint(it[0].toDouble(), it[1].toDouble())
+            if (it.size == 2) {
+                GeoPoint(it[0].toDouble(), it[1].toDouble())
+            } else null
         }
     }
 
@@ -64,14 +66,12 @@ data class TouristSpotEntity(
     val latitude: Double,
     val longitude: Double,
     val rating: Double,
-    val userRatingsTotal: Int,
-    val address: String,
-    val phoneNumber: String?,
-    val website: String?,
-    val openingHours: List<String>?,
-    val photos: List<String>?,
-    val priceLevel: Int,
-    val isVerified: Boolean,
+    val reviewCount: Int,
+    val direccion: String,
+    val telefono: String?,
+    val sitioWeb: String?,
+    val horarios: String?,
+    val imagenUrl: String?,
     val visitCount: Int,
     val lastSyncedAt: Long = System.currentTimeMillis()
 ) {
@@ -83,14 +83,12 @@ data class TouristSpotEntity(
             categoria = categoria,
             ubicacion = GeoPoint(latitude, longitude),
             rating = rating,
-            userRatingsTotal = userRatingsTotal,
-            address = address,
-            phoneNumber = phoneNumber,
-            website = website,
-            openingHours = openingHours,
-            photos = photos,
-            priceLevel = priceLevel,
-            isVerified = isVerified,
+            reviewCount = reviewCount,
+            direccion = direccion,
+            telefono = telefono ?: "",
+            sitioWeb = sitioWeb ?: "",
+            horarios = horarios ?: "",
+            imagenUrl = imagenUrl ?: "",
             visitCount = visitCount
         )
     }
@@ -105,14 +103,12 @@ data class TouristSpotEntity(
                 latitude = spot.ubicacion?.latitude ?: 0.0,
                 longitude = spot.ubicacion?.longitude ?: 0.0,
                 rating = spot.rating,
-                userRatingsTotal = spot.userRatingsTotal,
-                address = spot.address,
-                phoneNumber = spot.phoneNumber,
-                website = spot.website,
-                openingHours = spot.openingHours,
-                photos = spot.photos,
-                priceLevel = spot.priceLevel,
-                isVerified = spot.isVerified,
+                reviewCount = spot.reviewCount,
+                direccion = spot.direccion,
+                telefono = spot.telefono,
+                sitioWeb = spot.sitioWeb,
+                horarios = spot.horarios,
+                imagenUrl = spot.imagenUrl,
                 visitCount = spot.visitCount
             )
         }
@@ -127,13 +123,13 @@ data class EventEntity(
     val title: String,
     val description: String,
     val category: String,
+    val location: String,
     val placeId: String,
-    val placeName: String,
-    val dateTimestamp: Long,
+    val startDateTimestamp: Long,
     val endDateTimestamp: Long?,
     val isFeatured: Boolean,
     val imageUrl: String?,
-    val organizer: String,
+    val organizerName: String,
     val lastSyncedAt: Long = System.currentTimeMillis()
 ) {
     fun toEvent(): Event {
@@ -142,13 +138,13 @@ data class EventEntity(
             title = title,
             description = description,
             category = category,
+            location = location,
             placeId = placeId,
-            placeName = placeName,
-            date = java.util.Date(dateTimestamp),
+            startDate = java.util.Date(startDateTimestamp),
             endDate = endDateTimestamp?.let { java.util.Date(it) },
             isFeatured = isFeatured,
-            imageUrl = imageUrl,
-            organizer = organizer
+            imageUrl = imageUrl ?: "",
+            organizerName = organizerName
         )
     }
 
@@ -159,13 +155,13 @@ data class EventEntity(
                 title = event.title,
                 description = event.description,
                 category = event.category,
+                location = event.location,
                 placeId = event.placeId,
-                placeName = event.placeName,
-                dateTimestamp = event.date?.time ?: System.currentTimeMillis(),
+                startDateTimestamp = event.startDate?.time ?: System.currentTimeMillis(),
                 endDateTimestamp = event.endDate?.time,
                 isFeatured = event.isFeatured,
                 imageUrl = event.imageUrl,
-                organizer = event.organizer
+                organizerName = event.organizerName
             )
         }
     }
@@ -179,13 +175,13 @@ data class BlogPostEntity(
     val title: String,
     val content: String,
     val category: String,
-    val author: String,
+    val authorName: String,
     val authorId: String,
     val imageUrl: String?,
     val likes: Int,
-    val views: Int,
+    val viewCount: Int,
     val isFeatured: Boolean,
-    val createdAtTimestamp: Long,
+    val publishedAtTimestamp: Long,
     val lastSyncedAt: Long = System.currentTimeMillis()
 ) {
     fun toBlogPost(): BlogPost {
@@ -194,13 +190,13 @@ data class BlogPostEntity(
             title = title,
             content = content,
             category = category,
-            author = author,
+            authorName = authorName,
             authorId = authorId,
-            imageUrl = imageUrl,
+            imageUrl = imageUrl ?: "",
             likes = likes,
-            views = views,
+            viewCount = viewCount,
             isFeatured = isFeatured,
-            createdAt = java.util.Date(createdAtTimestamp)
+            publishedAt = java.util.Date(publishedAtTimestamp)
         )
     }
 
@@ -211,13 +207,13 @@ data class BlogPostEntity(
                 title = post.title,
                 content = post.content,
                 category = post.category,
-                author = post.author,
+                authorName = post.authorName,
                 authorId = post.authorId,
                 imageUrl = post.imageUrl,
                 likes = post.likes,
-                views = post.views,
+                viewCount = post.viewCount,
                 isFeatured = post.isFeatured,
-                createdAtTimestamp = post.createdAt?.time ?: System.currentTimeMillis()
+                publishedAtTimestamp = post.publishedAt?.time ?: System.currentTimeMillis()
             )
         }
     }

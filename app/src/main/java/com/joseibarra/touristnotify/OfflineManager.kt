@@ -92,10 +92,10 @@ class OfflineManager(context: Context) {
      * Sincroniza lugares turísticos
      */
     private suspend fun syncTouristSpots() {
-        val snapshot = firestore.collection("lugares_turisticos").get().await()
+        val snapshot = firestore.collection("lugares").get().await()
         val spots = snapshot.documents.mapNotNull { doc ->
             doc.toObject(TouristSpot::class.java)?.let { spot ->
-                TouristSpotEntity.fromTouristSpot(spot)
+                TouristSpotEntity.fromTouristSpot(spot.copy(id = doc.id))
             }
         }
         db.touristSpotDao().insertSpots(spots)
@@ -108,7 +108,7 @@ class OfflineManager(context: Context) {
         val snapshot = firestore.collection("events").get().await()
         val events = snapshot.documents.mapNotNull { doc ->
             doc.toObject(Event::class.java)?.let { event ->
-                EventEntity.fromEvent(event)
+                EventEntity.fromEvent(event.copy(id = doc.id))
             }
         }
         db.eventDao().insertEvents(events)
@@ -121,7 +121,7 @@ class OfflineManager(context: Context) {
         val snapshot = firestore.collection("blog_posts").get().await()
         val posts = snapshot.documents.mapNotNull { doc ->
             doc.toObject(BlogPost::class.java)?.let { post ->
-                BlogPostEntity.fromBlogPost(post)
+                BlogPostEntity.fromBlogPost(post.copy(id = doc.id))
             }
         }
         db.blogPostDao().insertPosts(posts)
@@ -140,12 +140,12 @@ class OfflineManager(context: Context) {
         val favorites = favoritesSnapshot.documents.mapNotNull { doc ->
             doc.toObject(Favorite::class.java)?.let { favorite ->
                 FavoriteEntity(
-                    id = favorite.id,
+                    id = doc.id,
                     userId = favorite.userId,
                     placeId = favorite.placeId,
                     placeName = favorite.placeName,
-                    category = favorite.category,
-                    createdAtTimestamp = favorite.createdAt?.time ?: System.currentTimeMillis()
+                    category = favorite.placeCategory,
+                    createdAtTimestamp = favorite.addedAt?.time ?: System.currentTimeMillis()
                 )
             }
         }
@@ -160,12 +160,12 @@ class OfflineManager(context: Context) {
         val checkIns = checkInsSnapshot.documents.mapNotNull { doc ->
             doc.toObject(CheckIn::class.java)?.let { checkIn ->
                 CheckInEntity(
-                    id = checkIn.id,
+                    id = doc.id,
                     userId = checkIn.userId,
                     placeId = checkIn.placeId,
                     placeName = checkIn.placeName,
-                    category = checkIn.category,
-                    timestampLong = checkIn.timestamp?.time ?: System.currentTimeMillis()
+                    category = checkIn.placeCategory,
+                    timestampLong = checkIn.checkInTime?.time ?: System.currentTimeMillis()
                 )
             }
         }

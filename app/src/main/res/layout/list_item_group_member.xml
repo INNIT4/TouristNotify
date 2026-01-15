@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:gravity="center_vertical">
 
         <!-- Avatar placeholder -->
         <TextView
@@ -42,26 +43,48 @@
                 tools:text="Juan Pérez" />
 
             <TextView
-                android:id="@+id/last_update_text_view"
+                android:id="@+id/location_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
-                tools:text="📍 Compartiendo - Ahora" />
+                tools:text="📍 Compartiendo" />
+
+            <TextView
+                android:id="@+id/last_update_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="11sp"
+                tools:text="Hace 5 min" />
 
         </LinearLayout>
 
-        <!-- Status Indicator -->
-        <TextView
-            android:id="@+id/status_indicator_text_view"
+        <!-- Status Indicator Container -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="12sp"
-            tools:text="● En línea"
-            tools:textColor="#4CAF50" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View
+                android:id="@+id/status_indicator_view"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginEnd="6dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/status_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="12sp"
+                tools:text="En línea"
+                tools:textColor="#4CAF50" />
+        </LinearLayout>
 
     </LinearLayout>
 

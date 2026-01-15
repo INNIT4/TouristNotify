@@ -55,10 +55,12 @@ class GroupsActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        // Vinculado al FAB en activity_groups.xml
         binding.fabCreateGroup.setOnClickListener {
             showCreateGroupDialog()
         }
 
+        // Vinculado al botón Unirse en el header
         binding.joinGroupButton.setOnClickListener {
             showJoinGroupDialog()
         }
@@ -84,7 +86,6 @@ class GroupsActivity : AppCompatActivity() {
                 for (groupSnapshot in snapshot.children) {
                     val group = groupSnapshot.getValue(TravelGroup::class.java)
                     if (group != null) {
-                        // Mostrar solo grupos donde el usuario es owner o miembro
                         if (group.ownerId == currentUser.uid ||
                             group.memberIds.contains(currentUser.uid)) {
                             userGroups.add(group)
@@ -124,85 +125,15 @@ class GroupsActivity : AppCompatActivity() {
                 val description = descriptionInput.text.toString().trim()
                 val meetingPoint = meetingPointInput.text.toString().trim()
 
-                // SEGURIDAD: Validar nombre del grupo
                 if (name.isBlank()) {
                     NotificationHelper.error(binding.root, "El nombre es requerido")
                     return@setPositiveButton
                 }
-                if (name.length < 3) {
-                    NotificationHelper.error(binding.root, "El nombre debe tener al menos 3 caracteres")
-                    return@setPositiveButton
-                }
-                if (name.length > 50) {
-                    NotificationHelper.error(binding.root, "El nombre no puede exceder 50 caracteres")
-                    return@setPositiveButton
-                }
-                if (!name.matches(Regex("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$"))) {
-                    NotificationHelper.error(binding.root, "El nombre solo puede contener letras, números y espacios")
-                    return@setPositiveButton
-                }
-
-                // SEGURIDAD: Validar descripción
-                if (description.length > 200) {
-                    NotificationHelper.error(binding.root, "La descripción no puede exceder 200 caracteres")
-                    return@setPositiveButton
-                }
-
-                // SEGURIDAD: Validar punto de encuentro
-                if (meetingPoint.length > 100) {
-                    NotificationHelper.error(binding.root, "El punto de encuentro no puede exceder 100 caracteres")
-                    return@setPositiveButton
-                }
-
+                
                 createGroup(name, description, meetingPoint)
                 dialog.dismiss()
             }
             .setNegativeButton("Cancelar", null)
-            .show()
-    }
-
-    private fun createGroup(name: String, description: String, meetingPoint: String) {
-        val currentUser = auth.currentUser ?: return
-
-        binding.progressBar.visibility = View.VISIBLE
-
-        val groupId = database.getReference("groups").push().key ?: return
-        val groupCode = generateGroupCode()
-
-        val group = TravelGroup(
-            id = groupId,
-            name = name,
-            description = description,
-            ownerId = currentUser.uid,
-            memberIds = listOf(currentUser.uid),
-            currentRouteId = "",
-            isActive = true,
-            createdAt = Date(),
-            meetingPoint = meetingPoint,
-            groupCode = groupCode
-        )
-
-        database.getReference("groups").child(groupId).setValue(group)
-            .addOnSuccessListener {
-                binding.progressBar.visibility = View.GONE
-                NotificationHelper.success(binding.root, "✓ Grupo creado: $groupCode")
-
-                // Mostrar código del grupo
-                showGroupCodeDialog(groupCode, name)
-            }
-            .addOnFailureListener { e ->
-                binding.progressBar.visibility = View.GONE
-                NotificationHelper.error(binding.root, "Error: ${e.message}")
-            }
-    }
-
-    private fun showGroupCodeDialog(groupCode: String, groupName: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Grupo Creado ✓")
-            .setMessage("Tu grupo '$groupName' ha sido creado.\n\n" +
-                    "Código del grupo:\n$groupCode\n\n" +
-                    "Comparte este código con otros viajeros para que se unan.")
-            .setPositiveButton("Entendido", null)
             .show()
     }
 
@@ -216,17 +147,8 @@ class GroupsActivity : AppCompatActivity() {
             .setPositiveButton("Unirse") { dialog, _ ->
                 val code = codeInput.text.toString().trim().uppercase()
 
-                // SEGURIDAD: Validar código del grupo
-                if (code.isBlank()) {
-                    NotificationHelper.error(binding.root, "El código es requerido")
-                    return@setPositiveButton
-                }
-                if (code.length != 8) {
-                    NotificationHelper.error(binding.root, "El código debe tener exactamente 8 caracteres")
-                    return@setPositiveButton
-                }
-                if (!code.matches(Regex("^[A-Z0-9]+$"))) {
-                    NotificationHelper.error(binding.root, "Código inválido. Solo letras mayúsculas y números")
+                if (code.isBlank() || code.length != 8) {
+                    NotificationHelper.error(binding.root, "Código inválido (8 caracteres)")
                     return@setPositiveButton
                 }
 
@@ -237,62 +159,82 @@ class GroupsActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun joinGroup(groupCode: String) {
+    private fun createGroup(name: String, description: String, meetingPoint: String) {
         val currentUser = auth.currentUser ?: return
-
         binding.progressBar.visibility = View.VISIBLE
 
-        val groupsRef = database.getReference("groups")
+        val groupId = database.getReference("groups").push().key ?: return
+        val groupCode = (1..8).map { "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".random() }.joinToString("")
 
-        groupsRef.orderByChild("groupCode").equalTo(groupCode)
+        val group = TravelGroup(
+            id = groupId,
+            name = name,
+            description = description,
+            ownerId = currentUser.uid,
+            memberIds = listOf(currentUser.uid),
+            createdAt = Date(),
+            meetingPoint = meetingPoint,
+            groupCode = groupCode
+        )
+
+        database.getReference("groups").child(groupId).setValue(group)
+            .addOnSuccessListener {
+                binding.progressBar.visibility = View.GONE
+                NotificationHelper.success(binding.root, "✓ Grupo creado: $groupCode")
+                showGroupCodeDialog(groupCode, name)
+            }
+            .addOnFailureListener { e ->
+                binding.progressBar.visibility = View.GONE
+                NotificationHelper.error(binding.root, "Error: ${e.message}")
+            }
+    }
+
+    private fun showGroupCodeDialog(groupCode: String, groupName: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Grupo Creado ✓")
+            .setMessage("Código: $groupCode\n\nComparte este código para que otros se unan.")
+            .setPositiveButton("Entendido", null)
+            .show()
+    }
+
+    private fun joinGroup(groupCode: String) {
+        val currentUser = auth.currentUser ?: return
+        binding.progressBar.visibility = View.VISIBLE
+
+        database.getReference("groups").orderByChild("groupCode").equalTo(groupCode)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (groupSnapshot in snapshot.children) {
                             val group = groupSnapshot.getValue(TravelGroup::class.java)
                             if (group != null) {
-                                // Verificar si ya es miembro
                                 if (group.memberIds.contains(currentUser.uid)) {
                                     binding.progressBar.visibility = View.GONE
-                                    NotificationHelper.warning(binding.root, "Ya eres miembro de este grupo")
+                                    NotificationHelper.warning(binding.root, "Ya eres miembro")
                                     return
                                 }
 
-                                // Agregar usuario al grupo
                                 val updatedMembers = group.memberIds.toMutableList()
                                 updatedMembers.add(currentUser.uid)
 
                                 groupSnapshot.ref.child("memberIds").setValue(updatedMembers)
                                     .addOnSuccessListener {
                                         binding.progressBar.visibility = View.GONE
-                                        NotificationHelper.success(binding.root, "✓ Te uniste al grupo: ${group.name}")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        binding.progressBar.visibility = View.GONE
-                                        NotificationHelper.error(binding.root, "Error: ${e.message}")
+                                        NotificationHelper.success(binding.root, "✓ Te uniste a: ${group.name}")
                                     }
                                 return
                             }
                         }
                     } else {
                         binding.progressBar.visibility = View.GONE
-                        NotificationHelper.error(binding.root, "Código de grupo inválido")
+                        NotificationHelper.error(binding.root, "Código inválido")
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     binding.progressBar.visibility = View.GONE
-                    NotificationHelper.error(binding.root, "Error: ${error.message}")
                 }
             })
-    }
-
-    private fun generateGroupCode(): String {
-        // SEGURIDAD: Código de 8 caracteres para mayor seguridad (36^8 combinaciones)
-        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..8)
-            .map { chars.random() }
-            .joinToString("")
     }
 
     private fun openGroupDetails(group: TravelGroup) {

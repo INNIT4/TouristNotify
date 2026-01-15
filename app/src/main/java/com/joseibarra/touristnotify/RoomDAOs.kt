@@ -48,16 +48,16 @@ interface TouristSpotDao {
 
 @Dao
 interface EventDao {
-    @Query("SELECT * FROM events ORDER BY dateTimestamp ASC")
+    @Query("SELECT * FROM events ORDER BY startDateTimestamp ASC")
     fun getAllEventsFlow(): Flow<List<EventEntity>>
 
-    @Query("SELECT * FROM events ORDER BY dateTimestamp ASC")
+    @Query("SELECT * FROM events ORDER BY startDateTimestamp ASC")
     suspend fun getAllEvents(): List<EventEntity>
 
     @Query("SELECT * FROM events WHERE id = :id")
     suspend fun getEventById(id: String): EventEntity?
 
-    @Query("SELECT * FROM events WHERE category = :category ORDER BY dateTimestamp ASC")
+    @Query("SELECT * FROM events WHERE category = :category ORDER BY startDateTimestamp ASC")
     suspend fun getEventsByCategory(category: String): List<EventEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -78,16 +78,16 @@ interface EventDao {
 
 @Dao
 interface BlogPostDao {
-    @Query("SELECT * FROM blog_posts ORDER BY createdAtTimestamp DESC")
+    @Query("SELECT * FROM blog_posts ORDER BY publishedAtTimestamp DESC")
     fun getAllPostsFlow(): Flow<List<BlogPostEntity>>
 
-    @Query("SELECT * FROM blog_posts ORDER BY createdAtTimestamp DESC")
+    @Query("SELECT * FROM blog_posts ORDER BY publishedAtTimestamp DESC")
     suspend fun getAllPosts(): List<BlogPostEntity>
 
     @Query("SELECT * FROM blog_posts WHERE id = :id")
     suspend fun getPostById(id: String): BlogPostEntity?
 
-    @Query("SELECT * FROM blog_posts WHERE category = :category ORDER BY createdAtTimestamp DESC")
+    @Query("SELECT * FROM blog_posts WHERE category = :category ORDER BY publishedAtTimestamp DESC")
     suspend fun getPostsByCategory(category: String): List<BlogPostEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

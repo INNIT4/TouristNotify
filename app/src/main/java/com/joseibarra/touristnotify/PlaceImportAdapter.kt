@@ -40,7 +40,7 @@ class PlaceImportAdapter(
             binding.placeInfoTextView.text = infoText.ifBlank { "Sin información adicional" }
 
             // Categoría sugerida
-            binding.placeCategoryTextView.text = guessCategory(place.types)
+            binding.placeCategoryTextView.text = CategoryUtils.guessCategory(place.types)
 
             binding.buttonImport.setOnClickListener {
                 onImportClicked(place)
@@ -52,19 +52,6 @@ class PlaceImportAdapter(
 
             binding.root.setOnClickListener {
                 onDetailsClicked(place)
-            }
-        }
-
-        private fun guessCategory(types: List<String>): String {
-            return when {
-                types.contains("museum") -> "Museo"
-                types.contains("restaurant") || types.contains("food") -> "Restaurante"
-                types.contains("lodging") || types.contains("hotel") -> "Hotel"
-                types.contains("church") || types.contains("place_of_worship") -> "Iglesia"
-                types.contains("park") -> "Parque"
-                types.contains("store") || types.contains("shopping_mall") -> "Tienda"
-                types.contains("tourist_attraction") -> "Atracción Turística"
-                else -> "Otro"
             }
         }
     }

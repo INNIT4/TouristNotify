@@ -10,8 +10,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -22,7 +20,6 @@ import kotlinx.coroutines.launch
 class PlaceDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlaceDetailsBinding
-    private lateinit var placesClient: PlacesClient
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var reviewAdapter: ReviewAdapter

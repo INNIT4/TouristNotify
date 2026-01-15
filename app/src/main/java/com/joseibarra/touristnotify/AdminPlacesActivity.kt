@@ -194,7 +194,7 @@ class AdminPlacesActivity : AppCompatActivity() {
 
     private fun showImportDialog(place: PlaceImportItem) {
         val categories = arrayOf("Museo", "Restaurante", "Hotel", "Iglesia", "Parque", "Tienda", "Atracción Turística", "Otro")
-        var selectedCategory = guessCategory(place.types)
+        var selectedCategory = CategoryUtils.guessCategory(place.types)
         var selectedCategoryIndex = categories.indexOf(selectedCategory)
 
         AlertDialog.Builder(this)
@@ -212,19 +212,6 @@ class AdminPlacesActivity : AppCompatActivity() {
                 showPlaceDetails(place)
             }
             .show()
-    }
-
-    private fun guessCategory(types: List<String>): String {
-        return when {
-            types.contains("museum") -> "Museo"
-            types.contains("restaurant") || types.contains("food") -> "Restaurante"
-            types.contains("lodging") || types.contains("hotel") -> "Hotel"
-            types.contains("church") || types.contains("place_of_worship") -> "Iglesia"
-            types.contains("park") -> "Parque"
-            types.contains("store") || types.contains("shopping_mall") -> "Tienda"
-            types.contains("tourist_attraction") -> "Atracción Turística"
-            else -> "Otro"
-        }
     }
 
     private fun importPlaceToFirebase(place: PlaceImportItem, category: String) {

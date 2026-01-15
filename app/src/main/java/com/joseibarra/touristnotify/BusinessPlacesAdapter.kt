@@ -40,7 +40,7 @@ class BusinessPlacesAdapter(
         val place = places[position]
 
         holder.nameTextView.text = place.nombre
-        holder.categoryTextView.text = getCategoryEmoji(place.categoria) + " " + place.categoria
+        holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(place.categoria) + " " + place.categoria
         holder.ratingTextView.text = if (place.rating > 0) {
             "⭐ ${place.rating} (${place.reviewCount})"
         } else {
@@ -97,19 +97,5 @@ class BusinessPlacesAdapter(
     fun updatePlaces(newPlaces: List<TouristSpot>) {
         places = newPlaces
         notifyDataSetChanged()
-    }
-
-    private fun getCategoryEmoji(category: String): String {
-        return when (category.lowercase()) {
-            "restaurante", "restaurant" -> "🍽️"
-            "café", "cafe", "cafetería" -> "☕"
-            "hotel" -> "🏨"
-            "museo", "museum" -> "🏛️"
-            "iglesia", "church" -> "⛪"
-            "parque", "park" -> "🌳"
-            "tienda", "shop" -> "🛍️"
-            "coworking" -> "💼"
-            else -> "📍"
-        }
     }
 }

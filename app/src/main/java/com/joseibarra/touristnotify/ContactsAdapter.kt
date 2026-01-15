@@ -28,21 +28,17 @@ class ContactsAdapter(private val contacts: List<Contact>) : RecyclerView.Adapte
             binding.textViewContactCategory.text = contact.category
             binding.textViewContactDescription.text = contact.description
 
-            binding.buttonCall.setOnClickListener {
-                val context = binding.root.context
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:${contact.phoneNumber}")
-                }
-                context.startActivity(intent)
-            }
+            // Ambos el botón y el card completo inician la llamada
+            binding.buttonCall.setOnClickListener { callContact(contact.phoneNumber) }
+            binding.root.setOnClickListener { callContact(contact.phoneNumber) }
+        }
 
-            binding.root.setOnClickListener {
-                val context = binding.root.context
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:${contact.phoneNumber}")
-                }
-                context.startActivity(intent)
+        private fun callContact(phoneNumber: String) {
+            val context = binding.root.context
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$phoneNumber")
             }
+            context.startActivity(intent)
         }
     }
 }

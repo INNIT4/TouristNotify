@@ -42,7 +42,7 @@ class BlogPostAdapter(
         val post = posts[position]
 
         holder.titleTextView.text = post.title
-        holder.categoryTextView.text = getCategoryEmoji(post.category) + " " + post.category
+        holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
 
         // Content preview (primeras 150 caracteres)
         holder.contentPreviewTextView.text = if (post.content.length > 150) {
@@ -81,18 +81,6 @@ class BlogPostAdapter(
     fun updatePosts(newPosts: List<BlogPost>) {
         posts = newPosts
         notifyDataSetChanged()
-    }
-
-    private fun getCategoryEmoji(category: String): String {
-        return when (category) {
-            "Consejos" -> "💡"
-            "Historia" -> "📜"
-            "Gastronomía" -> "🍽️"
-            "Cultura" -> "🎭"
-            "Naturaleza" -> "🌿"
-            "Eventos" -> "🎉"
-            else -> "📝"
-        }
     }
 
     private fun formatDate(date: Date): String {

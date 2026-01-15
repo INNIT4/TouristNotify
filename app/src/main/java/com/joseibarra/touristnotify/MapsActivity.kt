@@ -510,9 +510,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun enableMyLocation() {
         if (isLocationPermissionGranted()) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mMap.isMyLocationEnabled = true
-            }
+            mMap.isMyLocationEnabled = true
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
         }

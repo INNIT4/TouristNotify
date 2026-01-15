@@ -37,7 +37,7 @@ class PlaceSelectionAdapter(
         val place = places[position]
 
         holder.nameTextView.text = place.nombre
-        holder.categoryTextView.text = getCategoryEmoji(place.categoria) + " " + place.categoria
+        holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(place.categoria) + " " + place.categoria
         holder.ratingTextView.text = String.format("%.1f ⭐", place.rating)
         holder.reviewsTextView.text = "(${place.reviewCount} reseñas)"
 
@@ -68,16 +68,4 @@ class PlaceSelectionAdapter(
     }
 
     override fun getItemCount(): Int = places.size
-
-    private fun getCategoryEmoji(category: String): String {
-        return when (category.lowercase()) {
-            "museo" -> "🏛️"
-            "restaurante", "gastronomía" -> "🍴"
-            "hotel", "hospedaje" -> "🏨"
-            "iglesia", "templo" -> "⛪"
-            "parque", "naturaleza" -> "🌿"
-            "tienda", "comercio" -> "🛍️"
-            else -> "📍"
-        }
-    }
 }

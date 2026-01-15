@@ -183,7 +183,7 @@ class ProximityNotificationManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val categoryEmoji = getCategoryEmoji(place.categoria)
+        val categoryEmoji = CategoryUtils.getCategoryEmoji(place.categoria)
         val ratingText = if (place.rating > 0) {
             "⭐ ${place.rating} (${place.reviewCount} reseñas)"
         } else {
@@ -229,16 +229,4 @@ class ProximityNotificationManager(private val context: Context) {
         notificationManager.notify(placeName.hashCode(), notification)
     }
 
-    private fun getCategoryEmoji(category: String): String {
-        return when (category.lowercase()) {
-            "museo", "museum" -> "🏛️"
-            "restaurante", "restaurant" -> "🍽️"
-            "café", "cafe", "cafetería" -> "☕"
-            "hotel" -> "🏨"
-            "iglesia", "church" -> "⛪"
-            "parque", "park" -> "🌳"
-            "tienda", "shop" -> "🛍️"
-            else -> "📍"
-        }
-    }
 }

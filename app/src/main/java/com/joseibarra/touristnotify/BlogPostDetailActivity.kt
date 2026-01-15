@@ -64,7 +64,7 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding.contentScrollView.visibility = View.VISIBLE
 
         binding.postTitleTextView.text = post.title
-        binding.postCategoryTextView.text = getCategoryEmoji(post.category) + " " + post.category
+        binding.postCategoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
         binding.postContentTextView.text = post.content
         binding.postAuthorTextView.text = "Por ${post.authorName}"
 
@@ -85,18 +85,6 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding.relatedCategoryTextView.text = "Ver más de ${post.category}"
         binding.relatedCategoryCard.setOnClickListener {
             finish() // Volver a la lista
-        }
-    }
-
-    private fun getCategoryEmoji(category: String): String {
-        return when (category) {
-            "Consejos" -> "💡"
-            "Historia" -> "📜"
-            "Gastronomía" -> "🍽️"
-            "Cultura" -> "🎭"
-            "Naturaleza" -> "🌿"
-            "Eventos" -> "🎉"
-            else -> "📝"
         }
     }
 }

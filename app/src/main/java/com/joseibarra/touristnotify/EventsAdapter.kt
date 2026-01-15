@@ -41,7 +41,7 @@ class EventsAdapter(
         val event = events[position]
 
         holder.titleTextView.text = event.title
-        holder.categoryTextView.text = getCategoryEmoji(event.category) + " " + event.category
+        holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(event.category) + " " + event.category
         holder.locationTextView.text = "📍 " + event.location
         holder.descriptionTextView.text = event.description
 
@@ -73,19 +73,5 @@ class EventsAdapter(
         val cal2 = Calendar.getInstance().apply { time = date2 }
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
-    }
-
-    private fun getCategoryEmoji(category: String): String {
-        return when (category.lowercase()) {
-            "festival" -> "🎉"
-            "cultural" -> "🎭"
-            "religioso" -> "⛪"
-            "música" -> "🎵"
-            "deportes" -> "⚽"
-            "gastronomía" -> "🍴"
-            "arte" -> "🎨"
-            "naturaleza" -> "🌿"
-            else -> "📌"
-        }
     }
 }

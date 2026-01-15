@@ -104,4 +104,156 @@
         tools:visibility="visible"
         android:contentDescription="Guardar Ruta" />
 
+    <!-- Panel de Navegación de Ruta -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/route_navigation_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Header: Progreso y Cerrar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/route_progress_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Lugar 1 de 5"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorPrimary"
+                    tools:text="Lugar 2 de 5" />
+
+                <ImageButton
+                    android:id="@+id/close_route_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Cerrar navegación" />
+            </LinearLayout>
+
+            <!-- Nombre del Lugar Actual -->
+            <TextView
+                android:id="@+id/current_place_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Plaza de Armas"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_marginBottom="8dp"
+                tools:text="Museo Costumbrista" />
+
+            <!-- Categoría -->
+            <TextView
+                android:id="@+id/current_place_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏛️ Museo"
+                android:textSize="14sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_marginBottom="12dp"
+                tools:text="🏛️ Museo" />
+
+            <!-- Descripción (preview) -->
+            <TextView
+                android:id="@+id/current_place_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Descripción del lugar..."
+                android:textSize="14sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="16dp"
+                tools:text="Ubicado en el centro histórico, este museo muestra la cultura local..." />
+
+            <!-- Botones de Navegación -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="12dp">
+
+                <!-- Botón Anterior -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/previous_place_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="← Anterior"
+                    app:icon="@android:drawable/ic_media_previous"
+                    app:iconGravity="start" />
+
+                <!-- Botón Siguiente -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/next_place_button"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Siguiente →"
+                    app:icon="@android:drawable/ic_media_next"
+                    app:iconGravity="end" />
+            </LinearLayout>
+
+            <!-- Botones de Acción -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <!-- Ver Detalles -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/view_details_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Ver detalles"
+                    app:icon="@android:drawable/ic_menu_info_details"
+                    app:iconGravity="start" />
+
+                <!-- Navegar (GPS) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/navigate_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Navegar"
+                    app:icon="@android:drawable/ic_dialog_map"
+                    app:iconGravity="start" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 </RelativeLayout>

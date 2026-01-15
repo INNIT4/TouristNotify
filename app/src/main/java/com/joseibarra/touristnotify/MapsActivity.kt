@@ -52,6 +52,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var navigationPolyline: Polyline? = null
     private val selectedCategories = mutableSetOf<String>()
     private var allSpots = listOf<TouristSpot>()
+    private var currentPlaceIndex = 0
+    private var isNavigatingRoute = false
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -185,6 +187,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun loadRouteByIds(placeIds: List<String>) {
         binding.searchView.visibility = View.GONE
         binding.saveRouteButton.visibility = View.GONE
+        binding.filterScrollView.visibility = View.GONE
 
         db.collection("lugares").whereIn(FieldPath.documentId(), placeIds).get()
             .addOnSuccessListener { documents ->
@@ -199,6 +202,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 currentRouteSpots.forEach { addMarkerForTouristSpot(it) }
                 drawRoutePolyline(currentRouteSpots)
+
+                // Iniciar navegación de ruta
+                isNavigatingRoute = true
+                currentPlaceIndex = 0
+                setupRouteNavigation()
+                updateRouteNavigationPanel()
 
                 val boundsBuilder = LatLngBounds.Builder()
                 currentRouteSpots.forEach { spot -> spot.ubicacion?.let { boundsBuilder.include(LatLng(it.latitude, it.longitude)) } }
@@ -215,6 +224,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun loadPersonalizedRoute(placeNames: List<String>) {
         binding.searchView.visibility = View.GONE
         binding.saveRouteButton.visibility = View.VISIBLE
+        binding.filterScrollView.visibility = View.GONE
 
         db.collection("lugares").whereIn("nombre", placeNames).get()
             .addOnSuccessListener { documents ->
@@ -229,6 +239,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 currentRouteSpots.forEach { addMarkerForTouristSpot(it) }
                 drawRoutePolyline(currentRouteSpots)
+
+                // Iniciar navegación de ruta
+                isNavigatingRoute = true
+                currentPlaceIndex = 0
+                setupRouteNavigation()
+                updateRouteNavigationPanel()
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error cargando ruta", e)
@@ -559,5 +575,117 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         navigationPolyline?.remove()
         routePolyline = null
         navigationPolyline = null
+    }
+
+    // =============== NAVEGACIÓN DE RUTA ===============
+
+    private fun setupRouteNavigation() {
+        binding.routeNavigationPanel.visibility = View.VISIBLE
+
+        // Botón anterior
+        binding.previousPlaceButton.setOnClickListener {
+            if (currentPlaceIndex > 0) {
+                currentPlaceIndex--
+                updateRouteNavigationPanel()
+                centerOnCurrentPlace()
+            }
+        }
+
+        // Botón siguiente
+        binding.nextPlaceButton.setOnClickListener {
+            if (currentPlaceIndex < currentRouteSpots.size - 1) {
+                currentPlaceIndex++
+                updateRouteNavigationPanel()
+                centerOnCurrentPlace()
+            }
+        }
+
+        // Botón cerrar navegación
+        binding.closeRouteButton.setOnClickListener {
+            closeRouteNavigation()
+        }
+
+        // Botón ver detalles
+        binding.viewDetailsButton.setOnClickListener {
+            val currentSpot = currentRouteSpots[currentPlaceIndex]
+            val intent = Intent(this, PlaceDetailsActivity::class.java).apply {
+                putExtra("PLACE_ID", currentSpot.id)
+                putExtra("PLACE_NAME", currentSpot.nombre)
+                putExtra("PLACE_CATEGORY", currentSpot.categoria)
+                putExtra("PLACE_DESCRIPTION", currentSpot.descripcion)
+                putExtra("GOOGLE_PLACE_ID", currentSpot.googlePlaceId)
+                currentSpot.ubicacion?.let {
+                    putExtra("PLACE_LATITUDE", it.latitude)
+                    putExtra("PLACE_LONGITUDE", it.longitude)
+                }
+            }
+            placeDetailsLauncher.launch(intent)
+        }
+
+        // Botón navegar con GPS
+        binding.navigateButton.setOnClickListener {
+            val currentSpot = currentRouteSpots[currentPlaceIndex]
+            currentSpot.ubicacion?.let { location ->
+                val gmmIntentUri = android.net.Uri.parse(
+                    "google.navigation:q=${location.latitude},${location.longitude}&mode=w"
+                )
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                mapIntent.setPackage("com.google.android.apps.maps")
+
+                if (mapIntent.resolveActivity(packageManager) != null) {
+                    startActivity(mapIntent)
+                } else {
+                    NotificationHelper.error(
+                        binding.root,
+                        "Google Maps no está instalado"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateRouteNavigationPanel() {
+        if (currentRouteSpots.isEmpty()) return
+
+        val currentSpot = currentRouteSpots[currentPlaceIndex]
+
+        // Actualizar progreso
+        binding.routeProgressText.text = "Lugar ${currentPlaceIndex + 1} de ${currentRouteSpots.size}"
+
+        // Actualizar información del lugar
+        binding.currentPlaceName.text = currentSpot.nombre
+        binding.currentPlaceCategory.text =
+            "${CategoryUtils.getCategoryEmoji(currentSpot.categoria)} ${currentSpot.categoria}"
+        binding.currentPlaceDescription.text = currentSpot.descripcion
+
+        // Habilitar/deshabilitar botones según posición
+        binding.previousPlaceButton.isEnabled = currentPlaceIndex > 0
+        binding.nextPlaceButton.isEnabled = currentPlaceIndex < currentRouteSpots.size - 1
+
+        // Cambiar estilo del botón deshabilitado
+        binding.previousPlaceButton.alpha = if (currentPlaceIndex > 0) 1f else 0.5f
+        binding.nextPlaceButton.alpha = if (currentPlaceIndex < currentRouteSpots.size - 1) 1f else 0.5f
+    }
+
+    private fun centerOnCurrentPlace() {
+        if (currentRouteSpots.isEmpty()) return
+
+        val currentSpot = currentRouteSpots[currentPlaceIndex]
+        currentSpot.ubicacion?.let { location ->
+            val latLng = LatLng(location.latitude, location.longitude)
+            mMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(latLng, 17f),
+                500,
+                null
+            )
+        }
+    }
+
+    private fun closeRouteNavigation() {
+        isNavigatingRoute = false
+        binding.routeNavigationPanel.visibility = View.GONE
+        binding.searchView.visibility = View.VISIBLE
+        binding.filterScrollView.visibility = View.VISIBLE
+        finish()
     }
 }

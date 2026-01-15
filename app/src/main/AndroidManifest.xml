@@ -95,18 +95,6 @@
             android:label="Rutas Temáticas" />
 
         <activity
-            android:name=".ComparatorActivity"
-            android:label="Comparador de Lugares" />
-
-        <activity
-            android:name=".PlaceComparisonActivity"
-            android:label="Comparación de Lugares" />
-
-        <activity
-            android:name=".BusinessTravelerActivity"
-            android:label="Modo Viajero de Negocios" />
-
-        <activity
             android:name=".BlogActivity"
             android:label="Blog de Consejos" />
 
@@ -136,41 +124,8 @@
             android:label="Subir Foto" />
 
         <activity
-            android:name=".ChatActivity"
-            android:label="Chat con IA"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
-            android:name=".AIRecommendationsActivity"
-            android:label="Recomendaciones IA" />
-
-        <activity
-            android:name=".GroupsActivity"
-            android:label="Grupos de Viaje" />
-
-        <activity
-            android:name=".GroupDetailsActivity"
-            android:label="Detalles del Grupo" />
-
-        <activity
-            android:name=".GroupMapActivity"
-            android:label="Mapa del Grupo" />
-
-        <activity
-            android:name=".GroupChatActivity"
-            android:label="Chat del Grupo"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
             android:name=".OfflineSettingsActivity"
             android:label="Modo Sin Conexión" />
-
-        <!-- Service para compartir ubicación en tiempo real -->
-        <service
-            android:name=".LocationSharingService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="location" />
 
         <!-- Receiver para geofencing -->
         <receiver

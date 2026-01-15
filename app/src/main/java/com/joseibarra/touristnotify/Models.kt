@@ -65,47 +65,6 @@ data class Event(
 )
 
 /**
- * Modelo para grupos de viaje
- */
-data class TravelGroup(
-    val id: String = "",
-    val name: String = "",
-    val description: String = "",
-    val ownerId: String = "",
-    val memberIds: List<String> = emptyList(),
-    val currentRouteId: String = "",
-    val isActive: Boolean = true,
-    @ServerTimestamp
-    val createdAt: Date? = null,
-    val meetingPoint: String = "",
-    val groupCode: String = ""
-)
-
-/**
- * Modelo para miembros de grupo con ubicación
- */
-data class GroupMember(
-    val userId: String = "",
-    val userName: String = "",
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
-    val lastUpdate: Date? = null,
-    val isOnline: Boolean = false
-)
-
-/**
- * Modelo para mensajes del chat grupal
- */
-data class GroupChatMessage(
-    val id: String = "",
-    val groupId: String = "",
-    val senderId: String = "",
-    val senderName: String = "",
-    val message: String = "",
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-/**
  * Modelo para posts del blog
  */
 data class BlogPost(
@@ -156,14 +115,6 @@ data class ThemedRoute(
 )
 
 /**
- * Modelo para comparación de lugares
- */
-data class PlaceComparison(
-    val places: List<TouristSpot> = emptyList(),
-    val selectedPlaceIds: List<String> = emptyList()
-)
-
-/**
  * Modelo para fotos de lugares turísticos
  */
 data class PlacePhoto(
@@ -182,25 +133,3 @@ data class PlacePhoto(
     val height: Int = 0
 )
 
-/**
- * Modelo para mensajes del chat con IA
- */
-data class ChatMessage(
-    val text: String = "",
-    val isFromUser: Boolean = true,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-/**
- * Modelo para recomendaciones IA personalizadas
- */
-data class AIRecommendation(
-    val placeId: String = "",
-    val placeName: String = "",
-    val placeCategory: String = "",
-    val reason: String = "",
-    val score: Double = 0.0,
-    val weatherSuitable: Boolean = true,
-    val estimatedDuration: String = "",
-    val bestTimeToVisit: String = ""
-)

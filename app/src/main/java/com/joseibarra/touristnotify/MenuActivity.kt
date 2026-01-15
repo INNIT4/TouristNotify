@@ -67,16 +67,6 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.buttonComparator.setOnClickListener {
-            val intent = Intent(this, ComparatorActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.buttonBusinessTraveler.setOnClickListener {
-            val intent = Intent(this, BusinessTravelerActivity::class.java)
-            startActivity(intent)
-        }
-
         binding.buttonBlog.setOnClickListener {
             val intent = Intent(this, BlogActivity::class.java)
             startActivity(intent)
@@ -84,21 +74,6 @@ class MenuActivity : AppCompatActivity() {
 
         binding.buttonProximityNotifications.setOnClickListener {
             val intent = Intent(this, ProximityNotificationsActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.buttonChat.setOnClickListener {
-            val intent = Intent(this, ChatActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.buttonAiRecommendations.setOnClickListener {
-            val intent = Intent(this, AIRecommendationsActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.buttonGroups.setOnClickListener {
-            val intent = Intent(this, GroupsActivity::class.java)
             startActivity(intent)
         }
 

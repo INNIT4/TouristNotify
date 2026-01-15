@@ -181,11 +181,27 @@ class ThemedRoutesActivity : AppCompatActivity() {
             }
             startActivity(intent)
         } else {
-            // Mostrar información sobre la ruta
-            NotificationHelper.info(
-                binding.root,
-                "Ruta ${route.name}: ${route.estimatedDuration}"
-            )
+            // Mostrar diálogo con información detallada de la ruta
+            showRouteDetailsDialog(route)
         }
+    }
+
+    private fun showRouteDetailsDialog(route: ThemedRoute) {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("${route.icon} ${route.name}")
+            .setMessage(buildString {
+                append("📝 Descripción:\n${route.description}\n\n")
+                append("⏱️ Duración: ${route.estimatedDuration}\n")
+                append("🎯 Dificultad: ${route.difficulty}\n")
+                append("🎨 Tema: ${route.theme}")
+            })
+            .setPositiveButton("Ver en mapa") { _, _ ->
+                // Abrir el mapa general
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
+            }
+            .setNegativeButton("Cerrar", null)
+            .create()
+        dialog.show()
     }
 }

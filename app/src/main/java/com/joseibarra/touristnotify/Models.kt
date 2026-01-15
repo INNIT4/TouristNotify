@@ -82,7 +82,7 @@ data class BlogPost(
     val viewCount: Int = 0,
     val likes: Int = 0,
     val isFeatured: Boolean = false // Post destacado en la página principal
-)
+) : java.io.Serializable
 
 /**
  * Modelo para información del clima

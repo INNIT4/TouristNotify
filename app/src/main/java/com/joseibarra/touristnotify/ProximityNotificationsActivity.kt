@@ -92,11 +92,11 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         // Radius selection
         binding.radiusChipGroup.setOnCheckedChangeListener { _, checkedId ->
             val radius = when (checkedId) {
-                R.id.radius_100m_chip -> 100
+                R.id.radius_100m_chip -> 10
                 R.id.radius_250m_chip -> 250
                 R.id.radius_500m_chip -> 500
                 R.id.radius_1km_chip -> 1000
-                else -> 250
+                else -> 10
             }
             saveProximityRadius(radius)
 
@@ -120,9 +120,9 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         binding.notificationsSwitch.isChecked = enabled
 
         // Load radius
-        val radius = prefs.getInt("proximity_radius", 250)
+        val radius = prefs.getInt("proximity_radius", 10)
         when (radius) {
-            100 -> binding.radius100mChip.isChecked = true
+            10 -> binding.radius100mChip.isChecked = true
             250 -> binding.radius250mChip.isChecked = true
             500 -> binding.radius500mChip.isChecked = true
             1000 -> binding.radius1kmChip.isChecked = true
@@ -212,7 +212,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
     private fun setupNotifications() {
         val prefs = getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
-        val radius = prefs.getInt("proximity_radius", 250).toFloat()
+        val radius = prefs.getInt("proximity_radius", 10).toFloat()
 
         binding.setupProgressBar.visibility = View.VISIBLE
         binding.setupStatusTextView.text = "Configurando notificaciones..."
@@ -251,7 +251,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
         fun getProximityRadius(context: Context): Int {
             return context.getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
-                .getInt("proximity_radius", 250)
+                .getInt("proximity_radius", 10)
         }
     }
 }

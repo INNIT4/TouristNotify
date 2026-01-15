@@ -22,15 +22,24 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding = ActivityBlogPostDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        postId = intent.getStringExtra("POST_ID") ?: ""
-        val postTitle = intent.getStringExtra("POST_TITLE") ?: "Post"
+        // Try to get post object first (new approach)
+        val post = intent.getSerializableExtra("POST_OBJECT") as? BlogPost
 
-        supportActionBar?.title = postTitle
-
-        if (postId.isNotEmpty()) {
-            loadPostDetails()
+        if (post != null) {
+            postId = post.id
+            supportActionBar?.title = post.title
+            displayPost(post)
         } else {
-            finish()
+            // Fallback: try old approach with POST_ID
+            postId = intent.getStringExtra("POST_ID") ?: ""
+            val postTitle = intent.getStringExtra("POST_TITLE") ?: "Post"
+            supportActionBar?.title = postTitle
+
+            if (postId.isNotEmpty()) {
+                loadPostDetails()
+            } else {
+                finish()
+            }
         }
     }
 

@@ -652,6 +652,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Actualizar progreso
         binding.routeProgressText.text = "Lugar ${currentPlaceIndex + 1} de ${currentRouteSpots.size}"
 
+        // Calcular tiempo estimado total
+        val estimatedMinutes = calculateEstimatedTime(currentRouteSpots.size)
+        val hours = estimatedMinutes / 60
+        val minutes = estimatedMinutes % 60
+        binding.routeTimeEstimateText.text = if (hours > 0) {
+            "⏱️ Tiempo estimado: ${hours}h ${minutes}min"
+        } else {
+            "⏱️ Tiempo estimado: ${minutes}min"
+        }
+
         // Actualizar información del lugar
         binding.currentPlaceName.text = currentSpot.nombre
         binding.currentPlaceCategory.text =
@@ -679,6 +689,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 null
             )
         }
+    }
+
+    private fun calculateEstimatedTime(placeCount: Int): Int {
+        // 15 minutos por lugar + 5 minutos entre lugares
+        val timePerPlace = 15
+        val timeBetweenPlaces = 5
+        return (placeCount * timePerPlace) + ((placeCount - 1) * timeBetweenPlaces)
     }
 
     private fun closeRouteNavigation() {

@@ -22,6 +22,12 @@ class MenuActivity : AppCompatActivity() {
 
         loadWeather()
 
+        // Búsqueda global (click en el texto de bienvenida)
+        binding.welcomeText.setOnClickListener {
+            val intent = Intent(this, GlobalSearchActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.buttonGenerateRoute.setOnClickListener {
             val intent = Intent(this, PreferencesActivity::class.java)
             startActivity(intent)
@@ -82,6 +88,11 @@ class MenuActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Botón de configuración rápida (click en el icono de la app)
+        binding.appIcon.setOnClickListener {
+            showQuickSettingsDialog()
+        }
+
         // Acceso secreto al panel administrativo (mantener presionado el footer)
         binding.footerText.setOnLongClickListener {
             showAdminAccessDialog()
@@ -134,6 +145,28 @@ class MenuActivity : AppCompatActivity() {
                 binding.weatherEmojiTextView.text = "🌤️"
             }
         }
+    }
+
+    private fun showQuickSettingsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_quick_settings, null)
+        val darkModeSwitch = dialogView.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.dark_mode_switch)
+
+        // Cargar estado actual
+        darkModeSwitch.isChecked = TouristNotifyApplication.isDarkModeEnabled(this)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("⚙️ Configuración Rápida")
+            .setView(dialogView)
+            .setPositiveButton("Cerrar", null)
+            .create()
+
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            TouristNotifyApplication.setDarkMode(this, isChecked)
+            // El tema se aplicará automáticamente al recrear la actividad
+            recreate()
+        }
+
+        dialog.show()
     }
 
     private fun showAdminAccessDialog() {

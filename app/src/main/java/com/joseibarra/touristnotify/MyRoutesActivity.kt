@@ -31,6 +31,11 @@ class MyRoutesActivity : AppCompatActivity() {
         loadSavedRoutes()
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right)
+    }
+
     private fun setupRecyclerView() {
         routeAdapter = RouteAdapter(
             routes = emptyList(),
@@ -39,6 +44,7 @@ class MyRoutesActivity : AppCompatActivity() {
                     putStringArrayListExtra("ROUTE_PLACES_IDS", ArrayList(route.pdis_incluidos))
                 }
                 startActivity(intent)
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             },
             onDeleteClicked = { route, position ->
                 showDeleteConfirmation(route, position)

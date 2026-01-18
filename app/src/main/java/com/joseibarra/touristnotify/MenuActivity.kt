@@ -17,6 +17,16 @@ class MenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check if onboarding needs to be shown
+        val prefs = getSharedPreferences("TouristNotifyPrefs", MODE_PRIVATE)
+        if (!prefs.getBoolean("onboarding_completed", false)) {
+            val intent = Intent(this, OnboardingActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -26,71 +36,92 @@ class MenuActivity : AppCompatActivity() {
         binding.welcomeText.setOnClickListener {
             val intent = Intent(this, GlobalSearchActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonGenerateRoute.setOnClickListener {
             val intent = Intent(this, PreferencesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonMyRoutes.setOnClickListener {
             val intent = Intent(this, MyRoutesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonViewMap.setOnClickListener {
             val intent = Intent(this, MapsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
         binding.buttonContacts.setOnClickListener {
             val intent = Intent(this, ContactsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonTopPlaces.setOnClickListener {
             val intent = Intent(this, TopPlacesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonFavorites.setOnClickListener {
             val intent = Intent(this, FavoritesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonStats.setOnClickListener {
             val intent = Intent(this, StatsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonEvents.setOnClickListener {
             val intent = Intent(this, EventsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonThemedRoutes.setOnClickListener {
             val intent = Intent(this, ThemedRoutesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonBlog.setOnClickListener {
             val intent = Intent(this, BlogActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonProximityNotifications.setOnClickListener {
             val intent = Intent(this, ProximityNotificationsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         binding.buttonOffline.setOnClickListener {
             val intent = Intent(this, OfflineSettingsActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
 
         // Botón de configuración rápida (click en el icono de la app)
         binding.appIcon.setOnClickListener {
             showQuickSettingsDialog()
+        }
+
+        // Directorio de servicios (long click en weather card)
+        binding.weatherCard.setOnLongClickListener {
+            val intent = Intent(this, ServicesDirectoryActivity::class.java)
+            startActivity(intent)
+            overridePendingTransition(R.anim.slide_up, R.anim.fade_out)
+            true
         }
 
         // Acceso secreto al panel administrativo (mantener presionado el footer)
@@ -176,6 +207,7 @@ class MenuActivity : AppCompatActivity() {
         dialogBuilder.setPositiveButton("Acceder") { _, _ ->
             val intent = Intent(this, AdminPlacesActivity::class.java)
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
         dialogBuilder.setNegativeButton("Cancelar", null)
         dialogBuilder.show()

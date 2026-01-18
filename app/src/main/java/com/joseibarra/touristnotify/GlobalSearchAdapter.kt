@@ -2,6 +2,7 @@ package com.joseibarra.touristnotify
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.joseibarra.touristnotify.databinding.ListItemSearchResultBinding
 
@@ -21,6 +22,10 @@ class GlobalSearchAdapter(
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
         holder.bind(results[position])
+
+        // Aplicar animación de fade in
+        val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in)
+        holder.itemView.startAnimation(animation)
     }
 
     override fun getItemCount() = results.size

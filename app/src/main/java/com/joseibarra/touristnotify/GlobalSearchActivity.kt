@@ -24,6 +24,14 @@ class GlobalSearchActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupSearch()
+
+        // Aplicar animación de entrada
+        overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right)
     }
 
     private fun setupRecyclerView() {
@@ -35,19 +43,22 @@ class GlobalSearchActivity : AppCompatActivity() {
                         putExtra("PLACE_NAME", result.title)
                     }
                     startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
                 SearchResultType.EVENT -> {
                     val intent = Intent(this, EventsActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
                 SearchResultType.BLOG -> {
-                    // Abrir blog detail
                     val intent = Intent(this, BlogActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
                 SearchResultType.ROUTE -> {
                     val intent = Intent(this, MyRoutesActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
             }
         }

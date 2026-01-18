@@ -3,6 +3,7 @@ package com.joseibarra.touristnotify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -64,6 +65,10 @@ class EventsAdapter(
         holder.card.setOnClickListener {
             onEventClick(event)
         }
+
+        // Aplicar animación de fade in
+        val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in)
+        holder.itemView.startAnimation(animation)
     }
 
     override fun getItemCount(): Int = events.size

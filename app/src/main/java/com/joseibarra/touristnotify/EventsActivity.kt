@@ -31,6 +31,11 @@ class EventsActivity : AppCompatActivity() {
         loadEvents()
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_right)
+    }
+
     private fun setupRecyclerView() {
         adapter = EventsAdapter(events) { event ->
             openEventDetails(event)
@@ -167,6 +172,7 @@ class EventsActivity : AppCompatActivity() {
                 putExtra("PLACE_DESCRIPTION", event.description)
             }
             startActivity(intent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         } else {
             // Mostrar detalles del evento en un diálogo o nueva pantalla
             NotificationHelper.info(binding.root, "Evento: ${event.title}")

@@ -46,8 +46,20 @@
             android:label="Restablecer contraseña" />
 
         <activity
+            android:name=".OnboardingActivity"
+            android:label="Bienvenido a TouristNotify" />
+
+        <activity
             android:name=".MenuActivity"
             android:label="Menu" />
+
+        <activity
+            android:name=".GlobalSearchActivity"
+            android:label="Búsqueda Global" />
+
+        <activity
+            android:name=".ServicesDirectoryActivity"
+            android:label="Directorio de Servicios" />
 
         <activity
             android:name=".MyRoutesActivity"

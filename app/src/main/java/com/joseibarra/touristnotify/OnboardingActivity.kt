@@ -21,7 +21,7 @@ class OnboardingActivity : AppCompatActivity() {
         OnboardingPage(
             "📍",
             "Notificaciones Inteligentes",
-            "Recibe avisos cuando estés cerca de lugares turísticos, estilo Pokémon Go"
+            "Recibe avisos automáticos cuando estés cerca de lugares turísticos interesantes"
         ),
         OnboardingPage(
             "✨",

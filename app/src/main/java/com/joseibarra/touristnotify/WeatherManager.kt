@@ -5,15 +5,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Manager para obtener información del clima de Álamos, Sonora
  *
- * Para usar con OpenWeatherMap API:
- * 1. Obtener API key gratuita en: https://openweathermap.org/api
- * 2. Agregar WEATHER_API_KEY en local.properties
- * 3. Agregar buildConfigField en build.gradle.kts
- * 4. Descomentar la implementación real en getCurrentWeather()
+ * Usa OpenWeatherMap API (gratuita)
+ * Para configurar:
+ * 1. Obtener API key en: https://openweathermap.org/api
+ * 2. Agregar en local.properties: WEATHER_API_KEY=tu_api_key_aqui
  */
 object WeatherManager {
 
@@ -22,32 +23,16 @@ object WeatherManager {
     private const val ALAMOS_LON = -108.94
 
     /**
-     * Obtiene el clima actual de Álamos, Sonora
-     *
-     * NOTA: Esta versión usa datos simulados. Para usar datos reales,
-     * descomentar la implementación con OpenWeatherMap API y agregar la API key.
+     * Obtiene el clima actual de Álamos, Sonora desde OpenWeatherMap
      */
     suspend fun getCurrentWeather(): Result<WeatherInfo> = withContext(Dispatchers.IO) {
         try {
-            // === IMPLEMENTACIÓN MOCK (TEMPORAL) ===
-            // Simula clima soleado y cálido típico de Álamos
-            val mockWeather = WeatherInfo(
-                temperature = 28.5,
-                feelsLike = 30.0,
-                description = "Despejado",
-                icon = "01d", // Código de ícono de sol
-                humidity = 45,
-                windSpeed = 12.5,
-                timestamp = System.currentTimeMillis()
-            )
-            Result.success(mockWeather)
-
-            /* === IMPLEMENTACIÓN REAL CON OPENWEATHERMAP API ===
             val apiKey = BuildConfig.WEATHER_API_KEY
+
+            // Si no hay API key, usar datos mock
             if (apiKey.isBlank()) {
-                return@withContext Result.failure(
-                    Exception("API Key no configurada. Ver documentación en WeatherManager.kt")
-                )
+                Log.w(TAG, "WEATHER_API_KEY no configurada, usando datos simulados")
+                return@withContext Result.success(getMockWeather())
             }
 
             val url = "https://api.openweathermap.org/data/2.5/weather?" +
@@ -66,21 +51,107 @@ object WeatherManager {
                 description = weather.getString("description").replaceFirstChar { it.uppercase() },
                 icon = weather.getString("icon"),
                 humidity = main.getInt("humidity"),
-                windSpeed = wind.getDouble("speed"),
+                windSpeed = wind.getDouble("speed") * 3.6, // m/s a km/h
                 timestamp = System.currentTimeMillis()
             )
 
             Result.success(weatherInfo)
-            */
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error obteniendo clima", e)
-            Result.failure(e)
+            Log.e(TAG, "Error obteniendo clima, usando datos mock", e)
+            // Fallback a datos mock si falla la API
+            Result.success(getMockWeather())
         }
     }
 
     /**
-     * Genera recomendaciones basadas en el clima usando IA
+     * Obtiene el pronóstico de los próximos 5 días
+     */
+    suspend fun getForecast(): Result<List<ForecastDay>> = withContext(Dispatchers.IO) {
+        try {
+            val apiKey = BuildConfig.WEATHER_API_KEY
+
+            if (apiKey.isBlank()) {
+                Log.w(TAG, "WEATHER_API_KEY no configurada, usando pronóstico simulado")
+                return@withContext Result.success(getMockForecast())
+            }
+
+            val url = "https://api.openweathermap.org/data/2.5/forecast?" +
+                    "lat=$ALAMOS_LAT&lon=$ALAMOS_LON&appid=$apiKey&units=metric&lang=es"
+
+            val response = URL(url).readText()
+            val json = JSONObject(response)
+            val list = json.getJSONArray("list")
+
+            // Agrupar por día (toma el pronóstico de mediodía de cada día)
+            val forecastMap = mutableMapOf<String, ForecastDay>()
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            for (i in 0 until list.length()) {
+                val item = list.getJSONObject(i)
+                val dt = item.getLong("dt") * 1000
+                val date = Date(dt)
+                val dayKey = dateFormat.format(date)
+
+                // Solo tomar el pronóstico del mediodía (12:00)
+                val dtTxt = item.getString("dt_txt")
+                if (dtTxt.contains("12:00:00") && forecastMap.size < 5) {
+                    val main = item.getJSONObject("main")
+                    val weather = item.getJSONArray("weather").getJSONObject(0)
+
+                    forecastMap[dayKey] = ForecastDay(
+                        date = date,
+                        tempMax = main.getDouble("temp_max"),
+                        tempMin = main.getDouble("temp_min"),
+                        description = weather.getString("description").replaceFirstChar { it.uppercase() },
+                        icon = weather.getString("icon")
+                    )
+                }
+            }
+
+            val forecast = forecastMap.values.toList()
+            Result.success(forecast)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error obteniendo pronóstico, usando datos mock", e)
+            Result.success(getMockForecast())
+        }
+    }
+
+    /**
+     * Datos mock/simulados para cuando no hay API key o falla la conexión
+     */
+    private fun getMockWeather(): WeatherInfo {
+        return WeatherInfo(
+            temperature = 28.5,
+            feelsLike = 30.0,
+            description = "Despejado",
+            icon = "01d",
+            humidity = 45,
+            windSpeed = 12.5,
+            timestamp = System.currentTimeMillis()
+        )
+    }
+
+    /**
+     * Pronóstico mock de 5 días
+     */
+    private fun getMockForecast(): List<ForecastDay> {
+        val calendar = Calendar.getInstance()
+        return (1..5).map { day ->
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+            ForecastDay(
+                date = calendar.time,
+                tempMax = 30.0 + (Math.random() * 5 - 2.5),
+                tempMin = 18.0 + (Math.random() * 3 - 1.5),
+                description = listOf("Despejado", "Parcialmente nublado", "Soleado").random(),
+                icon = listOf("01d", "02d", "03d").random()
+            )
+        }
+    }
+
+    /**
+     * Genera recomendaciones basadas en el clima
      */
     suspend fun getWeatherRecommendations(weather: WeatherInfo): String {
         return when {

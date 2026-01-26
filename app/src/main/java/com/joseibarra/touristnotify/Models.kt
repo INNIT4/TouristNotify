@@ -98,6 +98,17 @@ data class WeatherInfo(
 )
 
 /**
+ * Modelo para pronóstico diario del clima
+ */
+data class ForecastDay(
+    val date: Date,
+    val tempMax: Double,
+    val tempMin: Double,
+    val description: String,
+    val icon: String
+)
+
+/**
  * Modelo para rutas temáticas
  */
 data class ThemedRoute(

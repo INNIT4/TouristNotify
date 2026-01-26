@@ -30,6 +30,7 @@ android {
 
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\"")
         buildConfigField("String", "DIRECTIONS_API_KEY", "\"${properties.getProperty("DIRECTIONS_API_KEY", "")}\"")
+        buildConfigField("String", "WEATHER_API_KEY", "\"${properties.getProperty("WEATHER_API_KEY", "")}\"")
 
         // Para Maps API, el Secrets Plugin lo maneja automáticamente
         manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY", "")

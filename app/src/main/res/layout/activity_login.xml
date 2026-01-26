@@ -190,18 +190,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Botón Skip (solo para debug) -->
+        <!-- Botón Continuar como invitado -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/skip_button"
             style="@style/Widget.TouristNotify.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Modo Desarrollo"
-            android:textColor="?attr/colorTertiary"
-            android:textSize="12sp"
-            app:icon="@android:drawable/ic_menu_preferences"
-            app:iconSize="16dp"
+            android:text="🚶 Continuar como invitado"
+            android:textColor="?attr/colorSecondary"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_card" />

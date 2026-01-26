@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Marco transparente en el centro -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="4dp"
+                android:color="#FFFFFF" />
+            <corners android:radius="16dp" />
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+
+    <!-- Esquinas decorativas -->
+    <item
+        android:top="0dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#4CAF50" />
+            <size
+                android:width="40dp"
+                android:height="4dp" />
+        </shape>
+    </item>
+
+    <item
+        android:top="0dp"
+        android:left="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#4CAF50" />
+            <size
+                android:width="4dp"
+                android:height="40dp" />
+        </shape>
+    </item>
+</layer-list>

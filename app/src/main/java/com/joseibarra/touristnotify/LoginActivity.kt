@@ -33,14 +33,10 @@ class LoginActivity : AppCompatActivity() {
             navigateToRegister()
         }
 
-        // El botón "Saltar" solo está disponible en builds debug
-        if (BuildConfig.ENABLE_SKIP_LOGIN) {
-            binding.skipButton.visibility = View.VISIBLE
-            binding.skipButton.setOnClickListener {
-                navigateToMenu()
-            }
-        } else {
-            binding.skipButton.visibility = View.GONE
+        // Botón "Continuar como invitado" - SIEMPRE VISIBLE
+        binding.skipButton.visibility = View.VISIBLE
+        binding.skipButton.setOnClickListener {
+            enableGuestModeAndNavigate()
         }
     }
 
@@ -83,8 +79,26 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToMenu() {
+        // Desactivar modo invitado si se hace login
+        AuthManager.disableGuestMode(this)
+
         val intent = Intent(this, MenuActivity::class.java)
         startActivity(intent)
         finish() // Cierra LoginActivity para que el usuario no pueda volver atrás
+    }
+
+    private fun enableGuestModeAndNavigate() {
+        // Activar modo invitado
+        AuthManager.enableGuestMode(this)
+
+        Toast.makeText(
+            this,
+            "Modo invitado activado. Algunas funciones estarán limitadas.",
+            Toast.LENGTH_LONG
+        ).show()
+
+        val intent = Intent(this, MenuActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

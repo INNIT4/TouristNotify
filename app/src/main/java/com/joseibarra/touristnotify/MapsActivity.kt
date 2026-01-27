@@ -256,9 +256,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Aplicar estilo bloqueado si es usuario invitado
         if (!AuthManager.isAuthenticated()) {
             binding.saveRouteButton.alpha = 0.5f
-            binding.saveRouteButton.setCompoundDrawablesWithIntrinsicBounds(
-                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
-            )
+            binding.saveRouteButton.setImageResource(R.drawable.ic_lock_outline_black_24dp)
         }
 
         binding.saveRouteButton.setOnClickListener {

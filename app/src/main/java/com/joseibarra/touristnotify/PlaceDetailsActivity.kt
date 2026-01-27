@@ -114,23 +114,16 @@ class PlaceDetailsActivity : AppCompatActivity() {
         if (!AuthManager.isAuthenticated()) {
             // Favoritos
             binding.favoriteButton.alpha = 0.5f
-            binding.favoriteButton.setCompoundDrawablesWithIntrinsicBounds(
-                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
-            )
+            binding.favoriteButton.icon = getDrawable(R.drawable.ic_lock_outline_black_24dp)
 
             // Check-in
             binding.checkInButton.alpha = 0.5f
-            binding.checkInButton.setCompoundDrawablesWithIntrinsicBounds(
-                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
-            )
+            binding.checkInButton.icon = getDrawable(R.drawable.ic_lock_outline_black_24dp)
 
             // Reseñas
             binding.submitReviewButton.alpha = 0.5f
             binding.submitRatingBar.alpha = 0.5f
             binding.reviewEditText.alpha = 0.5f
-            binding.submitReviewButton.setCompoundDrawablesWithIntrinsicBounds(
-                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
-            )
         }
     }
 

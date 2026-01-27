@@ -2,15 +2,9 @@ package com.joseibarra.touristnotify
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 
 /**

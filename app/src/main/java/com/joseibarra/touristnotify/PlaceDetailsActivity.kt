@@ -36,7 +36,19 @@ class PlaceDetailsActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        placeId = intent.getStringExtra("PLACE_ID")
+        // Obtener placeId de varias fuentes
+        placeId = when {
+            // 1. Desde deep link (QR escaneado con cámara nativa)
+            intent?.data != null -> {
+                handleDeepLink(intent.data)
+            }
+            // 2. Desde navegación normal de la app
+            intent.hasExtra("PLACE_ID") -> {
+                intent.getStringExtra("PLACE_ID")
+            }
+            else -> null
+        }
+
         placeName = intent.getStringExtra("PLACE_NAME") ?: ""
         placeCategory = intent.getStringExtra("PLACE_CATEGORY") ?: ""
 
@@ -51,6 +63,49 @@ class PlaceDetailsActivity : AppCompatActivity() {
         setupReviews()
         loadReviews()
         checkFavoriteStatus()
+    }
+
+    /**
+     * Procesa deep links de códigos QR
+     * Soporta formatos:
+     * - touristnotify://place/{placeId}
+     * - https://touristnotify.app/place/{placeId}
+     */
+    private fun handleDeepLink(uri: Uri?): String? {
+        if (uri == null) return null
+
+        return try {
+            when (uri.scheme) {
+                // touristnotify://place/abc123
+                "touristnotify" -> {
+                    if (uri.host == "place") {
+                        uri.lastPathSegment
+                    } else {
+                        null
+                    }
+                }
+                // https://touristnotify.app/place/abc123
+                "https", "http" -> {
+                    val pathSegments = uri.pathSegments
+                    if (pathSegments.size >= 2 && pathSegments[0] == "place") {
+                        pathSegments[1]
+                    } else {
+                        null
+                    }
+                }
+                else -> null
+            }?.also {
+                Log.d(TAG, "Deep link detected: placeId = $it")
+                Toast.makeText(
+                    this,
+                    "📱 Abriendo lugar desde código QR...",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error processing deep link", e)
+            null
+        }
     }
 
     private fun setupUI() {
@@ -378,5 +433,9 @@ class PlaceDetailsActivity : AppCompatActivity() {
         }.addOnFailureListener { e ->
             NotificationHelper.error(binding.root, "Error al actualizar la reseña: ${e.message}")
         }
+    }
+
+    companion object {
+        private const val TAG = "PlaceDetailsActivity"
     }
 }

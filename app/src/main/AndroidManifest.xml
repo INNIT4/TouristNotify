@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".TouristNotifyApplication"
@@ -76,7 +75,35 @@
 
         <activity
             android:name=".PlaceDetailsActivity"
-            android:label="Detalles del Lugar" />
+            android:label="Detalles del Lugar"
+            android:exported="true">
+
+            <!-- Deep Links para códigos QR -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Formato: touristnotify://place/{placeId} -->
+                <data
+                    android:scheme="touristnotify"
+                    android:host="place"
+                    android:pathPattern="/.*" />
+            </intent-filter>
+
+            <!-- App Links para URLs web (opcional) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Formato: https://touristnotify.app/place/{placeId} -->
+                <data
+                    android:scheme="https"
+                    android:host="touristnotify.app"
+                    android:pathPrefix="/place/" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".MapsActivity"
@@ -139,11 +166,6 @@
         <activity
             android:name=".OfflineSettingsActivity"
             android:label="Modo Sin Conexión" />
-
-        <activity
-            android:name=".QRScannerActivity"
-            android:label="Escanear código QR"
-            android:screenOrientation="portrait" />
 
         <!-- Receiver para geofencing -->
         <receiver

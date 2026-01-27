@@ -96,17 +96,6 @@ dependencies {
     // WorkManager para sincronización en background
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    // ML Kit para escaneo de códigos QR
-    implementation("com.google.mlkit:barcode-scanning:17.3.0")
-
-    // CameraX para el lector de QR
-    implementation("androidx.camera:camera-camera2:1.3.4")
-    implementation("androidx.camera:camera-lifecycle:1.3.4")
-    implementation("androidx.camera:camera-view:1.3.4")
-
-    // Guava (requerido por CameraX para ListenableFuture)
-    implementation("com.google.guava:guava:31.1-android")
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

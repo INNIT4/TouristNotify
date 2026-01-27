@@ -120,34 +120,101 @@ object WeatherManager {
 
     /**
      * Datos mock/simulados para cuando no hay API key o falla la conexión
+     * Genera datos dinámicos basados en la hora del día para mayor realismo
      */
     private fun getMockWeather(): WeatherInfo {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+
+        // Temperatura base según hora del día (patrón típico de Álamos, Sonora)
+        val baseTemp = when {
+            hour in 0..5 -> 18.0 + (Math.random() * 3)      // Madrugada: 18-21°C
+            hour in 6..8 -> 20.0 + (Math.random() * 4)      // Mañana: 20-24°C
+            hour in 9..11 -> 25.0 + (Math.random() * 4)     // Media mañana: 25-29°C
+            hour in 12..15 -> 30.0 + (Math.random() * 5)    // Mediodía: 30-35°C (más calor)
+            hour in 16..18 -> 28.0 + (Math.random() * 4)    // Tarde: 28-32°C
+            hour in 19..21 -> 23.0 + (Math.random() * 3)    // Noche: 23-26°C
+            else -> 19.0 + (Math.random() * 3)              // Noche tardía: 19-22°C
+        }
+
+        val feelsLike = baseTemp + (Math.random() * 3 - 1)
+
+        // Descripción y emoji según hora
+        val (description, icon) = when {
+            hour in 6..7 -> Pair("Despejado - Amanecer", "01d")
+            hour in 8..17 -> {
+                when ((Math.random() * 10).toInt()) {
+                    in 0..6 -> Pair("Despejado", "01d")
+                    in 7..8 -> Pair("Parcialmente nublado", "02d")
+                    else -> Pair("Soleado", "01d")
+                }
+            }
+            hour in 18..19 -> Pair("Atardecer despejado", "01d")
+            else -> Pair("Despejado - Noche", "01n")
+        }
+
+        // Humedad varía con la hora (más alta en la madrugada)
+        val humidity = when {
+            hour in 0..6 -> 55 + (Math.random() * 15).toInt()   // 55-70%
+            hour in 7..11 -> 40 + (Math.random() * 15).toInt()  // 40-55%
+            hour in 12..17 -> 30 + (Math.random() * 15).toInt() // 30-45%
+            else -> 45 + (Math.random() * 15).toInt()           // 45-60%
+        }
+
+        // Viento más fuerte en la tarde
+        val windSpeed = when {
+            hour in 12..17 -> 10.0 + (Math.random() * 10)  // 10-20 km/h
+            else -> 5.0 + (Math.random() * 8)              // 5-13 km/h
+        }
+
         return WeatherInfo(
-            temperature = 28.5,
-            feelsLike = 30.0,
-            description = "Despejado",
-            icon = "01d",
-            humidity = 45,
-            windSpeed = 12.5,
+            temperature = baseTemp,
+            feelsLike = feelsLike,
+            description = description,
+            icon = icon,
+            humidity = humidity,
+            windSpeed = windSpeed,
             timestamp = System.currentTimeMillis()
         )
     }
 
     /**
      * Pronóstico mock de 5 días
+     * Genera pronóstico dinámico con variaciones realistas
      */
     private fun getMockForecast(): List<ForecastDay> {
         val calendar = Calendar.getInstance()
-        return (1..5).map { day ->
+        val forecast = mutableListOf<ForecastDay>()
+
+        // Patrones de clima variados pero coherentes
+        val weatherPatterns = listOf(
+            Triple("Despejado", "01d", 32.0 to 19.0),
+            Triple("Soleado", "01d", 33.0 to 20.0),
+            Triple("Parcialmente nublado", "02d", 29.0 to 18.0),
+            Triple("Mayormente soleado", "02d", 31.0 to 19.5),
+            Triple("Algo nublado", "03d", 27.0 to 17.0)
+        )
+
+        repeat(5) { day ->
             calendar.add(Calendar.DAY_OF_MONTH, 1)
-            ForecastDay(
-                date = calendar.time,
-                tempMax = 30.0 + (Math.random() * 5 - 2.5),
-                tempMin = 18.0 + (Math.random() * 3 - 1.5),
-                description = listOf("Despejado", "Parcialmente nublado", "Soleado").random(),
-                icon = listOf("01d", "02d", "03d").random()
+            val pattern = weatherPatterns[(day + (Math.random() * weatherPatterns.size).toInt()) % weatherPatterns.size]
+            val (description, icon, temps) = pattern
+
+            // Añadir variación aleatoria pequeña a las temperaturas
+            val tempVariation = Math.random() * 4 - 2  // ±2°C
+
+            forecast.add(
+                ForecastDay(
+                    date = calendar.time,
+                    tempMax = temps.first + tempVariation,
+                    tempMin = temps.second + tempVariation * 0.5,
+                    description = description,
+                    icon = icon
+                )
             )
         }
+
+        return forecast
     }
 
     /**

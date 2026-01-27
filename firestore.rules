@@ -129,6 +129,24 @@ service cloud.firestore {
         // No se puede eliminar estadísticas
         allow delete: if false;
       }
+
+      // Uso de API (control de límites)
+      match /usage/{dateId} {
+        // Solo el dueño puede leer su uso
+        allow read: if isOwner(userId);
+
+        // Solo el dueño puede crear/actualizar su uso
+        // Validar que no exceda límites razonables
+        allow create, update: if isOwner(userId) &&
+                                 request.resource.data.keys().hasAll([
+                                   'routesGenerated', 'date', 'timestamp'
+                                 ]) &&
+                                 request.resource.data.routesGenerated is int &&
+                                 request.resource.data.routesGenerated <= 50; // Límite de seguridad
+
+        // No se puede eliminar registros de uso
+        allow delete: if false;
+      }
     }
 
     // ============================================================================

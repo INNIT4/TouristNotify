@@ -26,13 +26,52 @@ class PreferencesActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         setupLockedFeaturesUI()
+        updateUsageDisplay()
 
         binding.generateRouteButton.setOnClickListener {
             // Verificar autenticación antes de generar ruta
             AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
-                generateRouteWithAuth()
+                checkUsageLimitAndGenerate()
             }
         }
+    }
+
+    /**
+     * Verifica límites de uso antes de generar ruta
+     */
+    private fun checkUsageLimitAndGenerate() {
+        lifecycleScope.launch {
+            val (canGenerate, message) = UsageManager.canGenerateRoute(this@PreferencesActivity)
+
+            if (!canGenerate) {
+                // Límite alcanzado
+                androidx.appcompat.app.AlertDialog.Builder(this@PreferencesActivity)
+                    .setTitle("⚠️ Límite diario alcanzado")
+                    .setMessage(message + "\n\nEsto ayuda a controlar los costos del servicio de IA.")
+                    .setPositiveButton("Entendido", null)
+                    .show()
+                return@launch
+            }
+
+            // Puede generar, proceder
+            generateRouteWithAuth()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateUsageDisplay()
+    }
+
+    /**
+     * Actualiza el display de uso en la UI
+     */
+    private fun updateUsageDisplay() {
+        val stats = UsageManager.getUsageStats(this)
+        val usageText = "${stats.routesUsedToday}/${stats.routesLimitToday} rutas IA usadas hoy"
+
+        // Mostrar en el subtítulo o crear un TextView nuevo
+        binding.subtitleText.text = "La IA creará la ruta perfecta para ti\n$usageText"
     }
 
     private fun setupLockedFeaturesUI() {
@@ -211,9 +250,13 @@ class PreferencesActivity : AppCompatActivity() {
                 if (foundPlaceNames.isNotEmpty()) {
                     Log.d("AI_Parsed_Places", "Lugares encontrados en la respuesta: $foundPlaceNames")
 
+                    // Registrar uso exitoso de la generación de ruta
+                    UsageManager.recordRouteGeneration(this@PreferencesActivity)
+
                     // Mostrar la respuesta de la IA al usuario
+                    val remaining = UsageManager.getRemainingRoutes(this@PreferencesActivity)
                     Toast.makeText(this@PreferencesActivity,
-                        "✨ Ruta creada con ${foundPlaceNames.size} destinos",
+                        "✨ Ruta creada con ${foundPlaceNames.size} destinos\nTe quedan $remaining rutas IA hoy",
                         Toast.LENGTH_LONG).show()
 
                     navigateToMapWithRoute(foundPlaceNames)

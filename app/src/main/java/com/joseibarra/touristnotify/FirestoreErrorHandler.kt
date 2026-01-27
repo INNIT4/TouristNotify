@@ -233,3 +233,36 @@ fun Exception.handleFirestoreError(
         onAuthRequired
     )
 }
+
+/**
+ * Extension function para Throwable (usado con Result.onFailure)
+ * Ejemplo de uso:
+ *
+ * result.onFailure { e ->
+ *     e.handleFirestoreError(
+ *         context = this@MyActivity,
+ *         view = binding.root,
+ *         operation = "cargar datos"
+ *     )
+ * }
+ */
+fun Throwable.handleFirestoreError(
+    context: Context,
+    view: android.view.View,
+    operation: String,
+    onAuthRequired: (() -> Unit)? = null
+) {
+    // Convertir Throwable a Exception si es posible
+    val exception = when (this) {
+        is Exception -> this
+        else -> Exception(this.message, this)
+    }
+
+    FirestoreErrorHandler.handleError(
+        context,
+        view,
+        exception,
+        operation,
+        onAuthRequired
+    )
+}

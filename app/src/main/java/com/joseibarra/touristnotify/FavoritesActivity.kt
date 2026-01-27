@@ -20,6 +20,18 @@ class FavoritesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar autenticación antes de acceder a favoritos
+        if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_FAVORITES) {
+                initializeActivity()
+            }) {
+            // Si no está autenticado, cerrar activity
+            finish()
+            return
+        }
+    }
+
+    private fun initializeActivity() {
         binding = ActivityFavoritesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

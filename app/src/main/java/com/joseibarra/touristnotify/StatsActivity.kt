@@ -23,6 +23,17 @@ class StatsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar autenticación antes de ver estadísticas
+        if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.VIEW_STATS) {
+                initializeActivity()
+            }) {
+            finish()
+            return
+        }
+    }
+
+    private fun initializeActivity() {
         binding = ActivityStatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

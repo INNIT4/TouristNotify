@@ -21,6 +21,17 @@ class MyRoutesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar autenticación antes de acceder a rutas guardadas
+        if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_ROUTES) {
+                initializeActivity()
+            }) {
+            finish()
+            return
+        }
+    }
+
+    private fun initializeActivity() {
         binding = ActivityMyRoutesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

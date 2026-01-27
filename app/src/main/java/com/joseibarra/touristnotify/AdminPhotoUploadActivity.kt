@@ -49,6 +49,16 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
+        // Verificar autenticación antes de verificar permisos de admin
+        if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.UPLOAD_PHOTOS) {
+                checkAdminAndInitialize()
+            }) {
+            finish()
+            return
+        }
+    }
+
+    private fun checkAdminAndInitialize() {
         // Verificar autorización - Solo Oficina de Turismo
         if (!AdminConfig.canCreateBlogPosts(auth.currentUser?.email)) {
             NotificationHelper.error(

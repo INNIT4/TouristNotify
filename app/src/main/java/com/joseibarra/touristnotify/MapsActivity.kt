@@ -254,14 +254,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupSaveRouteButton() {
         binding.saveRouteButton.setOnClickListener {
-            if (auth.currentUser == null) {
-                NotificationHelper.info(binding.root, "Debes iniciar sesión para guardar una ruta")
-                return@setOnClickListener
-            }
-            if (currentRouteSpots.isNotEmpty()) {
-                showSaveRouteDialog()
-            } else {
-                NotificationHelper.warning(binding.root, "Agrega lugares a la ruta primero")
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.SAVE_ROUTES) {
+                if (currentRouteSpots.isNotEmpty()) {
+                    showSaveRouteDialog()
+                } else {
+                    NotificationHelper.warning(binding.root, "Agrega lugares a la ruta primero")
+                }
             }
         }
     }

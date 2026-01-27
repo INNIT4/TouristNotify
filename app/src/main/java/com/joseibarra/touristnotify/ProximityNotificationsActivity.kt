@@ -61,6 +61,17 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar autenticación antes de configurar notificaciones
+        if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
+                initializeActivity()
+            }) {
+            finish()
+            return
+        }
+    }
+
+    private fun initializeActivity() {
         binding = ActivityProximityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

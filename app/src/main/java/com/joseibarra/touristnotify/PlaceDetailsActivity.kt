@@ -164,55 +164,47 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun toggleFavorite() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            NotificationHelper.info(binding.root, "Debes iniciar sesión para agregar favoritos")
-            return
-        }
+        AuthManager.requireAuth(this, AuthManager.AuthRequired.SAVE_FAVORITES) {
+            val currentPlaceId = placeId ?: return@requireAuth
 
-        val currentPlaceId = placeId ?: return
+            lifecycleScope.launch {
+                val result = if (isFavorite) {
+                    FavoritesManager.removeFavorite(currentPlaceId)
+                } else {
+                    FavoritesManager.addFavorite(currentPlaceId, placeName, placeCategory)
+                }
 
-        lifecycleScope.launch {
-            val result = if (isFavorite) {
-                FavoritesManager.removeFavorite(currentPlaceId)
-            } else {
-                FavoritesManager.addFavorite(currentPlaceId, placeName, placeCategory)
-            }
-
-            result.onSuccess {
-                isFavorite = !isFavorite
-                updateFavoriteButton()
-                val message = if (isFavorite) "Agregado a favoritos" else "Eliminado de favoritos"
-                NotificationHelper.success(binding.root, message)
-            }.onFailure { e ->
-                NotificationHelper.error(binding.root, "Error: ${e.message}")
+                result.onSuccess {
+                    isFavorite = !isFavorite
+                    updateFavoriteButton()
+                    val message = if (isFavorite) "Agregado a favoritos" else "Eliminado de favoritos"
+                    NotificationHelper.success(binding.root, message)
+                }.onFailure { e ->
+                    NotificationHelper.error(binding.root, "Error: ${e.message}")
+                }
             }
         }
     }
 
     private fun performCheckIn() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            NotificationHelper.info(binding.root, "Debes iniciar sesión para hacer check-in")
-            return
-        }
+        AuthManager.requireAuth(this, AuthManager.AuthRequired.CHECK_IN) {
+            val currentPlaceId = placeId ?: return@requireAuth
 
-        val currentPlaceId = placeId ?: return
+            lifecycleScope.launch {
+                // Verificar si ya hizo check-in hoy
+                val hasCheckedIn = CheckInManager.hasCheckedInToday(currentPlaceId)
+                if (hasCheckedIn) {
+                    NotificationHelper.warning(binding.root, "Ya hiciste check-in aquí hoy")
+                    return@launch
+                }
 
-        lifecycleScope.launch {
-            // Verificar si ya hizo check-in hoy
-            val hasCheckedIn = CheckInManager.hasCheckedInToday(currentPlaceId)
-            if (hasCheckedIn) {
-                NotificationHelper.warning(binding.root, "Ya hiciste check-in aquí hoy")
-                return@launch
-            }
+                val result = CheckInManager.checkIn(currentPlaceId, placeName, placeCategory)
 
-            val result = CheckInManager.checkIn(currentPlaceId, placeName, placeCategory)
-
-            result.onSuccess {
-                NotificationHelper.success(binding.root, "✅ Check-in exitoso!")
-            }.onFailure { e ->
-                NotificationHelper.error(binding.root, "Error al hacer check-in: ${e.message}")
+                result.onSuccess {
+                    NotificationHelper.success(binding.root, "✅ Check-in exitoso!")
+                }.onFailure { e ->
+                    NotificationHelper.error(binding.root, "Error al hacer check-in: ${e.message}")
+                }
             }
         }
     }
@@ -318,49 +310,47 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun submitReview() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            NotificationHelper.info(binding.root, "Debes iniciar sesión para dejar una reseña")
-            return
-        }
+        AuthManager.requireAuth(this, AuthManager.AuthRequired.LEAVE_REVIEWS) {
+            val currentUser = auth.currentUser ?: return@requireAuth
 
-        val rating = binding.submitRatingBar.rating
-        if (rating == 0f) {
-            NotificationHelper.warning(binding.root, "Por favor, selecciona una calificación")
-            return
-        }
+            val rating = binding.submitRatingBar.rating
+            if (rating == 0f) {
+                NotificationHelper.warning(binding.root, "Por favor, selecciona una calificación")
+                return@requireAuth
+            }
 
-        val currentPlaceId = placeId
-        if (currentPlaceId == null) {
-            NotificationHelper.error(binding.root, "Error: ID del lugar no disponible")
-            return
-        }
+            val currentPlaceId = placeId
+            if (currentPlaceId == null) {
+                NotificationHelper.error(binding.root, "Error: ID del lugar no disponible")
+                return@requireAuth
+            }
 
-        val comment = binding.reviewEditText.text.toString()
-        val placeRef = db.collection("lugares").document(currentPlaceId)
+            val comment = binding.reviewEditText.text.toString()
+            val placeRef = db.collection("lugares").document(currentPlaceId)
 
-        // Verificar si el usuario ya dejó una reseña
-        placeRef.collection("reviews")
-            .whereEqualTo("userId", currentUser.uid)
-            .get()
-            .addOnSuccessListener { existingReviews ->
-                if (!existingReviews.isEmpty) {
-                    NotificationHelper.show(
-                        binding.root,
-                        "Ya dejaste una reseña para este lugar",
-                        NotificationHelper.NotificationType.WARNING,
-                        Snackbar.LENGTH_LONG,
-                        "Actualizar"
-                    ) {
-                        updateExistingReview(existingReviews.documents[0].id, rating, comment)
+            // Verificar si el usuario ya dejó una reseña
+            placeRef.collection("reviews")
+                .whereEqualTo("userId", currentUser.uid)
+                .get()
+                .addOnSuccessListener { existingReviews ->
+                    if (!existingReviews.isEmpty) {
+                        NotificationHelper.show(
+                            binding.root,
+                            "Ya dejaste una reseña para este lugar",
+                            NotificationHelper.NotificationType.WARNING,
+                            Snackbar.LENGTH_LONG,
+                            "Actualizar"
+                        ) {
+                            updateExistingReview(existingReviews.documents[0].id, rating, comment)
+                        }
+                    } else {
+                        submitNewReview(placeRef, currentUser.uid, currentUser.displayName ?: "Anónimo", rating, comment)
                     }
-                } else {
-                    submitNewReview(placeRef, currentUser.uid, currentUser.displayName ?: "Anónimo", rating, comment)
                 }
-            }
-            .addOnFailureListener { e ->
-                NotificationHelper.error(binding.root, "Error al verificar reseñas: ${e.message}")
-            }
+                .addOnFailureListener { e ->
+                    NotificationHelper.error(binding.root, "Error al verificar reseñas: ${e.message}")
+                }
+        }
     }
 
     private fun submitNewReview(placeRef: com.google.firebase.firestore.DocumentReference, userId: String, userName: String, rating: Float, comment: String) {

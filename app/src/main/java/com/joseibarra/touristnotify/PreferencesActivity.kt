@@ -26,26 +26,33 @@ class PreferencesActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         binding.generateRouteButton.setOnClickListener {
-            val budget = binding.budgetEditText.text.toString()
-            val time = binding.timeEditText.text.toString()
-            val interests = getSelectedInterests()
-            val travelType = getSelectedTravelType()
-            val pace = getSelectedPace()
-            val mobility = getSelectedMobility()
-            val customRequest = binding.customRequestEditText.text.toString().trim()
-
-            if (budget.isBlank() || time.isBlank()) {
-                Toast.makeText(this, "Por favor, ingresa presupuesto y tiempo disponible", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            // Verificar autenticación antes de generar ruta
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
+                generateRouteWithAuth()
             }
-
-            if (interests.isEmpty() && customRequest.isBlank()) {
-                Toast.makeText(this, "Selecciona al menos un interés o describe lo que buscas", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
         }
+    }
+
+    private fun generateRouteWithAuth() {
+        val budget = binding.budgetEditText.text.toString()
+        val time = binding.timeEditText.text.toString()
+        val interests = getSelectedInterests()
+        val travelType = getSelectedTravelType()
+        val pace = getSelectedPace()
+        val mobility = getSelectedMobility()
+        val customRequest = binding.customRequestEditText.text.toString().trim()
+
+        if (budget.isBlank() || time.isBlank()) {
+            Toast.makeText(this, "Por favor, ingresa presupuesto y tiempo disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (interests.isEmpty() && customRequest.isBlank()) {
+            Toast.makeText(this, "Selecciona al menos un interés o describe lo que buscas", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
     }
 
     private fun fetchPlacesAndThenGenerateRoute(

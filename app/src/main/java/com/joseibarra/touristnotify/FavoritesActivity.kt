@@ -73,7 +73,11 @@ class FavoritesActivity : AppCompatActivity() {
             }.onFailure { e ->
                 binding.progressBar.visibility = View.GONE
                 binding.emptyTextView.visibility = View.VISIBLE
-                NotificationHelper.error(binding.root, "Error al cargar favoritos: ${e.message}")
+                e.handleFirestoreError(
+                    context = this@FavoritesActivity,
+                    view = binding.root,
+                    operation = "cargar tus favoritos"
+                )
             }
         }
     }

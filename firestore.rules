@@ -1,0 +1,318 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================================
+    // FUNCIONES AUXILIARES
+    // ============================================================================
+
+    // Verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verificar si el usuario es el dueño del recurso
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Verificar si el email es de un administrador de la Oficina de Turismo
+    function isAdmin() {
+      return isAuthenticated() &&
+             request.auth.token.email in [
+               'turismo@alamos.gob.mx',
+               'admin@touristnotify.app'
+             ];
+    }
+
+    // Verificar que los datos de creación son válidos
+    function validUserData() {
+      return request.resource.data.keys().hasAll(['userId']) &&
+             request.resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================================================
+    // LUGARES (Puntos de Interés)
+    // ============================================================================
+
+    match /lugares/{placeId} {
+      // Todos pueden leer lugares (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar lugares
+      allow create, update, delete: if isAdmin();
+
+      // Reviews de un lugar específico
+      match /reviews/{reviewId} {
+        // Todos pueden leer reviews
+        allow read: if true;
+
+        // Solo usuarios autenticados pueden crear reviews
+        allow create: if isAuthenticated() &&
+                         request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.keys().hasAll([
+                           'userId', 'userName', 'rating', 'comment', 'timestamp'
+                         ]);
+
+        // Solo el dueño puede actualizar su propia review
+        allow update: if isAuthenticated() &&
+                         resource.data.userId == request.auth.uid;
+
+        // Solo el dueño o admin pueden eliminar una review
+        allow delete: if isAuthenticated() &&
+                         (resource.data.userId == request.auth.uid || isAdmin());
+      }
+    }
+
+    // ============================================================================
+    // RUTAS
+    // ============================================================================
+
+    match /rutas/{routeId} {
+      // Todos pueden leer rutas (son públicas)
+      allow read: if true;
+
+      // Solo usuarios autenticados pueden crear rutas
+      allow create: if isAuthenticated() &&
+                       request.resource.data.id_usuario == request.auth.uid &&
+                       request.resource.data.keys().hasAll([
+                         'id_ruta', 'id_usuario', 'nombre_ruta',
+                         'pdis_incluidos', 'fecha_creacion'
+                       ]);
+
+      // Solo el dueño puede modificar o eliminar su ruta
+      allow update, delete: if isAuthenticated() &&
+                               resource.data.id_usuario == request.auth.uid;
+    }
+
+    // ============================================================================
+    // USUARIOS
+    // ============================================================================
+
+    match /users/{userId} {
+      // Solo el dueño puede leer su perfil
+      allow read: if isOwner(userId);
+
+      // Solo el dueño puede crear/actualizar su perfil
+      allow create, update: if isOwner(userId);
+
+      // No se puede eliminar (soft delete preferido)
+      allow delete: if false;
+
+      // Favoritos del usuario
+      match /favorites/{favoriteId} {
+        // Solo el dueño puede leer sus favoritos
+        allow read: if isOwner(userId);
+
+        // Solo el dueño puede agregar favoritos
+        allow create: if isOwner(userId) &&
+                         request.resource.data.keys().hasAll([
+                           'placeId', 'placeName', 'category', 'addedAt'
+                         ]);
+
+        // Solo el dueño puede eliminar favoritos
+        allow delete: if isOwner(userId);
+
+        // No se permite actualización (delete + create preferido)
+        allow update: if false;
+      }
+
+      // Estadísticas del usuario
+      match /stats/{statId} {
+        // Solo el dueño puede leer sus estadísticas
+        allow read: if isOwner(userId);
+
+        // Solo el dueño puede crear/actualizar estadísticas
+        allow create, update: if isOwner(userId);
+
+        // No se puede eliminar estadísticas
+        allow delete: if false;
+      }
+    }
+
+    // ============================================================================
+    // CHECK-INS
+    // ============================================================================
+
+    match /checkIns/{checkInId} {
+      // Solo usuarios autenticados pueden leer sus propios check-ins
+      allow read: if isAuthenticated() &&
+                     resource.data.userId == request.auth.uid;
+
+      // Solo usuarios autenticados pueden crear check-ins
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.keys().hasAll([
+                         'userId', 'placeId', 'placeName', 'timestamp'
+                       ]);
+
+      // No se permite actualizar o eliminar check-ins (registro permanente)
+      allow update, delete: if false;
+    }
+
+    // ============================================================================
+    // BLOG
+    // ============================================================================
+
+    match /blog_posts/{postId} {
+      // Todos pueden leer posts del blog (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar posts
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // EVENTOS
+    // ============================================================================
+
+    match /eventos/{eventId} {
+      // Todos pueden leer eventos (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar eventos
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // FOTOS DE LUGARES
+    // ============================================================================
+
+    match /place_photos/{photoId} {
+      // Todos pueden leer fotos (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede subir fotos
+      allow create: if isAdmin() &&
+                       request.resource.data.keys().hasAll([
+                         'id', 'placeId', 'imageUrl', 'uploadedBy', 'uploadedAt'
+                       ]);
+
+      // Solo admin puede modificar metadata de fotos
+      allow update: if isAdmin();
+
+      // Solo admin puede eliminar fotos
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // GEOFENCES (Notificaciones de Proximidad)
+    // ============================================================================
+
+    match /geofences/{geofenceId} {
+      // Todos pueden leer geofences (para configurar notificaciones)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar geofences
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // CONFIGURACIÓN DE USUARIO
+    // ============================================================================
+
+    match /user_settings/{userId} {
+      // Solo el dueño puede leer su configuración
+      allow read: if isOwner(userId);
+
+      // Solo el dueño puede crear/actualizar su configuración
+      allow create, update: if isOwner(userId);
+
+      // No se puede eliminar configuración
+      allow delete: if false;
+    }
+
+    // ============================================================================
+    // NOTIFICACIONES
+    // ============================================================================
+
+    match /notifications/{notificationId} {
+      // Solo el destinatario puede leer sus notificaciones
+      allow read: if isAuthenticated() &&
+                     resource.data.userId == request.auth.uid;
+
+      // Sistema puede crear notificaciones (Cloud Functions)
+      // Usuario puede marcar como leída
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.uid;
+
+      // Solo el dueño puede eliminar sus notificaciones
+      allow delete: if isAuthenticated() &&
+                       resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================================================
+    // RUTAS TEMÁTICAS (Curadas por Admin)
+    // ============================================================================
+
+    match /themed_routes/{routeId} {
+      // Todos pueden leer rutas temáticas (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar rutas temáticas
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // SERVICIOS (Directorio)
+    // ============================================================================
+
+    match /services/{serviceId} {
+      // Todos pueden leer servicios (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar servicios
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // CONTACTOS DE EMERGENCIA
+    // ============================================================================
+
+    match /emergency_contacts/{contactId} {
+      // Todos pueden leer contactos de emergencia (modo invitado)
+      allow read: if true;
+
+      // Solo admin puede crear/modificar/eliminar contactos
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // CLIMA (Cache)
+    // ============================================================================
+
+    match /weather_cache/{cacheId} {
+      // Todos pueden leer cache del clima
+      allow read: if true;
+
+      // Solo sistema puede escribir (Cloud Functions)
+      allow write: if false;
+    }
+
+    // ============================================================================
+    // ANALYTICS (Solo escritura para usuarios)
+    // ============================================================================
+
+    match /analytics/{eventId} {
+      // Solo admin puede leer analytics
+      allow read: if isAdmin();
+
+      // Usuarios autenticados pueden escribir eventos (para tracking)
+      allow create: if isAuthenticated();
+
+      // No se puede modificar o eliminar analytics
+      allow update, delete: if false;
+    }
+
+    // ============================================================================
+    // REGLA POR DEFECTO: DENEGAR TODO LO NO ESPECIFICADO
+    // ============================================================================
+
+    // Cualquier colección no especificada arriba está bloqueada
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

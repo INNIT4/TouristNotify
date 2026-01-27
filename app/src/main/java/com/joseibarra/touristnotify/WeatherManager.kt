@@ -27,7 +27,7 @@ object WeatherManager {
      */
     suspend fun getCurrentWeather(): Result<WeatherInfo> = withContext(Dispatchers.IO) {
         try {
-            val apiKey = BuildConfig.WEATHER_API_KEY
+            val apiKey = ConfigManager.getWeatherApiKey()
 
             // Si no hay API key, usar datos mock
             if (apiKey.isBlank()) {
@@ -69,7 +69,7 @@ object WeatherManager {
      */
     suspend fun getForecast(): Result<List<ForecastDay>> = withContext(Dispatchers.IO) {
         try {
-            val apiKey = BuildConfig.WEATHER_API_KEY
+            val apiKey = ConfigManager.getWeatherApiKey()
 
             if (apiKey.isBlank()) {
                 Log.w(TAG, "WEATHER_API_KEY no configurada, usando pronóstico simulado")

@@ -17,9 +17,10 @@ object UsageManager {
     private const val KEY_LAST_RESET_DATE = "last_reset_date"
     private const val KEY_DAILY_ROUTES_COUNT = "daily_routes_count"
 
-    // Límites configurables
-    private const val MAX_DAILY_ROUTES = 5  // Máximo de rutas IA por día
-    private const val MAX_DAILY_ROUTES_PREMIUM = 20  // Para usuarios premium (futuro)
+    // Límites configurables (ahora desde ConfigManager/Remote Config)
+    // Estos son valores de fallback si Remote Config no está disponible
+    private const val DEFAULT_MAX_DAILY_ROUTES = 5
+    private const val DEFAULT_MAX_DAILY_ROUTES_PREMIUM = 20
 
     /**
      * Verifica si el usuario puede generar una ruta con IA
@@ -96,11 +97,16 @@ object UsageManager {
 
     /**
      * Obtiene el límite máximo de rutas por día para el usuario actual
+     * Usa ConfigManager (Remote Config) con fallback a defaults
      */
     private fun getMaxDailyRoutes(context: Context): Int {
         // TODO: Implementar lógica de usuarios premium cuando exista
         // Por ahora todos tienen el mismo límite
-        return MAX_DAILY_ROUTES
+        return try {
+            ConfigManager.getMaxDailyRoutes()
+        } catch (e: Exception) {
+            DEFAULT_MAX_DAILY_ROUTES
+        }
     }
 
     /**

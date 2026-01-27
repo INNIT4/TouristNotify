@@ -4,8 +4,14 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class TouristNotifyApplication : Application() {
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
@@ -19,6 +25,11 @@ class TouristNotifyApplication : Application() {
             .build()
 
         FirebaseFirestore.getInstance().firestoreSettings = settings
+
+        // Inicializar ConfigManager (Remote Config)
+        applicationScope.launch {
+            ConfigManager.initialize(this@TouristNotifyApplication)
+        }
     }
 
     private fun applyTheme() {

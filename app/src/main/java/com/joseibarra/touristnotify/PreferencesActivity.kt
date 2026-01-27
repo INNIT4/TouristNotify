@@ -153,10 +153,10 @@ class PreferencesActivity : AppCompatActivity() {
         knownPlaceNames: List<String>,
         placesForPrompt: String
     ) {
-        val apiKey = BuildConfig.GEMINI_API_KEY
+        val apiKey = ConfigManager.getGeminiApiKey()
 
         if (apiKey.isEmpty()) {
-            Toast.makeText(this, "Error: API key no configurada", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error: API key de Gemini no configurada", Toast.LENGTH_LONG).show()
             return
         }
 

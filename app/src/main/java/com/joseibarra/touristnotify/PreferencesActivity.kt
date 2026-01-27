@@ -25,11 +25,21 @@ class PreferencesActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
+        setupLockedFeaturesUI()
+
         binding.generateRouteButton.setOnClickListener {
             // Verificar autenticación antes de generar ruta
             AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
                 generateRouteWithAuth()
             }
+        }
+    }
+
+    private fun setupLockedFeaturesUI() {
+        // Si el usuario no está autenticado, aplicar estilo bloqueado
+        if (!AuthManager.isAuthenticated()) {
+            binding.generateRouteButton.alpha = 0.5f
+            binding.generateRouteButton.icon = getDrawable(R.drawable.ic_lock_outline_black_24dp)
         }
     }
 

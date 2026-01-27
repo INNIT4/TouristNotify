@@ -2,7 +2,15 @@ package com.joseibarra.touristnotify
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.view.Gravity
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 
 /**
@@ -127,6 +135,49 @@ object AuthManager {
         if (shouldMigrateFromGuest(context)) {
             disableGuestMode(context)
             // Aquí se podrían migrar datos locales a Firebase si fuera necesario
+        }
+    }
+
+    /**
+     * Aplica estilo visual de "bloqueado" a una vista cuando el usuario es invitado
+     * Reduce opacidad para indicar que está deshabilitada
+     *
+     * @param view Vista a la que aplicar el estilo
+     * @param lockIconView Vista opcional del icono de candado a mostrar
+     */
+    fun applyLockedStyle(view: View, lockIconView: ImageView? = null) {
+        // Reducir opacidad al 50%
+        view.alpha = 0.5f
+
+        // Mostrar icono de candado si se proporciona
+        lockIconView?.visibility = View.VISIBLE
+    }
+
+    /**
+     * Remueve el estilo visual de "bloqueado" de una vista
+     *
+     * @param view Vista de la que remover el estilo
+     * @param lockIconView Vista opcional del icono de candado a ocultar
+     */
+    fun removeLockedStyle(view: View, lockIconView: ImageView? = null) {
+        // Restaurar opacidad completa
+        view.alpha = 1.0f
+
+        // Ocultar icono de candado si se proporciona
+        lockIconView?.visibility = View.GONE
+    }
+
+    /**
+     * Aplica estilo bloqueado condicionalmente basado en si el usuario está autenticado
+     *
+     * @param view Vista a la que aplicar el estilo
+     * @param lockIconView Vista opcional del icono de candado
+     */
+    fun applyLockedStyleIfGuest(view: View, lockIconView: ImageView? = null) {
+        if (!isAuthenticated()) {
+            applyLockedStyle(view, lockIconView)
+        } else {
+            removeLockedStyle(view, lockIconView)
         }
     }
 }

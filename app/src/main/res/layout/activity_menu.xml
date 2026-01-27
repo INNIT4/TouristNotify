@@ -215,6 +215,17 @@
                         android:textColor="?attr/colorOnPrimaryContainer"
                         android:textSize="16sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_generate_route"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnPrimaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Card 2: Mis Rutas -->
@@ -257,6 +268,17 @@
                         android:textColor="?attr/colorOnSecondaryContainer"
                         android:textSize="16sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_my_routes"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnSecondaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Card 3: Ver Mapa -->
@@ -341,6 +363,17 @@
                         android:textColor="?attr/colorOnSecondaryContainer"
                         android:textSize="16sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_contacts"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnSecondaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
         </GridLayout>
@@ -463,6 +496,17 @@
                         android:textColor="?attr/colorOnTertiaryContainer"
                         android:textSize="14sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_favorites"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="6dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnTertiaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Estadísticas -->
@@ -504,6 +548,17 @@
                         android:textColor="?attr/colorOnSecondaryContainer"
                         android:textSize="14sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_stats"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="6dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnSecondaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Eventos -->
@@ -709,6 +764,17 @@
                         android:textColor="?attr/colorOnSecondaryContainer"
                         android:textSize="24sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_proximity"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnSecondaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Modo Sin Conexión -->

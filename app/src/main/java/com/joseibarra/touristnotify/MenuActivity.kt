@@ -30,6 +30,9 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Aplicar estilos bloqueados si es usuario invitado
+        setupLockedFeaturesUI()
+
         loadWeather()
 
         // Búsqueda global (click en el texto de bienvenida)
@@ -144,6 +147,16 @@ class MenuActivity : AppCompatActivity() {
             }
             lastAdminClickTime = currentTime
         }
+    }
+
+    private fun setupLockedFeaturesUI() {
+        // Aplicar estilo bloqueado a elementos premium si es usuario invitado
+        AuthManager.applyLockedStyleIfGuest(binding.buttonGenerateRoute, binding.lockIconGenerateRoute)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonMyRoutes, binding.lockIconMyRoutes)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonContacts, binding.lockIconContacts)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonFavorites, binding.lockIconFavorites)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonStats, binding.lockIconStats)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonProximityNotifications, binding.lockIconProximity)
     }
 
     private fun loadWeather() {

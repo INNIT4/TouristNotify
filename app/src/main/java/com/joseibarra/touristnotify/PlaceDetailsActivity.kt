@@ -59,6 +59,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         }
 
         setupUI()
+        setupLockedFeaturesUI()
         loadPlaceDetails()
         setupReviews()
         loadReviews()
@@ -105,6 +106,31 @@ class PlaceDetailsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e(TAG, "Error processing deep link", e)
             null
+        }
+    }
+
+    private fun setupLockedFeaturesUI() {
+        // Si el usuario no está autenticado, aplicar estilo bloqueado
+        if (!AuthManager.isAuthenticated()) {
+            // Favoritos
+            binding.favoriteButton.alpha = 0.5f
+            binding.favoriteButton.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
+            )
+
+            // Check-in
+            binding.checkInButton.alpha = 0.5f
+            binding.checkInButton.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
+            )
+
+            // Reseñas
+            binding.submitReviewButton.alpha = 0.5f
+            binding.submitRatingBar.alpha = 0.5f
+            binding.reviewEditText.alpha = 0.5f
+            binding.submitReviewButton.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_lock_outline_black_24dp, 0, 0, 0
+            )
         }
     }
 

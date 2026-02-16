@@ -435,7 +435,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .origin(origin)
                     .destination(destination)
                     .waypoints(*intermediateWaypoints)
-                    .optimizeWaypoints(true)
+                    .optimizeWaypoints(false)  // Mantener el orden original de la IA
                     .await()
 
                 withContext(Dispatchers.Main) {

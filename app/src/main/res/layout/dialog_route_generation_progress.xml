@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <!-- Lottie Animation o ProgressBar -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:indeterminate="true"
+        app:indicatorSize="64dp"
+        app:trackThickness="6dp" />
+
+    <!-- Emoji animado -->
+    <TextView
+        android:id="@+id/emoji_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="🤖"
+        android:textSize="48sp" />
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/progress_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Generando tu ruta perfecta"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurface" />
+
+    <!-- Mensaje de estado -->
+    <TextView
+        android:id="@+id/progress_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Analizando tus preferencias..."
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <!-- Mensaje de tips -->
+    <TextView
+        android:id="@+id/progress_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:text="💡 La IA está seleccionando los mejores lugares según tu presupuesto y tiempo"
+        android:textSize="12sp"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:background="@drawable/bg_rounded_light"
+        android:alpha="0.7" />
+
+</LinearLayout>

@@ -165,6 +165,9 @@ class PreferencesActivity : AppCompatActivity() {
             apiKey = apiKey
         )
 
+        // Crear y mostrar diálogo de progreso
+        val progressDialog = createProgressDialog()
+
         // ============ PROMPT MEJORADO CON TÉCNICAS PROFESIONALES ============
         val prompt = buildString {
             appendLine("# ROL")
@@ -227,7 +230,31 @@ class PreferencesActivity : AppCompatActivity() {
             appendLine("- Menciona los lugares en el orden lógico de visita")
         }
 
-        Toast.makeText(this, "Generando ruta personalizada con IA...", Toast.LENGTH_SHORT).show()
+        progressDialog.show()
+
+        // Actualizar mensajes de progreso cada segundo
+        val progressMessages = listOf(
+            "🔍 Analizando tus preferencias...",
+            "🗺️ Explorando ${knownPlaceNames.size} lugares disponibles...",
+            "🤔 Calculando la mejor combinación...",
+            "✨ Optimizando tu experiencia...",
+            "📍 Seleccionando los destinos perfectos..."
+        )
+
+        var messageIndex = 0
+        val progressView = progressDialog.findViewById<android.widget.TextView>(R.id.progress_message)
+
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        val progressRunnable = object : Runnable {
+            override fun run() {
+                if (messageIndex < progressMessages.size && progressDialog.isShowing) {
+                    progressView?.text = progressMessages[messageIndex]
+                    messageIndex++
+                    handler.postDelayed(this, 1500)
+                }
+            }
+        }
+        handler.postDelayed(progressRunnable, 1500)
 
         lifecycleScope.launch {
             try {
@@ -246,6 +273,10 @@ class PreferencesActivity : AppCompatActivity() {
                         foundPlaceNames.add(placeName)
                     }
                 }
+
+                // Cerrar diálogo de progreso
+                handler.removeCallbacks(progressRunnable)
+                progressDialog.dismiss()
 
                 if (foundPlaceNames.isNotEmpty()) {
                     Log.d("AI_Parsed_Places", "Lugares encontrados en la respuesta: $foundPlaceNames")
@@ -268,6 +299,9 @@ class PreferencesActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
+                handler.removeCallbacks(progressRunnable)
+                progressDialog.dismiss()
+
                 Log.e("AI_Error", "Error al generar contenido: ${e.message}", e)
                 Toast.makeText(this@PreferencesActivity,
                     "Error de IA: ${e.message}",
@@ -395,5 +429,22 @@ class PreferencesActivity : AppCompatActivity() {
             binding.radioMixto.id -> "Mixto (combinar caminata y transporte)"
             else -> "A pie"
         }
+    }
+
+    /**
+     * Crea un diálogo de progreso visual y animado
+     */
+    private fun createProgressDialog(): androidx.appcompat.app.AlertDialog {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_route_generation_progress, null)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Hacer el fondo transparente para esquinas redondeadas
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        return dialog
     }
 }

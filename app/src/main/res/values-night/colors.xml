@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gradient colors for dark mode - darker but still warm -->
+    <color name="gradient_start">#4A3A28</color>
+    <color name="gradient_end">#3A2D1A</color>
+
+    <!-- Card background for dark mode -->
+    <color name="card_background">#2A2216</color>
+</resources>

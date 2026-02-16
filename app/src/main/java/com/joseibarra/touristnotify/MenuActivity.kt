@@ -46,15 +46,19 @@ class MenuActivity : AppCompatActivity() {
         }
 
         binding.buttonGenerateRoute.setOnClickListener {
-            val intent = Intent(this, PreferencesActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
+                val intent = Intent(this, PreferencesActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonMyRoutes.setOnClickListener {
-            val intent = Intent(this, MyRoutesActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_ROUTES) {
+                val intent = Intent(this, MyRoutesActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonViewMap.setOnClickListener {
@@ -76,15 +80,19 @@ class MenuActivity : AppCompatActivity() {
         }
 
         binding.buttonFavorites.setOnClickListener {
-            val intent = Intent(this, FavoritesActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_FAVORITES) {
+                val intent = Intent(this, FavoritesActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonStats.setOnClickListener {
-            val intent = Intent(this, StatsActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.VIEW_STATS) {
+                val intent = Intent(this, StatsActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonEvents.setOnClickListener {
@@ -94,9 +102,11 @@ class MenuActivity : AppCompatActivity() {
         }
 
         binding.buttonThemedRoutes.setOnClickListener {
-            val intent = Intent(this, ThemedRoutesActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.THEMED_ROUTES) {
+                val intent = Intent(this, ThemedRoutesActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonBlog.setOnClickListener {
@@ -106,9 +116,11 @@ class MenuActivity : AppCompatActivity() {
         }
 
         binding.buttonProximityNotifications.setOnClickListener {
-            val intent = Intent(this, ProximityNotificationsActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
+                val intent = Intent(this, ProximityNotificationsActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
         }
 
         binding.buttonOffline.setOnClickListener {
@@ -177,10 +189,11 @@ class MenuActivity : AppCompatActivity() {
         // Aplicar estilo bloqueado a elementos premium si es usuario invitado
         AuthManager.applyLockedStyleIfGuest(binding.buttonGenerateRoute, binding.lockIconGenerateRoute)
         AuthManager.applyLockedStyleIfGuest(binding.buttonMyRoutes, binding.lockIconMyRoutes)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonContacts, binding.lockIconContacts)
+        // Contactos de emergencia están disponibles para todos (no se bloquean)
         AuthManager.applyLockedStyleIfGuest(binding.buttonFavorites, binding.lockIconFavorites)
         AuthManager.applyLockedStyleIfGuest(binding.buttonStats, binding.lockIconStats)
         AuthManager.applyLockedStyleIfGuest(binding.buttonProximityNotifications, binding.lockIconProximity)
+        AuthManager.applyLockedStyleIfGuest(binding.buttonThemedRoutes, binding.lockIconThemedRoutes)
     }
 
     private fun loadWeather() {

@@ -91,10 +91,10 @@ object AuthManager {
         const val VIEW_EVENTS = true
         const val VIEW_WEATHER = true
         const val SCAN_QR = true
-        const val VIEW_THEMED_ROUTES = true
         const val VIEW_TOP_PLACES = true
         const val VIEW_PHOTOS = true
         const val VIEW_SERVICES = true
+        const val EMERGENCY_CONTACTS = true
     }
 
     /**
@@ -110,9 +110,9 @@ object AuthManager {
         const val LEAVE_REVIEWS = "dejar reseñas"
         const val PROXIMITY_NOTIFICATIONS = "activar notificaciones de proximidad"
         const val VIEW_STATS = "ver estadísticas personales"
-        const val EMERGENCY_CONTACTS = "configurar contactos de emergencia"
         const val MY_ROUTES = "ver tus rutas guardadas"
         const val MY_FAVORITES = "ver tus favoritos"
+        const val THEMED_ROUTES = "acceder a rutas temáticas"
     }
 
     /**

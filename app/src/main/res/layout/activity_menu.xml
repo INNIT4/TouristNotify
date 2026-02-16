@@ -629,38 +629,54 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp">
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
+                    android:layout_height="match_parent">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🎨"
-                        android:textSize="32sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Rutas Temáticas"
-                        android:textAlignment="center"
-                        android:textColor="?attr/colorOnTertiaryContainer"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎨"
+                            android:textSize="32sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="→"
-                        android:textColor="?attr/colorOnTertiaryContainer"
-                        android:textSize="24sp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Rutas Temáticas"
+                            android:textAlignment="center"
+                            android:textColor="?attr/colorOnTertiaryContainer"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="→"
+                            android:textColor="?attr/colorOnTertiaryContainer"
+                            android:textSize="24sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/lock_icon_themed_routes"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="top|end"
+                        android:layout_margin="8dp"
+                        android:contentDescription="Requiere autenticación"
+                        android:src="@drawable/ic_lock_outline_black_24dp"
+                        android:visibility="gone"
+                        app:tint="?attr/colorOnTertiaryContainer" />
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Blog de Consejos -->

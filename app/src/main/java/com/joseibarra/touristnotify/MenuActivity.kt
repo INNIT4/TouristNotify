@@ -30,9 +30,6 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // DEBUG: Mostrar estado de autenticación
-        showAuthenticationStatus()
-
         // Aplicar estilos bloqueados si es usuario invitado
         setupLockedFeaturesUI()
 
@@ -161,27 +158,6 @@ class MenuActivity : AppCompatActivity() {
                 adminClickCount = 1
             }
             lastAdminClickTime = currentTime
-        }
-    }
-
-    /**
-     * Muestra el estado de autenticación en un Toast (solo en modo debug)
-     */
-    private fun showAuthenticationStatus() {
-        if (BuildConfig.DEBUG) {
-            val isAuth = AuthManager.isAuthenticated()
-            val isGuest = AuthManager.isGuestMode(this)
-            val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-
-            val status = buildString {
-                appendLine("🔐 Estado de Autenticación:")
-                appendLine("Autenticado: $isAuth")
-                appendLine("Modo Invitado: $isGuest")
-                appendLine("Usuario Firebase: ${currentUser?.email ?: "null"}")
-            }
-
-            android.widget.Toast.makeText(this, status, android.widget.Toast.LENGTH_LONG).show()
-            android.util.Log.d("MenuActivity", status)
         }
     }
 

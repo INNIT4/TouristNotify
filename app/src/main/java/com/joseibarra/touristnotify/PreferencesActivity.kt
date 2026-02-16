@@ -206,7 +206,11 @@ class PreferencesActivity : AppCompatActivity() {
             appendLine("# INSTRUCCIONES")
             appendLine("1. Analiza cuidadosamente el presupuesto, tiempo y preferencias del usuario")
             appendLine("2. Selecciona entre 3 y 6 lugares que mejor se adapten a sus necesidades")
-            appendLine("3. Ordena los lugares de forma lógica (proximidad geográfica, horarios, flujo natural)")
+            appendLine("3. IMPORTANTE: Ordena los lugares de forma GEOGRÁFICAMENTE ÓPTIMA:")
+            appendLine("   - Minimiza desplazamientos innecesarios")
+            appendLine("   - Evita ir y venir entre zonas lejanas")
+            appendLine("   - Agrupa lugares cercanos consecutivamente")
+            appendLine("   - El orden debe seguir un flujo natural sin saltos geográficos")
             appendLine("4. Asegúrate de que el tiempo total se ajuste a las ${time} horas disponibles")
             appendLine("5. Considera el presupuesto de $${budget} MXN (entradas, comidas, transporte)")
             appendLine("6. Si el usuario mencionó algo específico, prioriza cumplir esa petición")
@@ -227,7 +231,8 @@ class PreferencesActivity : AppCompatActivity() {
             appendLine("- NO inventes lugares que no estén en la lista")
             appendLine("- NO uses formato de lista numerada, escribe en párrafo natural")
             appendLine("- SÉ ESPECÍFICO sobre por qué recomiendas cada lugar")
-            appendLine("- Menciona los lugares en el orden lógico de visita")
+            appendLine("- CRÍTICO: Menciona los lugares en el ORDEN EXACTO de visita (del primero al último)")
+            appendLine("- El orden en que los menciones será el orden en que el usuario los visitará")
         }
 
         progressDialog.show()
@@ -266,20 +271,29 @@ class PreferencesActivity : AppCompatActivity() {
                     throw Exception("La respuesta de la IA está vacía.")
                 }
 
-                // Buscar lugares mencionados en la respuesta
+                // Buscar lugares mencionados en la respuesta Y MANTENER EL ORDEN DE LA IA
                 val foundPlaceNames = ArrayList<String>()
+                val placeWithIndex = mutableListOf<Pair<String, Int>>()
+
                 knownPlaceNames.forEach { placeName ->
-                    if (responseText.contains(placeName, ignoreCase = true)) {
-                        foundPlaceNames.add(placeName)
+                    val index = responseText.indexOf(placeName, ignoreCase = true)
+                    if (index != -1) {
+                        // Guardar el nombre y su posición en la respuesta
+                        placeWithIndex.add(Pair(placeName, index))
                     }
                 }
+
+                // Ordenar por el índice de aparición (orden en que la IA los mencionó)
+                placeWithIndex.sortBy { it.second }
+                placeWithIndex.forEach { foundPlaceNames.add(it.first) }
 
                 // Cerrar diálogo de progreso
                 handler.removeCallbacks(progressRunnable)
                 progressDialog.dismiss()
 
                 if (foundPlaceNames.isNotEmpty()) {
-                    Log.d("AI_Parsed_Places", "Lugares encontrados en la respuesta: $foundPlaceNames")
+                    Log.d("AI_Parsed_Places", "Lugares encontrados en orden de aparición: $foundPlaceNames")
+                    Log.d("AI_Place_Order", "Orden detallado: ${placeWithIndex.joinToString { "${it.first} (pos: ${it.second})" }}")
 
                     // Registrar uso exitoso de la generación de ruta
                     UsageManager.recordRouteGeneration(this@PreferencesActivity)

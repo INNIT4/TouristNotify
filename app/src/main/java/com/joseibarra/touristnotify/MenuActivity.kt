@@ -219,6 +219,7 @@ class MenuActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_quick_settings, null)
         val darkModeSwitch = dialogView.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.dark_mode_switch)
         val authStatusText = dialogView.findViewById<android.widget.TextView>(R.id.auth_status_text)
+        val profileButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.profile_button)
         val logoutButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.logout_button)
 
         // Cargar estado actual
@@ -232,6 +233,18 @@ class MenuActivity : AppCompatActivity() {
             currentUser != null -> "✅ Sesión activa: ${currentUser.email}"
             isGuest -> "👤 Modo Invitado"
             else -> "❌ Sin sesión"
+        }
+
+        // Configurar botón de perfil (solo visible si está autenticado)
+        if (currentUser != null) {
+            profileButton.visibility = View.VISIBLE
+            profileButton.setOnClickListener {
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+        } else {
+            profileButton.visibility = View.GONE
         }
 
         // Configurar botón de logout

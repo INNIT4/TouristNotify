@@ -62,12 +62,22 @@
         android:textColor="?android:attr/textColorSecondary"
         android:paddingBottom="8dp" />
 
+    <!-- Profile Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_button"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver Perfil"
+        app:icon="@android:drawable/ic_menu_myplaces" />
+
     <!-- Logout Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/logout_button"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Cerrar Sesión"
         android:textColor="?attr/colorError"
         app:strokeColor="?attr/colorError"

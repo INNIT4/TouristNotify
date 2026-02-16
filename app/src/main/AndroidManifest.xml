@@ -54,6 +54,10 @@
             android:label="Menu" />
 
         <activity
+            android:name=".ProfileActivity"
+            android:label="Mi Perfil" />
+
+        <activity
             android:name=".GlobalSearchActivity"
             android:label="Búsqueda Global" />
 

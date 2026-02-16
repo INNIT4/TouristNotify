@@ -30,6 +30,9 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // DEBUG: Mostrar estado de autenticación
+        showAuthenticationStatus()
+
         // Aplicar estilos bloqueados si es usuario invitado
         setupLockedFeaturesUI()
 
@@ -149,6 +152,27 @@ class MenuActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Muestra el estado de autenticación en un Toast (solo en modo debug)
+     */
+    private fun showAuthenticationStatus() {
+        if (BuildConfig.DEBUG) {
+            val isAuth = AuthManager.isAuthenticated()
+            val isGuest = AuthManager.isGuestMode(this)
+            val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+
+            val status = buildString {
+                appendLine("🔐 Estado de Autenticación:")
+                appendLine("Autenticado: $isAuth")
+                appendLine("Modo Invitado: $isGuest")
+                appendLine("Usuario Firebase: ${currentUser?.email ?: "null"}")
+            }
+
+            android.widget.Toast.makeText(this, status, android.widget.Toast.LENGTH_LONG).show()
+            android.util.Log.d("MenuActivity", status)
+        }
+    }
+
     private fun setupLockedFeaturesUI() {
         // Aplicar estilo bloqueado a elementos premium si es usuario invitado
         AuthManager.applyLockedStyleIfGuest(binding.buttonGenerateRoute, binding.lockIconGenerateRoute)
@@ -194,9 +218,32 @@ class MenuActivity : AppCompatActivity() {
     private fun showQuickSettingsDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_quick_settings, null)
         val darkModeSwitch = dialogView.findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.dark_mode_switch)
+        val authStatusText = dialogView.findViewById<android.widget.TextView>(R.id.auth_status_text)
+        val logoutButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.logout_button)
 
         // Cargar estado actual
         darkModeSwitch.isChecked = TouristNotifyApplication.isDarkModeEnabled(this)
+
+        // Mostrar estado de autenticación
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val isGuest = AuthManager.isGuestMode(this)
+
+        authStatusText.text = when {
+            currentUser != null -> "✅ Sesión activa: ${currentUser.email}"
+            isGuest -> "👤 Modo Invitado"
+            else -> "❌ Sin sesión"
+        }
+
+        // Configurar botón de logout
+        if (currentUser != null || isGuest) {
+            logoutButton.visibility = View.VISIBLE
+            logoutButton.text = if (currentUser != null) "Cerrar Sesión" else "Salir del Modo Invitado"
+            logoutButton.setOnClickListener {
+                performLogout()
+            }
+        } else {
+            logoutButton.visibility = View.GONE
+        }
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("⚙️ Configuración Rápida")
@@ -211,6 +258,27 @@ class MenuActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun performLogout() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("⚠️ Cerrar Sesión")
+            .setMessage("¿Estás seguro que deseas cerrar sesión? Perderás acceso a tus favoritos, rutas guardadas y estadísticas.")
+            .setPositiveButton("Cerrar Sesión") { _, _ ->
+                // Cerrar sesión de Firebase
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+
+                // Desactivar modo invitado
+                AuthManager.disableGuestMode(this)
+
+                // Volver a LoginActivity
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun showAdminAccessDialog() {

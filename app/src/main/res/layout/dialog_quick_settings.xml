@@ -44,4 +44,34 @@
             android:layout_marginStart="16dp" />
     </LinearLayout>
 
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider" />
+
+    <!-- Auth Status Section -->
+    <TextView
+        android:id="@+id/auth_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estado: Invitado"
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:paddingBottom="8dp" />
+
+    <!-- Logout Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/logout_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cerrar Sesión"
+        android:textColor="?attr/colorError"
+        app:strokeColor="?attr/colorError"
+        app:icon="@android:drawable/ic_lock_power_off"
+        app:iconTint="?attr/colorError" />
+
 </LinearLayout>

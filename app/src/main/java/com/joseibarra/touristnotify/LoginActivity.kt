@@ -19,12 +19,20 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Si ya hay sesión activa (cuenta real o modo invitado), ir directo al menú
-        val currentUser = auth.currentUser
-        val isGuest = AuthManager.isGuestMode(this)
-        if (currentUser != null || isGuest) {
-            goToMenu()
-            return
+        // Si se llega desde una feature bloqueada (invitado quiere iniciar sesión), mostrar siempre el login
+        val returnAfterLogin = intent.getBooleanExtra("RETURN_AFTER_LOGIN", false)
+
+        if (!returnAfterLogin) {
+            // Si ya hay sesión activa (cuenta real o modo invitado), ir directo al menú
+            val currentUser = auth.currentUser
+            val isGuest = AuthManager.isGuestMode(this)
+            if (currentUser != null || isGuest) {
+                goToMenu()
+                return
+            }
+        } else {
+            // El usuario invitado quiere registrarse/iniciar sesión — desactivar modo invitado para que el login funcione
+            AuthManager.disableGuestMode(this)
         }
 
         binding = ActivityLoginBinding.inflate(layoutInflater)

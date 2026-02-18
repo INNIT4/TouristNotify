@@ -396,7 +396,13 @@ class PreferencesActivity : AppCompatActivity() {
 
         val batch = db.batch()
         sampleSpots.forEach { spot ->
-            val docRef = db.collection("lugares").document()
+            // ID determinista basado en el nombre: si el seed se llama dos veces,
+            // sobreescribe el mismo documento en lugar de crear duplicados
+            val docId = spot.nombre
+                .lowercase()
+                .replace(" ", "_")
+                .replace(Regex("[^a-z0-9_]"), "")
+            val docRef = db.collection("lugares").document(docId)
             batch.set(docRef, spot)
         }
 

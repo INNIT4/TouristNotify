@@ -265,8 +265,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 val spots = documents.mapNotNull { doc -> doc.toObject(TouristSpot::class.java).copy(id = doc.id) }
+                // Deduplicar por nombre: si Firestore tiene docs duplicados (ej. seed doble),
+                // nos quedamos solo con el primero de cada nombre
+                val spotsByName = spots.groupBy { it.nombre }.mapValues { it.value.first() }
                 // Mantener el orden original de la IA
-                currentRouteSpots = spots.sortedBy { placeNames.indexOf(it.nombre) }
+                currentRouteSpots = placeNames.mapNotNull { spotsByName[it] }
 
                 currentRouteSpots.forEachIndexed { index, spot -> addMarkerForTouristSpot(spot, index + 1) }
                 drawRoutePolyline(currentRouteSpots)
@@ -406,19 +409,39 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addFallbackMarker(spot: TouristSpot, position: LatLng, routeIndex: Int, categoryColor: Int) {
-        if (routeIndex >= 1) {
-            addMarkerToMap(spot, position, createNumberedCircleMarker(routeIndex, categoryColor))
+        val bitmap = if (routeIndex >= 1) {
+            createNumberedCircleMarker(routeIndex, categoryColor)
         } else {
-            val marker = mMap.addMarker(
-                MarkerOptions()
-                    .position(position)
-                    .title(spot.nombre)
-                    .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
-                    .icon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(spot.categoria)))
-            )
-            marker?.tag = spot
-            marker?.let { touristSpotMarkers.add(it) }
+            createColoredCircleMarker(categoryColor)
         }
+        addMarkerToMap(spot, position, bitmap)
+    }
+
+    /** Círculo de color sólido con borde blanco — usado en modo mapa normal (sin número) */
+    private fun createColoredCircleMarker(backgroundColor: Int): Bitmap {
+        val size = 80
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        val cx = size / 2f
+        val cy = size / 2f
+        val radius = size / 2f - 5f
+
+        // Sombra suave
+        paint.color = Color.argb(60, 0, 0, 0)
+        canvas.drawCircle(cx + 2f, cy + 2f, radius, paint)
+
+        // Relleno de color de categoría
+        paint.color = backgroundColor
+        canvas.drawCircle(cx, cy, radius, paint)
+
+        // Borde blanco
+        paint.color = Color.WHITE
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 3.5f
+        canvas.drawCircle(cx, cy, radius, paint)
+
+        return bitmap
     }
 
     private fun addMarkerToMap(spot: TouristSpot, position: LatLng, bitmap: Bitmap) {

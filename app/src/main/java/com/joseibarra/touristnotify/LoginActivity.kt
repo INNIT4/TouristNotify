@@ -16,10 +16,19 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+
+        // Si ya hay sesión activa (cuenta real o modo invitado), ir directo al menú
+        val currentUser = auth.currentUser
+        val isGuest = AuthManager.isGuestMode(this)
+        if (currentUser != null || isGuest) {
+            goToMenu()
+            return
+        }
+
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         binding.loginButton.setOnClickListener {
             signInUser()
@@ -78,17 +87,28 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Navega al menú después de un login exitoso con cuenta real.
+     * Desactiva el modo invitado si estaba activo.
+     */
     private fun navigateToMenu() {
-        // Desactivar modo invitado si se hace login
         AuthManager.disableGuestMode(this)
+        goToMenu()
+    }
 
+    /**
+     * Ir al menú sin cambiar el estado de autenticación (para sesiones ya activas).
+     */
+    private fun goToMenu() {
         val intent = Intent(this, MenuActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        finish() // Cierra LoginActivity para que el usuario no pueda volver atrás
+        finish()
     }
 
     private fun enableGuestModeAndNavigate() {
-        // Activar modo invitado
+        // Cerrar cualquier sesión de Firebase activa antes de entrar como invitado
+        auth.signOut()
         AuthManager.enableGuestMode(this)
 
         Toast.makeText(
@@ -97,8 +117,6 @@ class LoginActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
 
-        val intent = Intent(this, MenuActivity::class.java)
-        startActivity(intent)
-        finish()
+        goToMenu()
     }
 }

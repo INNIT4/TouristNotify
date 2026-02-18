@@ -67,6 +67,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var currentPlaceIndex = 0
     private var isNavigatingRoute = false
     private val okHttpClient = OkHttpClient()
+    // Generación para evitar que callbacks viejos de Glide añadan marcadores duplicados
+    private var markerGeneration = 0
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -355,6 +357,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val categoryColor = getCategoryColor(spot.categoria)
 
         if (spot.imagenUrl.isNotBlank()) {
+            // Captura la generación actual — si cambia antes de que Glide responda, ignoramos el callback
+            val capturedGen = markerGeneration
+
             Glide.with(this)
                 .asBitmap()
                 .load(spot.imagenUrl)
@@ -363,10 +368,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         .circleCrop()
                         .override(120, 120)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .error(android.R.drawable.ic_menu_gallery)
                 )
                 .into(object : CustomTarget<Bitmap>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        if (capturedGen != markerGeneration) return  // Callback obsoleto, descartamos
                         val markerBitmap = if (routeIndex >= 1) {
                             createCircularBitmapWithNumber(resource, routeIndex, categoryColor)
                         } else {
@@ -374,28 +379,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         addMarkerToMap(spot, position, markerBitmap)
                     }
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        if (capturedGen != markerGeneration) return
+                        // Fallback: círculo numerado o pin de color si falla la imagen
+                        addFallbackMarker(spot, position, routeIndex, categoryColor)
+                    }
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
         } else {
-            // Sin imagen: círculo de color con número (ruta) o pin de color (exploración)
-            val markerBitmap = if (routeIndex >= 1) {
-                createNumberedCircleMarker(routeIndex, categoryColor)
-            } else {
-                null
-            }
-            if (markerBitmap != null) {
-                addMarkerToMap(spot, position, markerBitmap)
-            } else {
-                val marker = mMap.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title(spot.nombre)
-                        .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
-                        .icon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(spot.categoria)))
-                )
-                marker?.tag = spot
-                marker?.let { touristSpotMarkers.add(it) }
-            }
+            addFallbackMarker(spot, position, routeIndex, categoryColor)
+        }
+    }
+
+    private fun addFallbackMarker(spot: TouristSpot, position: LatLng, routeIndex: Int, categoryColor: Int) {
+        if (routeIndex >= 1) {
+            addMarkerToMap(spot, position, createNumberedCircleMarker(routeIndex, categoryColor))
+        } else {
+            val marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title(spot.nombre)
+                    .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
+                    .icon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(spot.categoria)))
+            )
+            marker?.tag = spot
+            marker?.let { touristSpotMarkers.add(it) }
         }
     }
 
@@ -732,6 +740,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun clearAllMarkers() {
+        markerGeneration++  // Invalida callbacks de Glide pendientes de la generación anterior
         touristSpotMarkers.forEach { it.remove() }
         touristSpotMarkers.clear()
         routePolyline?.remove()

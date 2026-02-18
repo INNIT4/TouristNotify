@@ -123,12 +123,18 @@ class PreferencesActivity : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
-                // Obtener detalles completos de los lugares
+                // Obtener detalles completos de los lugares con coordenadas y rating
                 val placesDetails = documents.mapNotNull { doc ->
                     val nombre = doc.getString("nombre") ?: return@mapNotNull null
                     val descripcion = doc.getString("descripcion") ?: ""
                     val categoria = doc.getString("categoria") ?: ""
-                    "$nombre (Categoría: $categoria - $descripcion)"
+                    val rating = doc.getDouble("rating") ?: 0.0
+                    val horarios = doc.getString("horarios") ?: ""
+                    val geo = doc.getGeoPoint("ubicacion")
+                    val coordStr = if (geo != null) "(lat:${String.format("%.4f", geo.latitude)},lng:${String.format("%.4f", geo.longitude)})" else ""
+                    val horarioStr = if (horarios.isNotBlank()) " | Horario: $horarios" else ""
+                    val ratingStr = if (rating > 0) " | ⭐${String.format("%.1f", rating)}" else ""
+                    "$nombre $coordStr [Categoría: $categoria$ratingStr$horarioStr] — $descripcion"
                 }
 
                 val placeNamesFromDb = documents.mapNotNull { it.getString("nombre") }
@@ -168,71 +174,70 @@ class PreferencesActivity : AppCompatActivity() {
         // Crear y mostrar diálogo de progreso
         val progressDialog = createProgressDialog()
 
-        // ============ PROMPT MEJORADO CON TÉCNICAS PROFESIONALES ============
+        // ============ PROMPT OPTIMIZADO CON CONTEXTO GEOGRÁFICO Y RATINGS ============
         val prompt = buildString {
             appendLine("# ROL")
-            appendLine("Eres un guía turístico experto en Álamos, Sonora, México, con amplio conocimiento de la historia, cultura y geografía local.")
+            appendLine("Eres un experto planificador de rutas turísticas para Álamos, Sonora, México. Tu especialidad es crear itinerarios eficientes que minimicen distancias caminadas y maximicen la experiencia cultural.")
             appendLine()
 
-            appendLine("# CONTEXTO")
-            appendLine("Álamos es un Pueblo Mágico colonial en Sonora, conocido por su arquitectura del siglo XVIII, calles empedradas, y rica historia minera.")
-            appendLine("Los turistas buscan experiencias auténticas que combinen historia, cultura y belleza natural.")
+            appendLine("# CONTEXTO GEOGRÁFICO")
+            appendLine("Álamos es un Pueblo Mágico colonial compacto (~1 km de radio caminable). Las coordenadas del centro son lat:27.0275, lng:-108.9400.")
+            appendLine("La mayoría de lugares históricos están a menos de 500 metros entre sí. Agrupa los cercanos para evitar caminatas innecesarias.")
             appendLine()
 
-            appendLine("# TAREA")
-            appendLine("Crea una ruta turística PERSONALIZADA basada en las siguientes preferencias del usuario:")
-            appendLine()
-
-            appendLine("## Perfil del Viajero:")
+            appendLine("# PERFIL DEL VIAJERO")
             appendLine("- Presupuesto: $${budget} MXN")
             appendLine("- Tiempo disponible: ${time} horas")
             if (interests.isNotEmpty()) {
                 appendLine("- Intereses: ${interests.joinToString(", ")}")
             }
             appendLine("- Tipo de viaje: $travelType")
-            appendLine("- Ritmo preferido: $pace")
+            appendLine("- Ritmo: $pace")
             appendLine("- Movilidad: $mobility")
             if (customRequest.isNotBlank()) {
                 appendLine()
-                appendLine("## Petición Específica del Usuario:")
+                appendLine("## Petición específica:")
                 appendLine("\"$customRequest\"")
             }
             appendLine()
 
-            appendLine("## Lugares Disponibles en Álamos:")
+            appendLine("# LUGARES DISPONIBLES")
+            appendLine("Cada lugar incluye coordenadas (lat,lng), categoría, rating ⭐ y horarios:")
             appendLine("- $placesForPrompt")
             appendLine()
 
-            appendLine("# INSTRUCCIONES")
-            appendLine("1. Analiza cuidadosamente el presupuesto, tiempo y preferencias del usuario")
-            appendLine("2. Selecciona entre 3 y 6 lugares que mejor se adapten a sus necesidades")
-            appendLine("3. IMPORTANTE: Ordena los lugares de forma GEOGRÁFICAMENTE ÓPTIMA:")
-            appendLine("   - Minimiza desplazamientos innecesarios")
-            appendLine("   - Evita ir y venir entre zonas lejanas")
-            appendLine("   - Agrupa lugares cercanos consecutivamente")
-            appendLine("   - El orden debe seguir un flujo natural sin saltos geográficos")
-            appendLine("4. Asegúrate de que el tiempo total se ajuste a las ${time} horas disponibles")
-            appendLine("5. Considera el presupuesto de $${budget} MXN (entradas, comidas, transporte)")
-            appendLine("6. Si el usuario mencionó algo específico, prioriza cumplir esa petición")
-            appendLine("7. Varía el tipo de actividades (no todo museos, ni todo aire libre)")
+            appendLine("# INSTRUCCIONES DE PLANIFICACIÓN")
+            appendLine("1. SELECCIÓN: Elige 3-6 lugares que coincidan con los intereses y se ajusten al tiempo disponible")
+            appendLine("   - Calcula ~15-20 min por lugar en interiores, ~30 min en restaurantes, ~10 min en exteriores")
+            appendLine("   - Considera el presupuesto (museos ~$50 MXN, restaurantes ~$150-300 MXN por persona)")
+            appendLine("   - Prioriza lugares con mayor rating cuando haya opciones similares")
+            appendLine()
+            appendLine("2. ORDEN GEOGRÁFICO ÓPTIMO (CRÍTICO):")
+            appendLine("   - Usa las coordenadas para agrupar lugares cercanos")
+            appendLine("   - Calcula distancias entre lugares: diferencia en lat/lng pequeña = cerca")
+            appendLine("   - Ordena como un circuito lógico, NO en zigzag")
+            appendLine("   - Empieza en un extremo y termina en el otro, nunca regreses sobre tus pasos")
+            appendLine("   - Si hay restaurante, colócalo al mediodía o al final")
+            appendLine()
+            appendLine("3. VARIEDAD: Mezcla categorías (historia + gastronomía, o cultura + naturaleza)")
             appendLine()
 
             appendLine("# FORMATO DE RESPUESTA")
-            appendLine("Responde en un párrafo natural y entusiasta, mencionando EXACTAMENTE los nombres de los lugares tal como aparecen en la lista.")
-            appendLine("Explica brevemente por qué cada lugar es ideal para este viajero.")
+            appendLine("Escribe UN párrafo natural y entusiasta. Menciona cada lugar EXACTAMENTE como aparece en la lista.")
+            appendLine("Explica brevemente (1 frase) por qué cada uno es ideal para este viajero.")
+            appendLine("CRÍTICO: El primer lugar mencionado = primera parada. El último = última parada.")
             appendLine()
 
-            appendLine("Ejemplo de respuesta:")
-            appendLine("\"Para tu experiencia de ${time} horas en Álamos, te recomiendo comenzar en la Plaza de Armas para sentir el corazón colonial de la ciudad, luego visitar el Museo Costumbrista de Sonora donde conocerás la rica historia regional, y finalizar en el Mirador El Perico para capturar vistas espectaculares al atardecer. Esta ruta se ajusta perfectamente a tu presupuesto de $${budget} MXN y combina historia con naturaleza.\"")
+            appendLine("Ejemplo de formato:")
+            appendLine("\"Para tu visita de ${time} horas en Álamos con interés en ${interests.firstOrNull() ?: "cultura"}, te recomiendo iniciar en [Lugar A] donde [razón breve], continuar hacia [Lugar B] que está a pocos pasos y [razón], luego [Lugar C] perfecto para [razón], y cerrar con [Lugar D] para [razón]. Esta ruta cubre el centro histórico sin retrocesos y se adapta a tu presupuesto de $${budget} MXN.\"")
             appendLine()
 
-            appendLine("# RESTRICCIONES")
-            appendLine("- USA ÚNICAMENTE los nombres exactos de la lista de lugares disponibles")
-            appendLine("- NO inventes lugares que no estén en la lista")
-            appendLine("- NO uses formato de lista numerada, escribe en párrafo natural")
-            appendLine("- SÉ ESPECÍFICO sobre por qué recomiendas cada lugar")
-            appendLine("- CRÍTICO: Menciona los lugares en el ORDEN EXACTO de visita (del primero al último)")
-            appendLine("- El orden en que los menciones será el orden en que el usuario los visitará")
+            appendLine("# RESTRICCIONES ABSOLUTAS")
+            appendLine("- SOLO usa nombres EXACTOS de la lista (copia y pega, sin modificar)")
+            appendLine("- NO inventes lugares")
+            appendLine("- NO uses listas numeradas ni viñetas")
+            appendLine("- NO ignores los horarios si están disponibles")
+            appendLine("- El orden de mención ES el orden de visita")
         }
 
         progressDialog.show()

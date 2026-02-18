@@ -1,24 +1,31 @@
 package com.joseibarra.touristnotify
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,17 +33,22 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.maps.DirectionsApi
-import com.google.maps.GeoApiContext
 import com.google.maps.android.PolyUtil
-import com.google.maps.model.TravelMode
+import com.google.maps.android.SphericalUtil
 import com.joseibarra.touristnotify.databinding.ActivityMapsBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import kotlin.math.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -54,6 +66,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var allSpots = listOf<TouristSpot>()
     private var currentPlaceIndex = 0
     private var isNavigatingRoute = false
+    private val okHttpClient = OkHttpClient()
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -100,9 +113,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     putExtra("PLACE_CATEGORY", it.categoria)
                     putExtra("PLACE_DESCRIPTION", it.descripcion)
                     putExtra("GOOGLE_PLACE_ID", it.googlePlaceId)
-                    it.ubicacion?.let {
-                        putExtra("PLACE_LATITUDE", it.latitude)
-                        putExtra("PLACE_LONGITUDE", it.longitude)
+                    it.ubicacion?.let { geo ->
+                        putExtra("PLACE_LATITUDE", geo.latitude)
+                        putExtra("PLACE_LONGITUDE", geo.longitude)
                     }
                 }
                 placeDetailsLauncher.launch(intent)
@@ -200,17 +213,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val spots = documents.mapNotNull { doc -> doc.toObject(TouristSpot::class.java).copy(id = doc.id) }
                 currentRouteSpots = spots.sortedBy { placeIds.indexOf(it.id) }
 
-                currentRouteSpots.forEach { addMarkerForTouristSpot(it) }
+                currentRouteSpots.forEachIndexed { index, spot -> addMarkerForTouristSpot(spot, index + 1) }
                 drawRoutePolyline(currentRouteSpots)
 
-                // Iniciar navegación de ruta
                 isNavigatingRoute = true
                 currentPlaceIndex = 0
-                setupRouteNavigation()
+                setupRouteNavigation(canSave = false)
                 updateRouteNavigationPanel()
 
                 val boundsBuilder = LatLngBounds.Builder()
-                currentRouteSpots.forEach { spot -> spot.ubicacion?.let { boundsBuilder.include(LatLng(it.latitude, it.longitude)) } }
+                currentRouteSpots.forEach { spot ->
+                    spot.ubicacion?.let { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
+                }
                 if (currentRouteSpots.isNotEmpty()) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 100))
                 }
@@ -223,7 +237,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun loadPersonalizedRoute(placeNames: List<String>) {
         binding.searchView.visibility = View.GONE
-        binding.saveRouteButton.visibility = View.VISIBLE
+        binding.saveRouteButton.visibility = View.GONE  // El botón guardar va dentro del panel
         binding.filterScrollView.visibility = View.GONE
 
         db.collection("lugares").whereIn("nombre", placeNames).get()
@@ -235,15 +249,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 val spots = documents.mapNotNull { doc -> doc.toObject(TouristSpot::class.java).copy(id = doc.id) }
+                // Mantener el orden original de la IA
                 currentRouteSpots = spots.sortedBy { placeNames.indexOf(it.nombre) }
 
-                currentRouteSpots.forEach { addMarkerForTouristSpot(it) }
+                currentRouteSpots.forEachIndexed { index, spot -> addMarkerForTouristSpot(spot, index + 1) }
                 drawRoutePolyline(currentRouteSpots)
 
-                // Iniciar navegación de ruta
                 isNavigatingRoute = true
                 currentPlaceIndex = 0
-                setupRouteNavigation()
+                setupRouteNavigation(canSave = true)
                 updateRouteNavigationPanel()
             }
             .addOnFailureListener { e ->
@@ -253,7 +267,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupSaveRouteButton() {
-        // Aplicar estilo bloqueado si es usuario invitado
         if (!AuthManager.isAuthenticated()) {
             binding.saveRouteButton.alpha = 0.5f
             binding.saveRouteButton.setImageResource(R.drawable.ic_lock_outline_black_24dp)
@@ -292,14 +305,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun saveRouteToFirestore(name: String, description: String) {
-        // Validación de usuario autenticado
         val currentUser = auth.currentUser
         if (currentUser == null) {
             Toast.makeText(this, "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Validación de ruta no vacía
         if (currentRouteSpots.isEmpty()) {
             Toast.makeText(this, "Error: No hay lugares en la ruta para guardar", Toast.LENGTH_SHORT).show()
             return
@@ -322,42 +333,86 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         db.collection("rutas").document(routeId).set(newRoute)
             .addOnSuccessListener {
                 NotificationHelper.routeSaved(binding.root, name)
+                // Ocultar botón guardar del panel tras guardar exitosamente
                 binding.saveRouteButton.visibility = View.GONE
+                binding.saveRoutePanelButton.visibility = View.GONE
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error al guardar ruta", e)
                 NotificationHelper.error(binding.root, "Error al guardar la ruta: ${e.message}")
             }
     }
-    
-    private fun addMarkerForTouristSpot(spot: TouristSpot) {
-        spot.ubicacion?.let { geoPoint ->
-            val position = LatLng(geoPoint.latitude, geoPoint.longitude)
 
-            // Personalizar color del marcador según categoría
-            val markerColor = when (spot.categoria.lowercase()) {
-                "museo" -> BitmapDescriptorFactory.HUE_VIOLET
-                "restaurante", "gastronomía" -> BitmapDescriptorFactory.HUE_ORANGE
-                "hotel", "hospedaje" -> BitmapDescriptorFactory.HUE_BLUE
-                "iglesia", "templo" -> BitmapDescriptorFactory.HUE_CYAN
-                "parque", "naturaleza" -> BitmapDescriptorFactory.HUE_GREEN
-                "tienda", "comercio" -> BitmapDescriptorFactory.HUE_YELLOW
-                else -> BitmapDescriptorFactory.HUE_RED
+    // =============== MARCADORES CIRCULARES CON IMAGEN ===============
+
+    /**
+     * Añade un marcador al mapa. Si el lugar tiene imagen, carga un círculo con Glide.
+     * En modo ruta (routeIndex >= 1), muestra un número encima de la imagen.
+     */
+    private fun addMarkerForTouristSpot(spot: TouristSpot, routeIndex: Int = -1) {
+        spot.ubicacion ?: return
+        val position = LatLng(spot.ubicacion.latitude, spot.ubicacion.longitude)
+        val categoryColor = getCategoryColor(spot.categoria)
+
+        if (spot.imagenUrl.isNotBlank()) {
+            Glide.with(this)
+                .asBitmap()
+                .load(spot.imagenUrl)
+                .apply(
+                    RequestOptions()
+                        .circleCrop()
+                        .override(120, 120)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .error(android.R.drawable.ic_menu_gallery)
+                )
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val markerBitmap = if (routeIndex >= 1) {
+                            createCircularBitmapWithNumber(resource, routeIndex, categoryColor)
+                        } else {
+                            createCircularBitmapWithBorder(resource, categoryColor)
+                        }
+                        addMarkerToMap(spot, position, markerBitmap)
+                    }
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        } else {
+            // Sin imagen: círculo de color con número (ruta) o pin de color (exploración)
+            val markerBitmap = if (routeIndex >= 1) {
+                createNumberedCircleMarker(routeIndex, categoryColor)
+            } else {
+                null
             }
-
-            val markerOptions = MarkerOptions()
-                .position(position)
-                .title(spot.nombre)
-                .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
-                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-
-            val marker = mMap.addMarker(markerOptions)
-            marker?.tag = spot
-            if (marker != null) {
-                touristSpotMarkers.add(marker)
+            if (markerBitmap != null) {
+                addMarkerToMap(spot, position, markerBitmap)
+            } else {
+                val marker = mMap.addMarker(
+                    MarkerOptions()
+                        .position(position)
+                        .title(spot.nombre)
+                        .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
+                        .icon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(spot.categoria)))
+                )
+                marker?.tag = spot
+                marker?.let { touristSpotMarkers.add(it) }
             }
         }
     }
+
+    private fun addMarkerToMap(spot: TouristSpot, position: LatLng, bitmap: Bitmap) {
+        val marker = mMap.addMarker(
+            MarkerOptions()
+                .position(position)
+                .title(spot.nombre)
+                .snippet("${spot.categoria} • ${String.format("%.1f", spot.rating)}⭐")
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                .anchor(0.5f, 0.5f)
+        )
+        marker?.tag = spot
+        marker?.let { touristSpotMarkers.add(it) }
+    }
+
+    // =============== RUTAS CON ROUTES API V2 ===============
 
     @SuppressLint("MissingPermission")
     private fun getDirectionsTo(destination: LatLng) {
@@ -376,28 +431,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Calcula y dibuja la ruta de navegación punto a punto usando Routes API v2.
+     * Reemplaza la antigua Directions API (deprecada en marzo 2025).
+     */
     private fun calculateAndDrawRoute(origin: LatLng, destination: LatLng) {
-        val geoApiContext = GeoApiContext.Builder().apiKey(BuildConfig.DIRECTIONS_API_KEY).build()
+        val body = """
+        {
+            "origin":{"location":{"latLng":{"latitude":${origin.latitude},"longitude":${origin.longitude}}}},
+            "destination":{"location":{"latLng":{"latitude":${destination.latitude},"longitude":${destination.longitude}}}},
+            "travelMode":"WALK",
+            "routingPreference":"ROUTING_PREFERENCE_UNSPECIFIED"
+        }
+        """.trimIndent()
+
+        val request = Request.Builder()
+            .url("https://routes.googleapis.com/directions/v2:computeRoutes")
+            .post(body.toRequestBody("application/json".toMediaType()))
+            .header("X-Goog-Api-Key", BuildConfig.DIRECTIONS_API_KEY)
+            .header("X-Goog-FieldMask", "routes.polyline.encodedPolyline")
+            .build()
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val directionsResult = DirectionsApi.newRequest(geoApiContext)
-                    .mode(TravelMode.DRIVING)
-                    .origin(com.google.maps.model.LatLng(origin.latitude, origin.longitude))
-                    .destination(com.google.maps.model.LatLng(destination.latitude, destination.longitude))
-                    .await()
+                val response = okHttpClient.newCall(request).execute()
+                val responseBody = response.body?.string() ?: throw Exception("Respuesta vacía")
+                val encoded = JSONObject(responseBody)
+                    .getJSONArray("routes")
+                    .getJSONObject(0)
+                    .getJSONObject("polyline")
+                    .getString("encodedPolyline")
 
                 withContext(Dispatchers.Main) {
                     navigationPolyline?.remove()
-                    val polylineOptions = PolylineOptions().color(Color.RED).width(15f)
-                    val decodedPath = PolyUtil.decode(directionsResult.routes[0].overviewPolyline.encodedPath)
-                    polylineOptions.addAll(decodedPath)
-                    navigationPolyline = mMap.addPolyline(polylineOptions)
-
+                    val path = PolyUtil.decode(encoded)
+                    animatePolylineDraw(path, 0xFFEA4335.toInt(), 12f) { polyline ->
+                        navigationPolyline = polyline
+                    }
                     val bounds = LatLngBounds.Builder().include(origin).include(destination).build()
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
                 }
             } catch (e: Exception) {
-                Log.e("DirectionsAPI", "Error al calcular la ruta", e)
+                Log.e(TAG, "Error Routes API v2 (navegación): ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@MapsActivity, "Error al calcular la ruta: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -405,65 +480,91 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Dibuja la polyline de la ruta turística completa usando Routes API v2.
+     * Aplica estilo mejorado: RoundCap, colores profesionales y animación de dibujo.
+     */
     private fun drawRoutePolyline(spots: List<TouristSpot>) {
         if (spots.size < 2) return
-
         routePolyline?.remove()
 
-        val waypoints = spots.mapNotNull { spot ->
-            spot.ubicacion?.let { com.google.maps.model.LatLng(it.latitude, it.longitude) }
-        }
+        val validSpots = spots.filter { it.ubicacion != null }
+        if (validSpots.size < 2) return
 
-        if (waypoints.size < 2) return
+        val body = buildRoutesApiBody(validSpots)
 
-        val origin = waypoints.first()
-        val destination = waypoints.last()
-        val intermediateWaypoints = if (waypoints.size > 2) {
-            waypoints.subList(1, waypoints.size - 1).toTypedArray()
-        } else {
-            emptyArray()
-        }
-
-        val geoApiContext = GeoApiContext.Builder()
-            .apiKey(BuildConfig.DIRECTIONS_API_KEY)
+        val request = Request.Builder()
+            .url("https://routes.googleapis.com/directions/v2:computeRoutes")
+            .post(body.toRequestBody("application/json".toMediaType()))
+            .header("X-Goog-Api-Key", BuildConfig.DIRECTIONS_API_KEY)
+            .header("X-Goog-FieldMask", "routes.polyline.encodedPolyline")
             .build()
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val directionsResult = DirectionsApi.newRequest(geoApiContext)
-                    .mode(TravelMode.DRIVING)
-                    .origin(origin)
-                    .destination(destination)
-                    .waypoints(*intermediateWaypoints)
-                    .optimizeWaypoints(false)  // Mantener el orden original de la IA
-                    .await()
+                val response = okHttpClient.newCall(request).execute()
+                val responseBody = response.body?.string() ?: throw Exception("Respuesta vacía")
+                val json = JSONObject(responseBody)
+
+                // Verificar que la respuesta tenga rutas
+                val routes = json.optJSONArray("routes")
+                if (routes == null || routes.length() == 0) {
+                    throw Exception("Sin rutas disponibles")
+                }
+
+                val encoded = routes
+                    .getJSONObject(0)
+                    .getJSONObject("polyline")
+                    .getString("encodedPolyline")
 
                 withContext(Dispatchers.Main) {
-                    if (directionsResult.routes.isNotEmpty() && directionsResult.routes[0].overviewPolyline != null) {
-                        val decodedPath = PolyUtil.decode(directionsResult.routes[0].overviewPolyline.encodedPath)
-                        routePolyline = mMap.addPolyline(PolylineOptions()
-                            .addAll(decodedPath)
-                            .color(Color.BLUE)
-                            .width(10f))
-                    } else {
-                        Log.w(TAG, "Directions API returned no routes.")
-                        drawStraightRoutePolyline(spots)
-                        Toast.makeText(this@MapsActivity, "No se pudo encontrar una ruta. Mostrando líneas rectas.", Toast.LENGTH_SHORT).show()
+                    val path = PolyUtil.decode(encoded)
+                    animatePolylineDraw(path, 0xCC1A73E8.toInt(), 14f) { polyline ->
+                        routePolyline = polyline
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error fetching directions", e)
+                Log.e(TAG, "Routes API v2 error (ruta): ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    drawStraightRoutePolyline(spots)
-                    Toast.makeText(this@MapsActivity, "Error al obtener direcciones. Mostrando líneas rectas.", Toast.LENGTH_SHORT).show()
+                    drawStraightRoutePolyline(validSpots)
                 }
             }
         }
     }
 
+    /**
+     * Construye el cuerpo JSON para Routes API v2 con múltiples paradas.
+     */
+    private fun buildRoutesApiBody(spots: List<TouristSpot>): String {
+        val origin = spots.first().ubicacion!!
+        val destination = spots.last().ubicacion!!
+
+        val intermediatesJson = if (spots.size > 2) {
+            spots.subList(1, spots.size - 1).joinToString(",") { spot ->
+                val loc = spot.ubicacion!!
+                """{"location":{"latLng":{"latitude":${loc.latitude},"longitude":${loc.longitude}}}}"""
+            }
+        } else ""
+
+        return """
+        {
+            "origin":{"location":{"latLng":{"latitude":${origin.latitude},"longitude":${origin.longitude}}}},
+            "destination":{"location":{"latLng":{"latitude":${destination.latitude},"longitude":${destination.longitude}}}},
+            "intermediates":[$intermediatesJson],
+            "travelMode":"WALK",
+            "routingPreference":"ROUTING_PREFERENCE_UNSPECIFIED"
+        }
+        """.trimIndent()
+    }
+
     private fun drawStraightRoutePolyline(spots: List<TouristSpot>) {
         routePolyline?.remove()
-        val polylineOptions = PolylineOptions().color(Color.BLUE).width(10f)
+        val polylineOptions = PolylineOptions()
+            .color(0xCC1A73E8.toInt())
+            .width(14f)
+            .startCap(RoundCap())
+            .endCap(RoundCap())
+            .jointType(JointType.ROUND)
         spots.forEach { spot ->
             spot.ubicacion?.let {
                 polylineOptions.add(LatLng(it.latitude, it.longitude))
@@ -472,13 +573,69 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         routePolyline = mMap.addPolyline(polylineOptions)
     }
 
+    /**
+     * Anima el dibujo progresivo de una polyline desde el inicio hasta el final.
+     * Duración: 1200ms con interpolación suave.
+     */
+    private fun animatePolylineDraw(
+        fullPath: List<LatLng>,
+        color: Int,
+        width: Float,
+        onCreated: (Polyline) -> Unit
+    ) {
+        val polyline = mMap.addPolyline(
+            PolylineOptions()
+                .color(color)
+                .width(width)
+                .startCap(RoundCap())
+                .endCap(RoundCap())
+                .jointType(JointType.ROUND)
+                .zIndex(1f)
+        )
+        onCreated(polyline)
+
+        if (fullPath.size < 2) {
+            polyline.points = fullPath
+            return
+        }
+
+        // Pre-calcular distancias acumuladas
+        val cumDist = mutableListOf(0.0)
+        for (i in 0 until fullPath.size - 1) {
+            cumDist.add(cumDist.last() + SphericalUtil.computeDistanceBetween(fullPath[i], fullPath[i + 1]))
+        }
+        val totalDist = cumDist.last()
+        if (totalDist == 0.0) { polyline.points = fullPath; return }
+
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 1200L
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { anim ->
+                val target = totalDist * anim.animatedFraction
+                val partial = mutableListOf(fullPath[0])
+                for (i in 0 until fullPath.size - 1) {
+                    if (cumDist[i + 1] <= target) {
+                        partial.add(fullPath[i + 1])
+                    } else {
+                        val segFrac = (target - cumDist[i]) / (cumDist[i + 1] - cumDist[i])
+                        partial.add(SphericalUtil.interpolate(fullPath[i], fullPath[i + 1], segFrac))
+                        break
+                    }
+                }
+                polyline.points = partial
+            }
+            start()
+        }
+    }
+
+    // =============== BÚSQUEDA ===============
+
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (!query.isNullOrBlank()) { searchPlaces(query) }
                 return false
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.isNullOrBlank()) { cargarLugaresDesdeFirestore() }
                 return true
@@ -504,7 +661,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
 
-                // Apply current filters to search results
                 val filteredResults = if (selectedCategories.isEmpty()) {
                     searchResults
                 } else {
@@ -526,7 +682,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
-    private fun isLocationPermissionGranted() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    // =============== UBICACIÓN ===============
+
+    private fun isLocationPermissionGranted() =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private fun enableMyLocation() {
         if (isLocationPermissionGranted()) {
@@ -583,10 +742,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // =============== NAVEGACIÓN DE RUTA ===============
 
-    private fun setupRouteNavigation() {
+    /**
+     * @param canSave true cuando la ruta viene de la IA y aún no ha sido guardada.
+     */
+    private fun setupRouteNavigation(canSave: Boolean = false) {
         binding.routeNavigationPanel.visibility = View.VISIBLE
 
-        // Botón anterior
+        // Botón guardar dentro del panel (solo en rutas nuevas de IA)
+        binding.saveRoutePanelButton.visibility = if (canSave) View.VISIBLE else View.GONE
+        binding.saveRoutePanelButton.setOnClickListener {
+            AuthManager.requireAuth(this, AuthManager.AuthRequired.SAVE_ROUTES) {
+                if (currentRouteSpots.isNotEmpty()) {
+                    showSaveRouteDialog()
+                } else {
+                    NotificationHelper.warning(binding.root, "No hay lugares en la ruta")
+                }
+            }
+        }
+
         binding.previousPlaceButton.setOnClickListener {
             if (currentPlaceIndex > 0) {
                 currentPlaceIndex--
@@ -595,7 +768,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        // Botón siguiente
         binding.nextPlaceButton.setOnClickListener {
             if (currentPlaceIndex < currentRouteSpots.size - 1) {
                 currentPlaceIndex++
@@ -604,12 +776,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        // Botón cerrar navegación
         binding.closeRouteButton.setOnClickListener {
             closeRouteNavigation()
         }
 
-        // Botón ver detalles
         binding.viewDetailsButton.setOnClickListener {
             val currentSpot = currentRouteSpots[currentPlaceIndex]
             val intent = Intent(this, PlaceDetailsActivity::class.java).apply {
@@ -626,7 +796,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             placeDetailsLauncher.launch(intent)
         }
 
-        // Botón navegar con GPS
         binding.navigateButton.setOnClickListener {
             val currentSpot = currentRouteSpots[currentPlaceIndex]
             currentSpot.ubicacion?.let { location ->
@@ -635,14 +804,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 )
                 val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
                 mapIntent.setPackage("com.google.android.apps.maps")
-
                 if (mapIntent.resolveActivity(packageManager) != null) {
                     startActivity(mapIntent)
                 } else {
-                    NotificationHelper.error(
-                        binding.root,
-                        "Google Maps no está instalado"
-                    )
+                    NotificationHelper.error(binding.root, "Google Maps no está instalado")
                 }
             }
         }
@@ -653,10 +818,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val currentSpot = currentRouteSpots[currentPlaceIndex]
 
-        // Actualizar progreso
         binding.routeProgressText.text = "Lugar ${currentPlaceIndex + 1} de ${currentRouteSpots.size}"
 
-        // Calcular tiempo estimado total
         val estimatedMinutes = calculateEstimatedTime(currentRouteSpots.size)
         val hours = estimatedMinutes / 60
         val minutes = estimatedMinutes % 60
@@ -666,17 +829,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             "⏱️ Tiempo estimado: ${minutes}min"
         }
 
-        // Actualizar información del lugar
         binding.currentPlaceName.text = currentSpot.nombre
         binding.currentPlaceCategory.text =
             "${CategoryUtils.getCategoryEmoji(currentSpot.categoria)} ${currentSpot.categoria}"
         binding.currentPlaceDescription.text = currentSpot.descripcion
 
-        // Habilitar/deshabilitar botones según posición
         binding.previousPlaceButton.isEnabled = currentPlaceIndex > 0
         binding.nextPlaceButton.isEnabled = currentPlaceIndex < currentRouteSpots.size - 1
-
-        // Cambiar estilo del botón deshabilitado
         binding.previousPlaceButton.alpha = if (currentPlaceIndex > 0) 1f else 0.5f
         binding.nextPlaceButton.alpha = if (currentPlaceIndex < currentRouteSpots.size - 1) 1f else 0.5f
     }
@@ -686,9 +845,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val currentSpot = currentRouteSpots[currentPlaceIndex]
         currentSpot.ubicacion?.let { location ->
-            val latLng = LatLng(location.latitude, location.longitude)
             mMap.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(latLng, 17f),
+                CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 17f),
                 500,
                 null
             )
@@ -696,7 +854,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun calculateEstimatedTime(placeCount: Int): Int {
-        // 15 minutos por lugar + 5 minutos entre lugares
         val timePerPlace = 15
         val timeBetweenPlaces = 5
         return (placeCount * timePerPlace) + ((placeCount - 1) * timeBetweenPlaces)
@@ -708,5 +865,92 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.searchView.visibility = View.VISIBLE
         binding.filterScrollView.visibility = View.VISIBLE
         finish()
+    }
+
+    // =============== HELPERS DE BITMAP PARA MARCADORES ===============
+
+    /**
+     * Círculo con imagen de lugar + borde de color de categoría.
+     */
+    private fun createCircularBitmapWithBorder(source: Bitmap, borderColor: Int): Bitmap {
+        val borderPx = dpToPx(3)
+        val size = source.width + borderPx * 2
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = borderColor })
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f - dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        canvas.drawBitmap(source, borderPx.toFloat(), borderPx.toFloat(), null)
+        return output
+    }
+
+    /**
+     * Círculo con imagen de lugar + número de parada en badge superior-derecho.
+     */
+    private fun createCircularBitmapWithNumber(source: Bitmap, number: Int, borderColor: Int): Bitmap {
+        val borderPx = dpToPx(3)
+        val size = source.width + borderPx * 2
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+
+        // Borde de color de categoría
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = borderColor })
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f - dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        canvas.drawBitmap(source, borderPx.toFloat(), borderPx.toFloat(), null)
+
+        // Badge con número
+        val badgeRadius = dpToPx(10).toFloat()
+        val badgeX = size - badgeRadius
+        val badgeY = badgeRadius
+        canvas.drawCircle(badgeX, badgeY, badgeRadius + dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        canvas.drawCircle(badgeX, badgeY, badgeRadius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#1A73E8") })
+        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = dpToPx(10).toFloat()
+            typeface = Typeface.DEFAULT_BOLD
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(number.toString(), badgeX, badgeY - (textPaint.descent() + textPaint.ascent()) / 2f, textPaint)
+        return output
+    }
+
+    /**
+     * Círculo de color con número (fallback cuando no hay imagen).
+     */
+    private fun createNumberedCircleMarker(number: Int, backgroundColor: Int): Bitmap {
+        val sizePx = dpToPx(44)
+        val output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+        canvas.drawCircle(sizePx / 2f, sizePx / 2f, sizePx / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        canvas.drawCircle(sizePx / 2f, sizePx / 2f, sizePx / 2f - dpToPx(2), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = backgroundColor })
+        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = dpToPx(16).toFloat()
+            typeface = Typeface.DEFAULT_BOLD
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText(number.toString(), sizePx / 2f, sizePx / 2f - (textPaint.descent() + textPaint.ascent()) / 2f, textPaint)
+        return output
+    }
+
+    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
+
+    private fun getCategoryColor(category: String): Int = when (category.lowercase()) {
+        "museo" -> Color.parseColor("#9C27B0")
+        "restaurante", "gastronomía" -> Color.parseColor("#FF5722")
+        "hotel", "hospedaje" -> Color.parseColor("#2196F3")
+        "iglesia", "templo" -> Color.parseColor("#00BCD4")
+        "parque", "naturaleza" -> Color.parseColor("#4CAF50")
+        "tienda", "comercio" -> Color.parseColor("#FFC107")
+        else -> Color.parseColor("#F44336")
+    }
+
+    private fun getCategoryHue(category: String): Float = when (category.lowercase()) {
+        "museo" -> BitmapDescriptorFactory.HUE_VIOLET
+        "restaurante", "gastronomía" -> BitmapDescriptorFactory.HUE_ORANGE
+        "hotel", "hospedaje" -> BitmapDescriptorFactory.HUE_BLUE
+        "iglesia", "templo" -> BitmapDescriptorFactory.HUE_CYAN
+        "parque", "naturaleza" -> BitmapDescriptorFactory.HUE_GREEN
+        "tienda", "comercio" -> BitmapDescriptorFactory.HUE_YELLOW
+        else -> BitmapDescriptorFactory.HUE_RED
     }
 }

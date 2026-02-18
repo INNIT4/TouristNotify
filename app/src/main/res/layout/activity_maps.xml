@@ -237,6 +237,18 @@
                     app:iconGravity="end" />
             </LinearLayout>
 
+            <!-- Botón Guardar Ruta (visible solo en rutas generadas por IA) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_route_panel_button"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Guardar ruta"
+                android:visibility="gone"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconGravity="start" />
+
             <!-- Botones de Acción -->
             <LinearLayout
                 android:layout_width="match_parent"

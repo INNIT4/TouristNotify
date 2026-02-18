@@ -192,7 +192,7 @@ class PreferencesActivity : AppCompatActivity() {
             appendLine()
 
             appendLine("# CONTEXTO GEOGRÁFICO")
-            appendLine("Álamos es un Pueblo Mágico colonial compacto (~1 km de radio caminable). Las coordenadas del centro son lat:27.0275, lng:-108.9400.")
+            appendLine("Álamos es un Pueblo Mágico colonial compacto (~1 km de radio caminable). Las coordenadas del centro son lat:${AppConstants.ALAMOS_LAT}, lng:${AppConstants.ALAMOS_LNG}.")
             appendLine("La mayoría de lugares históricos están a menos de 500 metros entre sí. Agrupa los cercanos para evitar caminatas innecesarias.")
             appendLine()
 
@@ -354,7 +354,7 @@ class PreferencesActivity : AppCompatActivity() {
                 nombre = "Plaza de Armas",
                 descripcion = "El corazón histórico y social de Álamos, rodeado de arcos y edificios coloniales.",
                 categoria = "Historia",
-                ubicacion = GeoPoint(27.0275, -108.9400),
+                ubicacion = GeoPoint(AppConstants.ALAMOS_LAT, AppConstants.ALAMOS_LNG),
                 googlePlaceId = "ChIJ-c-fJ8rS1oYREj9T7o-Z1A0"
             ),
             TouristSpot(

@@ -103,6 +103,9 @@ dependencies {
     // OkHttp para Routes API v2
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    // EncryptedSharedPreferences para almacenamiento seguro
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

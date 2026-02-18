@@ -48,7 +48,7 @@ class ServicesDirectoryActivity : AppCompatActivity() {
 
     private fun openGoogleMaps(query: String) {
         // Abrir Google Maps con búsqueda
-        val gmmIntentUri = Uri.parse("geo:27.0275,-108.94?q=$query")
+        val gmmIntentUri = Uri.parse("geo:${AppConstants.ALAMOS_LAT},${AppConstants.ALAMOS_LNG}?q=$query")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
 

@@ -139,7 +139,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             true
         }
 
-        val alamos = LatLng(27.0275, -108.94)
+        val alamos = LatLng(AppConstants.ALAMOS_LAT, AppConstants.ALAMOS_LNG)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(alamos, 15f))
 
         val routePlaceNames = intent.getStringArrayListExtra("ROUTE_PLACES")

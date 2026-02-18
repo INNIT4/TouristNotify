@@ -5,6 +5,8 @@ import android.content.Intent
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.firebase.auth.FirebaseAuth
 
 /**
@@ -14,6 +16,21 @@ object AuthManager {
 
     private const val PREFS_NAME = "TouristNotifyPrefs"
     private const val KEY_GUEST_MODE = "guest_mode_enabled"
+
+    /**
+     * Crea o abre el EncryptedSharedPreferences de la app.
+     * Las claves y valores quedan cifrados en el almacenamiento del dispositivo.
+     */
+    private fun getEncryptedPrefs(context: Context) =
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
 
     /**
      * Verifica si el usuario está autenticado (tiene cuenta)
@@ -26,7 +43,7 @@ object AuthManager {
      * Verifica si está en modo invitado
      */
     fun isGuestMode(context: Context): Boolean {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return getEncryptedPrefs(context)
             .getBoolean(KEY_GUEST_MODE, false)
     }
 
@@ -34,7 +51,7 @@ object AuthManager {
      * Activa el modo invitado
      */
     fun enableGuestMode(context: Context) {
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        getEncryptedPrefs(context)
             .edit()
             .putBoolean(KEY_GUEST_MODE, true)
             .apply()
@@ -44,7 +61,7 @@ object AuthManager {
      * Desactiva el modo invitado (cuando el usuario inicia sesión)
      */
     fun disableGuestMode(context: Context) {
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        getEncryptedPrefs(context)
             .edit()
             .putBoolean(KEY_GUEST_MODE, false)
             .apply()

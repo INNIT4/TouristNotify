@@ -87,6 +87,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 }
                 // https://touristnotify.app/place/abc123
                 "https", "http" -> {
+                    if (uri.host != "touristnotify.app") return null
                     val pathSegments = uri.pathSegments
                     if (pathSegments.size >= 2 && pathSegments[0] == "place") {
                         pathSegments[1]

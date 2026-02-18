@@ -19,8 +19,6 @@ import java.util.*
 object WeatherManager {
 
     private const val TAG = "WeatherManager"
-    private const val ALAMOS_LAT = 27.0275
-    private const val ALAMOS_LON = -108.94
 
     /**
      * Obtiene el clima actual de Álamos, Sonora desde OpenWeatherMap
@@ -36,7 +34,7 @@ object WeatherManager {
             }
 
             val url = "https://api.openweathermap.org/data/2.5/weather?" +
-                    "lat=$ALAMOS_LAT&lon=$ALAMOS_LON&appid=$apiKey&units=metric&lang=es"
+                    "lat=${AppConstants.ALAMOS_LAT}&lon=${AppConstants.ALAMOS_LNG}&appid=$apiKey&units=metric&lang=es"
 
             val response = URL(url).readText()
             val json = JSONObject(response)
@@ -77,7 +75,7 @@ object WeatherManager {
             }
 
             val url = "https://api.openweathermap.org/data/2.5/forecast?" +
-                    "lat=$ALAMOS_LAT&lon=$ALAMOS_LON&appid=$apiKey&units=metric&lang=es"
+                    "lat=${AppConstants.ALAMOS_LAT}&lon=${AppConstants.ALAMOS_LNG}&appid=$apiKey&units=metric&lang=es"
 
             val response = URL(url).readText()
             val json = JSONObject(response)

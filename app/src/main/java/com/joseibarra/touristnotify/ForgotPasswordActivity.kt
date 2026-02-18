@@ -38,7 +38,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
                         Toast.makeText(this, "Correo de restablecimiento enviado.", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        // Mensaje genérico para no revelar si el correo existe en el sistema
+                        Toast.makeText(this, "Si el correo existe, recibirás un enlace de restablecimiento.", Toast.LENGTH_LONG).show()
                     }
                 }
         } else {

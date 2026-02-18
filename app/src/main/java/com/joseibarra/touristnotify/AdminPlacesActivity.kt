@@ -81,7 +81,7 @@ class AdminPlacesActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
 
         // Coordenadas de Álamos, Sonora
-        val alamosCenter = com.google.android.gms.maps.model.LatLng(27.0275, -108.94)
+        val alamosCenter = com.google.android.gms.maps.model.LatLng(AppConstants.ALAMOS_LAT, AppConstants.ALAMOS_LNG)
 
         // Búsqueda de texto para encontrar lugares en Álamos
         val searchQuery = when(type) {

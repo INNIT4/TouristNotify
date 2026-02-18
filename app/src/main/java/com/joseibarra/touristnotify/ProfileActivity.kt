@@ -14,6 +14,8 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.touristnotify.databinding.ActivityProfileBinding
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -99,37 +101,30 @@ class ProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // Cargar estadísticas desde Firestore
-                val userDoc = db.collection("users")
-                    .document(userId)
-                    .get()
-                    .await()
+                // Lanzar las 3 queries a Firestore en paralelo
+                coroutineScope {
+                    val userDocDeferred = async {
+                        db.collection("users").document(userId).get().await()
+                    }
+                    val routesDeferred = async {
+                        db.collection("users").document(userId).collection("routes").get().await()
+                    }
+                    val checkInsDeferred = async {
+                        db.collection("users").document(userId).collection("checkIns").get().await()
+                    }
 
-                // Rutas guardadas
-                val routesCount = db.collection("users")
-                    .document(userId)
-                    .collection("routes")
-                    .get()
-                    .await()
-                    .size()
+                    val userDoc = userDocDeferred.await()
+                    val routesCount = routesDeferred.await().size()
+                    val checkInsCount = checkInsDeferred.await().size()
 
-                binding.routesCountText.text = routesCount.toString()
+                    binding.routesCountText.text = routesCount.toString()
+                    binding.checkinsCountText.text = checkInsCount.toString()
 
-                // Favoritos
-                val favorites = userDoc.get("favorites") as? List<*>
-                binding.favoritesCountText.text = (favorites?.size ?: 0).toString()
+                    val favorites = userDoc.get("favorites") as? List<*>
+                    binding.favoritesCountText.text = (favorites?.size ?: 0).toString()
+                }
 
-                // Check-ins
-                val checkInsCount = db.collection("users")
-                    .document(userId)
-                    .collection("checkIns")
-                    .get()
-                    .await()
-                    .size()
-
-                binding.checkinsCountText.text = checkInsCount.toString()
-
-                // Uso de rutas IA
+                // Uso de rutas IA (local, sin red)
                 val usageStats = UsageManager.getUsageStats(this@ProfileActivity)
                 binding.aiUsageText.text = "Rutas IA hoy: ${usageStats.routesUsedToday}/${usageStats.routesLimitToday}"
                 binding.aiUsageProgress.progress = usageStats.usagePercentage

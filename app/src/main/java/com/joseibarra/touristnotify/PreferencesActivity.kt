@@ -125,12 +125,11 @@ class PreferencesActivity : AppCompatActivity() {
         mobility: String,
         customRequest: String
     ) {
-        Toast.makeText(this, "Consultando lugares disponibles...", Toast.LENGTH_SHORT).show()
         db.collection("lugares")
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    Toast.makeText(this, "Base de datos vacía. Creando datos de ejemplo...", Toast.LENGTH_LONG).show()
+                    // Primera vez: seed silencioso sin mensajes técnicos visibles al usuario
                     seedDatabaseWithSampleData(budget, time, interests, travelType, pace, mobility, customRequest)
                     return@addOnSuccessListener
                 }
@@ -403,9 +402,8 @@ class PreferencesActivity : AppCompatActivity() {
 
         batch.commit()
             .addOnSuccessListener {
-                Log.d("Firestore", "Datos de ejemplo añadidos con éxito.")
-                // Después de añadir los datos, volvemos a intentar generar la ruta
-                Toast.makeText(this, "Datos creados. Re-intentando generar ruta...", Toast.LENGTH_SHORT).show()
+                Log.d("Firestore", "Lugares base añadidos con éxito.")
+                // Lugares cargados, generar ruta sin notificar al usuario
                 fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
             }
             .addOnFailureListener { e ->

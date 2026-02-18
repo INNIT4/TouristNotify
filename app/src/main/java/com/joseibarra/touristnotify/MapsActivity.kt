@@ -105,6 +105,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // Ocultar los puntos de interés por defecto de Google Maps (iglesias, tiendas, etc.)
+        // para que solo se vean nuestros marcadores personalizados
+        try {
+            val styleOptions = com.google.android.gms.maps.model.MapStyleOptions
+                .loadRawResourceStyle(this, R.raw.map_style)
+            mMap.setMapStyle(styleOptions)
+        } catch (e: Exception) {
+            Log.w("MapsActivity", "No se pudo aplicar el estilo del mapa", e)
+        }
+
         val alamosBounds = LatLngBounds(LatLng(26.98, -109.0), LatLng(27.06, -108.9))
         mMap.setLatLngBoundsForCameraTarget(alamosBounds)
         mMap.setMinZoomPreference(13.5f)

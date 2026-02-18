@@ -26,7 +26,7 @@ class OnboardingActivity : AppCompatActivity() {
         OnboardingPage(
             "✨",
             "Crea Rutas Personalizadas",
-            "Genera itinerarios con IA o explora rutas temáticas diseñadas por expertos"
+            "Genera itinerarios con IA o explora rutas predeterminadas diseñadas por expertos"
         )
     )
 

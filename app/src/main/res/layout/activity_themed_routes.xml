@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-medium"
-        android:text="🎨 Rutas Temáticas"
+        android:text="🎨 Rutas Predeterminadas"
         android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Explora Álamos por temas"
+        android:text="Explora Álamos con rutas curadas"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="center"
-                    android:text="Las rutas temáticas se cargarán pronto"
+                    android:text="Las rutas predeterminadas se cargarán pronto"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp" />
             </LinearLayout>

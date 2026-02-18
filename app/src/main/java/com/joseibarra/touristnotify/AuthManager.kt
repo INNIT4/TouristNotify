@@ -129,7 +129,7 @@ object AuthManager {
         const val VIEW_STATS = "ver estadísticas personales"
         const val MY_ROUTES = "ver tus rutas guardadas"
         const val MY_FAVORITES = "ver tus favoritos"
-        const val THEMED_ROUTES = "acceder a rutas temáticas"
+        const val THEMED_ROUTES = "acceder a rutas predeterminadas"
     }
 
     /**

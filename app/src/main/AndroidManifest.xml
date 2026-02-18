@@ -136,7 +136,7 @@
 
         <activity
             android:name=".ThemedRoutesActivity"
-            android:label="Rutas Temáticas" />
+            android:label="Rutas Predeterminadas" />
 
         <activity
             android:name=".BlogActivity"

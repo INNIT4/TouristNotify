@@ -170,7 +170,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:columnCount="2"
-            android:rowCount="2"
+            android:rowCount="3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/weather_card">
@@ -210,7 +210,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
-                        android:text="Generar\nRuta"
+                        android:text="Generar\nRuta IA"
                         android:textAlignment="center"
                         android:textColor="?attr/colorOnPrimaryContainer"
                         android:textSize="16sp" />
@@ -228,13 +228,65 @@
                     app:tint="?attr/colorOnPrimaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 2: Mis Rutas -->
+            <!-- Card 2: Rutas Predeterminadas (junto a Generar Ruta IA) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/button_my_routes"
+                android:id="@+id/button_themed_routes"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_row="0"
                 android:layout_column="1"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/md_theme_light_tertiaryContainer"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:text="🎨"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Rutas\nPredeterminadas"
+                        android:textAlignment="center"
+                        android:textColor="?attr/colorOnTertiaryContainer"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/lock_icon_themed_routes"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:contentDescription="Requiere autenticación"
+                    android:src="@drawable/ic_lock_outline_black_24dp"
+                    android:visibility="gone"
+                    app:tint="?attr/colorOnTertiaryContainer" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card 3: Mis Rutas -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/button_my_routes"
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_row="1"
+                android:layout_column="0"
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
@@ -281,13 +333,13 @@
                     app:tint="?attr/colorOnSecondaryContainer" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 3: Ver Mapa -->
+            <!-- Card 4: Ver Mapa -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/button_view_map"
                 android:layout_width="0dp"
                 android:layout_height="160dp"
                 android:layout_row="1"
-                android:layout_column="0"
+                android:layout_column="1"
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
@@ -323,51 +375,60 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card 4: Contactos -->
+            <!-- Card 5: Contactos (ancho completo, fila 2) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/button_contacts"
                 android:layout_width="0dp"
-                android:layout_height="160dp"
-                android:layout_row="1"
-                android:layout_column="1"
+                android:layout_height="100dp"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
                 android:layout_margin="8dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/md_theme_light_secondaryContainer"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
                     <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_marginBottom="12dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="Contactos"
                         android:src="@drawable/ic_contacts"
                         app:tint="?attr/colorOnSecondaryContainer" />
 
                     <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Contactos de Emergencia"
+                        android:textColor="?attr/colorOnSecondaryContainer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Contactos\nEmergencia"
-                        android:textAlignment="center"
+                        android:text="→"
                         android:textColor="?attr/colorOnSecondaryContainer"
-                        android:textSize="16sp" />
+                        android:textSize="24sp" />
                 </LinearLayout>
 
                 <ImageView
                     android:id="@+id/lock_icon_contacts"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="top|end"
                     android:layout_margin="8dp"
                     android:contentDescription="Requiere autenticación"
@@ -452,7 +513,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:columnCount="2"
-            android:rowCount="6"
+            android:rowCount="5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_top_places">
@@ -612,79 +673,12 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Rutas Temáticas -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/button_themed_routes"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_row="2"
-                android:layout_column="0"
-                android:layout_columnSpan="2"
-                android:layout_rowWeight="1"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/md_theme_light_tertiaryContainer"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🎨"
-                            android:textSize="32sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:text="Rutas Temáticas"
-                            android:textAlignment="center"
-                            android:textColor="?attr/colorOnTertiaryContainer"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="→"
-                            android:textColor="?attr/colorOnTertiaryContainer"
-                            android:textSize="24sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/lock_icon_themed_routes"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="top|end"
-                        android:layout_margin="8dp"
-                        android:contentDescription="Requiere autenticación"
-                        android:src="@drawable/ic_lock_outline_black_24dp"
-                        android:visibility="gone"
-                        app:tint="?attr/colorOnTertiaryContainer" />
-                </FrameLayout>
-            </com.google.android.material.card.MaterialCardView>
-
             <!-- Blog de Consejos -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/button_blog"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_row="3"
+                android:layout_row="2"
                 android:layout_column="0"
                 android:layout_columnSpan="2"
                 android:layout_rowWeight="1"
@@ -736,7 +730,7 @@
                 android:id="@+id/button_proximity_notifications"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_row="4"
+                android:layout_row="3"
                 android:layout_column="0"
                 android:layout_columnSpan="2"
                 android:layout_rowWeight="1"
@@ -798,7 +792,7 @@
                 android:id="@+id/button_offline"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_row="5"
+                android:layout_row="4"
                 android:layout_column="0"
                 android:layout_columnSpan="2"
                 android:layout_rowWeight="1"

@@ -94,7 +94,8 @@ data class WeatherInfo(
     val icon: String = "",
     val humidity: Int = 0,
     val windSpeed: Double = 0.0,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val isMock: Boolean = false
 )
 
 /**

@@ -4,8 +4,12 @@ import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -714,7 +718,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = cm.activeNetwork ?: return false
+            cm.getNetworkCapabilities(network)
+                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        } else {
+            @Suppress("DEPRECATION")
+            cm.activeNetworkInfo?.isConnected == true
+        }
+    }
+
     private fun cargarLugaresDesdeFirestore() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "Sin conexión a internet. No se pueden cargar los lugares.", Toast.LENGTH_LONG).show()
+            return
+        }
         clearAllMarkers()
         db.collection("lugares").get()
             .addOnSuccessListener { documents ->

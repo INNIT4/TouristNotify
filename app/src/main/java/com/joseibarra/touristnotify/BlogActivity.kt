@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.joseibarra.touristnotify.databinding.ActivityBlogBinding
@@ -22,6 +24,14 @@ class BlogActivity : AppCompatActivity() {
     private lateinit var adapter: BlogPostAdapter
 
     private var currentCategory: String = "Todos"
+
+    private var lastDocument: DocumentSnapshot? = null
+    private var isLoadingMore = false
+    private var hasMorePosts = true
+
+    companion object {
+        private const val PAGE_SIZE = 15L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +52,21 @@ class BlogActivity : AppCompatActivity() {
                 toggleLike(post)
             }
         )
-        binding.blogRecyclerView.layoutManager = LinearLayoutManager(this)
+        val layoutManager = LinearLayoutManager(this)
+        binding.blogRecyclerView.layoutManager = layoutManager
         binding.blogRecyclerView.adapter = adapter
+
+        // Cargar más al llegar al final de la lista
+        binding.blogRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val lastVisible = layoutManager.findLastVisibleItemPosition()
+                val total = layoutManager.itemCount
+                if (!isLoadingMore && hasMorePosts && dy > 0 && lastVisible >= total - 3) {
+                    loadMorePosts()
+                }
+            }
+        })
 
         // Category filters
         binding.filterAllChip.setOnClickListener {
@@ -103,35 +126,69 @@ class BlogActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
         binding.blogRecyclerView.visibility = View.GONE
 
+        // Reset pagination state on fresh load
+        lastDocument = null
+        hasMorePosts = true
+        blogPosts.clear()
+
         db.collection("blog_posts")
             .orderBy("isFeatured", Query.Direction.DESCENDING)
             .orderBy("publishedAt", Query.Direction.DESCENDING)
+            .limit(PAGE_SIZE)
             .get()
             .addOnSuccessListener { documents ->
-                blogPosts.clear()
+                binding.progressBar.visibility = View.GONE
 
                 for (document in documents) {
                     val post = document.toObject(BlogPost::class.java).copy(id = document.id)
                     blogPosts.add(post)
                 }
 
-                binding.progressBar.visibility = View.GONE
+                // Si se devolvieron menos de PAGE_SIZE, no hay más páginas
+                hasMorePosts = documents.size() >= PAGE_SIZE
+                lastDocument = documents.documents.lastOrNull()
 
                 if (blogPosts.isEmpty()) {
                     binding.emptyStateContainer.visibility = View.VISIBLE
                     binding.blogRecyclerView.visibility = View.GONE
-                    createSamplePosts() // Crear posts de ejemplo
+                    createSamplePosts()
                 } else {
                     binding.emptyStateContainer.visibility = View.GONE
                     binding.blogRecyclerView.visibility = View.VISIBLE
-                    adapter.notifyDataSetChanged()
-                    binding.postsCountTextView.text = "${blogPosts.size} artículos"
+                    filterPosts()
                 }
             }
             .addOnFailureListener { e ->
                 binding.progressBar.visibility = View.GONE
                 binding.emptyStateContainer.visibility = View.VISIBLE
                 NotificationHelper.error(binding.root, "Error al cargar posts: ${e.message}")
+            }
+    }
+
+    private fun loadMorePosts() {
+        val cursor = lastDocument ?: return
+        if (!hasMorePosts || isLoadingMore) return
+
+        isLoadingMore = true
+
+        db.collection("blog_posts")
+            .orderBy("isFeatured", Query.Direction.DESCENDING)
+            .orderBy("publishedAt", Query.Direction.DESCENDING)
+            .startAfter(cursor)
+            .limit(PAGE_SIZE)
+            .get()
+            .addOnSuccessListener { documents ->
+                isLoadingMore = false
+                for (document in documents) {
+                    val post = document.toObject(BlogPost::class.java).copy(id = document.id)
+                    blogPosts.add(post)
+                }
+                hasMorePosts = documents.size() >= PAGE_SIZE
+                lastDocument = documents.documents.lastOrNull() ?: lastDocument
+                filterPosts()
+            }
+            .addOnFailureListener {
+                isLoadingMore = false
             }
     }
 

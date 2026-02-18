@@ -174,7 +174,8 @@ object WeatherManager {
             icon = icon,
             humidity = humidity,
             windSpeed = windSpeed,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            isMock = true
         )
     }
 

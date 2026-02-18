@@ -49,6 +49,7 @@ class EventsActivity : AppCompatActivity() {
         binding.emptyStateContainer.visibility = View.GONE
 
         db.collection("eventos")
+            .limit(50)
             .get()
             .addOnSuccessListener { documents ->
                 binding.progressBar.visibility = View.GONE

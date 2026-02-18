@@ -1,6 +1,10 @@
 package com.joseibarra.touristnotify
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -41,7 +45,23 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = cm.activeNetwork ?: return false
+            cm.getNetworkCapabilities(network)
+                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        } else {
+            @Suppress("DEPRECATION")
+            cm.activeNetworkInfo?.isConnected == true
+        }
+    }
+
     private fun loadUserData() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "Sin conexión a internet. Algunos datos pueden no cargarse.", Toast.LENGTH_LONG).show()
+        }
+
         val user = auth.currentUser ?: run {
             // No hay usuario autenticado, volver al login
             startActivity(Intent(this, LoginActivity::class.java))

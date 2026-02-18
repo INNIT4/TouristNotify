@@ -140,8 +140,10 @@ object AuthManager {
      * @param lockIconView Vista opcional del icono de candado a mostrar
      */
     fun applyLockedStyle(view: View, lockIconView: ImageView? = null) {
-        // Reducir opacidad al 50%
-        view.alpha = 0.5f
+        // Mantener el botón visualmente activo (alpha completo) para que el usuario
+        // sepa que puede tocarlo. El icono de candado ya comunica que requiere login.
+        // Alpha=0.5 enviaba la señal incorrecta de "botón roto/deshabilitado".
+        view.alpha = 1.0f
 
         // Mostrar icono de candado si se proporciona
         lockIconView?.visibility = View.VISIBLE

@@ -163,7 +163,12 @@ class MenuActivity : AppCompatActivity() {
                 // Actualizar UI con datos del clima
                 binding.weatherEmojiTextView.text = WeatherManager.getWeatherEmoji(weather.icon)
                 binding.weatherTempTextView.text = "${weather.temperature.toInt()}°C"
-                binding.weatherDescriptionTextView.text = weather.description
+                // Indicar cuando los datos son estimados (sin API key o sin red)
+                binding.weatherDescriptionTextView.text = if (weather.isMock) {
+                    "${weather.description} (estimado)"
+                } else {
+                    weather.description
+                }
 
                 binding.weatherHumidityTextView.text = "💧 ${weather.humidity}%"
                 binding.weatherWindTextView.text = "💨 ${weather.windSpeed.toInt()} km/h"

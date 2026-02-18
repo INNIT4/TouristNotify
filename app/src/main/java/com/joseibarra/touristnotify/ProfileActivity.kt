@@ -151,8 +151,26 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
+        // Validar formato mínimo: al menos 3 caracteres, sin espacios
+        if (nickname.length < 3) {
+            Toast.makeText(this, "El nombre de usuario debe tener al menos 3 caracteres", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         lifecycleScope.launch {
             try {
+                // Verificar que ningún otro usuario tenga ese nickname
+                val existing = db.collection("users")
+                    .whereEqualTo("nickname", nickname)
+                    .get()
+                    .await()
+
+                val takenByOther = existing.documents.any { it.id != userId }
+                if (takenByOther) {
+                    Toast.makeText(this@ProfileActivity, "❌ Ese nombre de usuario ya está en uso", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
                 db.collection("users")
                     .document(userId)
                     .update("nickname", nickname)

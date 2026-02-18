@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.joseibarra.touristnotify.databinding.ActivityRegisterBinding
@@ -70,8 +71,22 @@ class RegisterActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                    navigateToMenu()
+                    // Enviar correo de verificación
+                    val user = auth.currentUser
+                    user?.sendEmailVerification()
+                        ?.addOnCompleteListener { verifyTask ->
+                            if (BuildConfig.DEBUG && !verifyTask.isSuccessful) {
+                                Log.e("RegisterActivity", "sendEmailVerification error: ${verifyTask.exception?.message}")
+                            }
+                        }
+
+                    // Informar al usuario y navegar al menú
+                    AlertDialog.Builder(this)
+                        .setTitle("Cuenta creada")
+                        .setMessage("Te enviamos un correo de verificación a $email.\n\nVerifica tu correo para activar todas las funciones de la app.")
+                        .setPositiveButton("Entendido") { _, _ -> navigateToMenu() }
+                        .setCancelable(false)
+                        .show()
                 } else {
                     // SEGURIDAD: Mensaje de error genérico
                     Toast.makeText(

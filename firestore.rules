@@ -97,8 +97,8 @@ service cloud.firestore {
       // Solo el dueño puede crear/actualizar su perfil
       allow create, update: if isOwner(userId);
 
-      // No se puede eliminar (soft delete preferido)
-      allow delete: if false;
+      // Solo el dueño puede eliminar su propio perfil (para deleteAccount)
+      allow delete: if isOwner(userId);
 
       // Favoritos del usuario
       match /favorites/{favoriteId} {

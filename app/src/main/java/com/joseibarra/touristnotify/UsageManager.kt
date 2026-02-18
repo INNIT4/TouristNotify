@@ -1,6 +1,8 @@
 package com.joseibarra.touristnotify
 
 import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -16,6 +18,17 @@ object UsageManager {
     private const val PREFS_NAME = "TouristNotifyUsage"
     private const val KEY_LAST_RESET_DATE = "last_reset_date"
     private const val KEY_DAILY_ROUTES_COUNT = "daily_routes_count"
+
+    private fun getEncryptedPrefs(context: Context) =
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
 
     // Límites configurables (ahora desde ConfigManager/Remote Config)
     // Estos son valores de fallback si Remote Config no está disponible
@@ -55,7 +68,7 @@ object UsageManager {
         }
 
         // Incrementar contador local
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(context)
         prefs.edit()
             .putInt(KEY_DAILY_ROUTES_COUNT, currentCount + 1)
             .apply()
@@ -91,7 +104,7 @@ object UsageManager {
      */
     fun getCurrentDailyRoutesCount(context: Context): Int {
         resetIfNewDay(context)
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(context)
         return prefs.getInt(KEY_DAILY_ROUTES_COUNT, 0)
     }
 
@@ -122,7 +135,7 @@ object UsageManager {
      * Resetea el contador si es un nuevo día
      */
     private fun resetIfNewDay(context: Context) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(context)
         val lastResetDate = prefs.getString(KEY_LAST_RESET_DATE, "")
         val today = getTodayDateString()
 
@@ -147,7 +160,7 @@ object UsageManager {
      * Fuerza un reset manual del contador (solo para admin/testing)
      */
     fun forceResetCounter(context: Context) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(context)
         prefs.edit()
             .putInt(KEY_DAILY_ROUTES_COUNT, 0)
             .putString(KEY_LAST_RESET_DATE, getTodayDateString())

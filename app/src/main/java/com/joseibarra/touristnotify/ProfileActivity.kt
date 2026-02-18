@@ -110,7 +110,8 @@ class ProfileActivity : AppCompatActivity() {
                         db.collection("users").document(userId).collection("routes").get().await()
                     }
                     val checkInsDeferred = async {
-                        db.collection("users").document(userId).collection("checkIns").get().await()
+                        // checkIns se guarda en la colección raíz con userId como campo
+                        db.collection("checkIns").whereEqualTo("userId", userId).get().await()
                     }
 
                     val userDoc = userDocDeferred.await()
@@ -299,11 +300,21 @@ class ProfileActivity : AppCompatActivity() {
                 val credential = EmailAuthProvider.getCredential(email, password)
                 user.reauthenticate(credential).await()
 
-                // Eliminar datos de Firestore
-                db.collection("users")
-                    .document(user.uid)
-                    .delete()
-                    .await()
+                // Eliminar subcollecciones del usuario
+                val uid = user.uid
+                val userRef = db.collection("users").document(uid)
+
+                for (sub in listOf("routes", "favorites", "stats", "usage")) {
+                    val docs = userRef.collection(sub).get().await()
+                    for (doc in docs.documents) doc.reference.delete().await()
+                }
+
+                // Eliminar check-ins del usuario (colección raíz)
+                val checkIns = db.collection("checkIns").whereEqualTo("userId", uid).get().await()
+                for (doc in checkIns.documents) doc.reference.delete().await()
+
+                // Eliminar documento del usuario
+                userRef.delete().await()
 
                 // Eliminar cuenta de Firebase Auth
                 user.delete().await()

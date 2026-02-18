@@ -97,8 +97,9 @@ class GlobalSearchActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
         searchResults.clear()
 
-        // Buscar en lugares
+        // Buscar en lugares (límite preventivo — Firestore no soporta full-text nativo)
         db.collection("lugares")
+            .limit(500)
             .get()
             .addOnSuccessListener { documents ->
                 for (doc in documents) {
@@ -120,6 +121,7 @@ class GlobalSearchActivity : AppCompatActivity() {
 
         // Buscar en blog
         db.collection("blog_posts")
+            .limit(200)
             .get()
             .addOnSuccessListener { documents ->
                 for (doc in documents) {
@@ -141,6 +143,7 @@ class GlobalSearchActivity : AppCompatActivity() {
 
         // Buscar en eventos
         db.collection("eventos")
+            .limit(100)
             .get()
             .addOnSuccessListener { documents ->
                 for (doc in documents) {

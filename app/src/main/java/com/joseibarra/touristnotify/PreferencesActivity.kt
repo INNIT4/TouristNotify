@@ -154,7 +154,7 @@ class PreferencesActivity : AppCompatActivity() {
                 generateRouteWithAI(budget, time, interests, travelType, pace, mobility, customRequest, placeNamesFromDb, placesForPrompt)
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error al cargar lugares", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error al cargar lugares", e)
                 Toast.makeText(this, "Error crítico al cargar lugares de la base de datos.", Toast.LENGTH_LONG).show()
             }
     }
@@ -281,7 +281,7 @@ class PreferencesActivity : AppCompatActivity() {
             try {
                 val response = generativeModel.generateContent(prompt)
                 val responseText = response.text
-                Log.d("AI_Raw_Response", "Respuesta completa de la IA: $responseText")
+                if (BuildConfig.DEBUG) Log.d("AI_Raw_Response", "Respuesta completa de la IA: $responseText")
 
                 if (responseText.isNullOrBlank()) {
                     throw Exception("La respuesta de la IA está vacía.")
@@ -308,8 +308,10 @@ class PreferencesActivity : AppCompatActivity() {
                 progressDialog.dismiss()
 
                 if (foundPlaceNames.isNotEmpty()) {
-                    Log.d("AI_Parsed_Places", "Lugares encontrados en orden de aparición: $foundPlaceNames")
-                    Log.d("AI_Place_Order", "Orden detallado: ${placeWithIndex.joinToString { "${it.first} (pos: ${it.second})" }}")
+                    if (BuildConfig.DEBUG) {
+                        Log.d("AI_Parsed_Places", "Lugares encontrados en orden de aparición: $foundPlaceNames")
+                        Log.d("AI_Place_Order", "Orden detallado: ${placeWithIndex.joinToString { "${it.first} (pos: ${it.second})" }}")
+                    }
 
                     // Registrar uso exitoso de la generación de ruta
                     UsageManager.recordRouteGeneration(this@PreferencesActivity)
@@ -322,7 +324,7 @@ class PreferencesActivity : AppCompatActivity() {
 
                     navigateToMapWithRoute(foundPlaceNames)
                 } else {
-                    Log.w("AI_Response_Error", "No se encontró ninguno de los lugares conocidos en la respuesta de la IA: $responseText")
+                    if (BuildConfig.DEBUG) Log.w("AI_Response_Error", "No se encontró ninguno de los lugares conocidos en la respuesta de la IA: $responseText")
                     Toast.makeText(this@PreferencesActivity,
                         "La IA no pudo generar una ruta con esos criterios. Intenta con diferentes preferencias.",
                         Toast.LENGTH_LONG).show()
@@ -332,7 +334,7 @@ class PreferencesActivity : AppCompatActivity() {
                 handler.removeCallbacks(progressRunnable)
                 progressDialog.dismiss()
 
-                Log.e("AI_Error", "Error al generar contenido: ${e.message}", e)
+                if (BuildConfig.DEBUG) Log.e("AI_Error", "Error al generar contenido: ${e.message}", e)
                 Toast.makeText(this@PreferencesActivity,
                     "Error de IA: ${e.message}",
                     Toast.LENGTH_LONG).show()
@@ -408,12 +410,12 @@ class PreferencesActivity : AppCompatActivity() {
 
         batch.commit()
             .addOnSuccessListener {
-                Log.d("Firestore", "Lugares base añadidos con éxito.")
+                if (BuildConfig.DEBUG) Log.d("Firestore", "Lugares base añadidos con éxito.")
                 // Lugares cargados, generar ruta sin notificar al usuario
                 fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error al añadir datos de ejemplo", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error al añadir datos de ejemplo", e)
                 Toast.makeText(this, "Error al inicializar la base de datos.", Toast.LENGTH_SHORT).show()
             }
     }

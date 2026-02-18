@@ -60,7 +60,7 @@ class ThemedRoutesActivity : AppCompatActivity() {
                         val route = document.toObject(ThemedRoute::class.java).copy(id = document.id)
                         routes.add(route)
                     } catch (e: Exception) {
-                        android.util.Log.e("ThemedRoutesActivity", "Error al parsear ruta: ${e.message}")
+                        if (BuildConfig.DEBUG) android.util.Log.e("ThemedRoutesActivity", "Error al parsear ruta: ${e.message}")
                     }
                 }
 

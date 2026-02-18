@@ -9,6 +9,8 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.joseibarra.touristnotify.databinding.ActivityProximityNotificationsBinding
 
 /**
@@ -18,6 +20,8 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProximityNotificationsBinding
     private lateinit var proximityManager: ProximityNotificationManager
+
+    private fun getEncryptedPrefs() = encryptedPrefs(this)
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -127,7 +131,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
     }
 
     private fun loadSettings() {
-        val prefs = getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs()
 
         // Load enabled state
         val enabled = prefs.getBoolean("proximity_notifications_enabled", false)
@@ -144,14 +148,14 @@ class ProximityNotificationsActivity : AppCompatActivity() {
     }
 
     private fun saveNotificationsEnabled(enabled: Boolean) {
-        getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        getEncryptedPrefs()
             .edit()
             .putBoolean("proximity_notifications_enabled", enabled)
             .apply()
     }
 
     private fun saveProximityRadius(radius: Int) {
-        getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        getEncryptedPrefs()
             .edit()
             .putInt("proximity_radius", radius)
             .apply()
@@ -225,7 +229,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
     }
 
     private fun setupNotifications() {
-        val prefs = getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs()
         val radius = prefs.getInt("proximity_radius", 10).toFloat()
 
         binding.setupProgressBar.visibility = View.VISIBLE
@@ -258,13 +262,26 @@ class ProximityNotificationsActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val PREFS_NAME = "TouristNotifyPrefs"
+
+        private fun encryptedPrefs(context: Context) =
+            EncryptedSharedPreferences.create(
+                context,
+                PREFS_NAME,
+                MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build(),
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
         fun isEnabled(context: Context): Boolean {
-            return context.getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+            return encryptedPrefs(context)
                 .getBoolean("proximity_notifications_enabled", false)
         }
 
         fun getProximityRadius(context: Context): Int {
-            return context.getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+            return encryptedPrefs(context)
                 .getInt("proximity_radius", 10)
         }
     }

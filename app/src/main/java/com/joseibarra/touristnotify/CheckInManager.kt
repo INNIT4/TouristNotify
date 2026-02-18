@@ -121,8 +121,7 @@ object CheckInManager {
                 transaction.set(statsRef, updatedStats)
             }.await()
         } catch (e: Exception) {
-            // Log pero no fallar
-            android.util.Log.e("CheckInManager", "Error updating stats", e)
+            if (BuildConfig.DEBUG) android.util.Log.e("CheckInManager", "Error updating stats", e)
         }
     }
 }

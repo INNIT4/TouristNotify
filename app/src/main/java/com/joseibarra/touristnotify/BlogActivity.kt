@@ -322,8 +322,4 @@ class BlogActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadBlogPosts() // Recargar al volver
-    }
 }

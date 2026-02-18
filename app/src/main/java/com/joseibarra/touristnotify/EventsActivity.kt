@@ -70,7 +70,7 @@ class EventsActivity : AppCompatActivity() {
                             events.add(event)
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("EventsActivity", "Error al parsear evento: ${e.message}")
+                        if (BuildConfig.DEBUG) android.util.Log.e("EventsActivity", "Error al parsear evento: ${e.message}")
                     }
                 }
 

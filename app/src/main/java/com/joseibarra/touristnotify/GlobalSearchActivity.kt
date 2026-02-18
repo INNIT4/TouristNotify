@@ -46,12 +46,17 @@ class GlobalSearchActivity : AppCompatActivity() {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
                 SearchResultType.EVENT -> {
+                    // No hay pantalla de detalle de evento; abrir la lista de eventos
                     val intent = Intent(this, EventsActivity::class.java)
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }
                 SearchResultType.BLOG -> {
-                    val intent = Intent(this, BlogActivity::class.java)
+                    // Navegar directamente al post seleccionado
+                    val intent = Intent(this, BlogPostDetailActivity::class.java).apply {
+                        putExtra("POST_ID", result.id)
+                        putExtra("POST_TITLE", result.title)
+                    }
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                 }

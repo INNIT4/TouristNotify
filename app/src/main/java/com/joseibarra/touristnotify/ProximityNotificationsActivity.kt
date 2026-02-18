@@ -117,9 +117,12 @@ class ProximityNotificationsActivity : AppCompatActivity() {
             }
         }
 
-        // Request permissions button
+        // Request permissions button — pide lo que falte (ubicación y/o notificaciones)
         binding.requestPermissionsButton.setOnClickListener {
-            requestLocationPermissions()
+            when {
+                !hasLocationPermissions() -> requestLocationPermissions()
+                !hasNotificationPermission() -> requestNotificationPermission()
+            }
         }
     }
 

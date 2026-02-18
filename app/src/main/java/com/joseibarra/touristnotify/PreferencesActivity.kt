@@ -96,6 +96,18 @@ class PreferencesActivity : AppCompatActivity() {
             return
         }
 
+        val budgetValue = budget.toDoubleOrNull()
+        if (budgetValue == null || budgetValue <= 0) {
+            Toast.makeText(this, "El presupuesto debe ser un número mayor a 0", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val timeValue = time.toDoubleOrNull()
+        if (timeValue == null || timeValue <= 0 || timeValue > 24) {
+            Toast.makeText(this, "El tiempo disponible debe ser entre 0.5 y 24 horas", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (interests.isEmpty() && customRequest.isBlank()) {
             Toast.makeText(this, "Selecciona al menos un interés o describe lo que buscas", Toast.LENGTH_SHORT).show()
             return

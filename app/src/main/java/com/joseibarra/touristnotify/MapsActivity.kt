@@ -265,11 +265,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 val spots = documents.mapNotNull { doc -> doc.toObject(TouristSpot::class.java).copy(id = doc.id) }
-                // Deduplicar por nombre: si Firestore tiene docs duplicados (ej. seed doble),
-                // nos quedamos solo con el primero de cada nombre
+                // Deduplicar docs de Firestore por nombre
                 val spotsByName = spots.groupBy { it.nombre }.mapValues { it.value.first() }
-                // Mantener el orden original de la IA
-                currentRouteSpots = placeNames.mapNotNull { spotsByName[it] }
+                // Mantener el orden original de la IA, eliminando nombres duplicados en la lista
+                currentRouteSpots = placeNames.distinct().mapNotNull { spotsByName[it] }
 
                 currentRouteSpots.forEachIndexed { index, spot -> addMarkerForTouristSpot(spot, index + 1) }
                 drawRoutePolyline(currentRouteSpots)

@@ -300,8 +300,10 @@ class PreferencesActivity : AppCompatActivity() {
                 }
 
                 // Ordenar por el índice de aparición (orden en que la IA los mencionó)
+                // distinctBy evita que un mismo lugar aparezca dos veces
+                // (ocurre cuando un nombre es substring de otro y ambos coinciden en el texto)
                 placeWithIndex.sortBy { it.second }
-                placeWithIndex.forEach { foundPlaceNames.add(it.first) }
+                placeWithIndex.distinctBy { it.first }.forEach { foundPlaceNames.add(it.first) }
 
                 // Cerrar diálogo de progreso
                 handler.removeCallbacks(progressRunnable)

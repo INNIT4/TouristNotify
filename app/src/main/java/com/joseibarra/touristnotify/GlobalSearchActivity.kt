@@ -118,6 +118,9 @@ class GlobalSearchActivity : AppCompatActivity() {
                 }
                 checkSearchComplete()
             }
+            .addOnFailureListener {
+                checkSearchComplete()
+            }
 
         // Buscar en blog
         db.collection("blog_posts")
@@ -140,6 +143,9 @@ class GlobalSearchActivity : AppCompatActivity() {
                 }
                 checkSearchComplete()
             }
+            .addOnFailureListener {
+                checkSearchComplete()
+            }
 
         // Buscar en eventos
         db.collection("eventos")
@@ -159,6 +165,9 @@ class GlobalSearchActivity : AppCompatActivity() {
                         ))
                     }
                 }
+                checkSearchComplete()
+            }
+            .addOnFailureListener {
                 checkSearchComplete()
             }
     }

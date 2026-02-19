@@ -3,6 +3,7 @@ package com.joseibarra.touristnotify
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.touristnotify.databinding.ActivityBlogPostDetailBinding
 import java.text.SimpleDateFormat
@@ -15,7 +16,9 @@ class BlogPostDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBlogPostDetailBinding
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private var postId: String = ""
+    private var currentPost: BlogPost? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +72,7 @@ class BlogPostDetailActivity : AppCompatActivity() {
     }
 
     private fun displayPost(post: BlogPost) {
+        currentPost = post
         binding.progressBar.visibility = View.GONE
         binding.contentScrollView.visibility = View.VISIBLE
 
@@ -87,6 +91,10 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding.postLikesTextView.text = "❤️ ${post.likes}"
         binding.postViewsTextView.text = "👁️ ${post.viewCount}"
 
+        binding.postLikesTextView.setOnClickListener {
+            toggleLike(currentPost ?: post)
+        }
+
         // Featured badge
         binding.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE
 
@@ -95,5 +103,44 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding.relatedCategoryCard.setOnClickListener {
             finish() // Volver a la lista
         }
+    }
+
+    private fun toggleLike(post: BlogPost) {
+        val userId = auth.currentUser?.uid ?: run {
+            NotificationHelper.info(binding.root, "Inicia sesión para dar Me gusta")
+            return
+        }
+
+        db.collection("blog_likes")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("postId", post.id)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    db.collection("blog_likes").add(
+                        hashMapOf(
+                            "userId" to userId,
+                            "postId" to post.id,
+                            "timestamp" to System.currentTimeMillis()
+                        )
+                    )
+                    db.collection("blog_posts").document(post.id)
+                        .update("likes", post.likes + 1)
+                    val updated = post.copy(likes = post.likes + 1)
+                    currentPost = updated
+                    binding.postLikesTextView.text = "❤️ ${updated.likes}"
+                    NotificationHelper.success(binding.root, "Te gusta este artículo")
+                } else {
+                    for (doc in documents) {
+                        db.collection("blog_likes").document(doc.id).delete()
+                    }
+                    db.collection("blog_posts").document(post.id)
+                        .update("likes", maxOf(0, post.likes - 1))
+                    val updated = post.copy(likes = maxOf(0, post.likes - 1))
+                    currentPost = updated
+                    binding.postLikesTextView.text = "❤️ ${updated.likes}"
+                    NotificationHelper.info(binding.root, "Ya no te gusta este artículo")
+                }
+            }
     }
 }

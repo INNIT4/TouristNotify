@@ -20,18 +20,18 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
         if (geofencingEvent == null) {
-            Log.e(TAG, "GeofencingEvent is null")
+            if (BuildConfig.DEBUG) Log.e(TAG, "GeofencingEvent is null")
             return
         }
 
         if (geofencingEvent.hasError()) {
-            Log.e(TAG, "Geofencing error: ${geofencingEvent.errorCode}")
+            if (BuildConfig.DEBUG) Log.e(TAG, "Geofencing error: ${geofencingEvent.errorCode}")
             return
         }
 
         // Verificar si las notificaciones están habilitadas
         if (!ProximityNotificationsActivity.isEnabled(context)) {
-            Log.d(TAG, "Proximity notifications are disabled")
+            if (BuildConfig.DEBUG) Log.d(TAG, "Proximity notifications are disabled")
             return
         }
 
@@ -44,7 +44,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             if (triggeringGeofences != null) {
                 for (geofence in triggeringGeofences) {
                     val placeId = geofence.requestId
-                    Log.d(TAG, "User entered geofence for place: $placeId")
+                    if (BuildConfig.DEBUG) Log.d(TAG, "User entered geofence for place: $placeId")
 
                     // Mostrar notificación
                     val proximityManager = ProximityNotificationManager(context)

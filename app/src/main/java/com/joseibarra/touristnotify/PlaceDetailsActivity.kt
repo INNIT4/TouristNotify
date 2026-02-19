@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,7 +74,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         placeCategory = intent.getStringExtra("PLACE_CATEGORY") ?: ""
 
         if (placeId == null) {
-            Toast.makeText(this, "Error: No se encontró el lugar.", Toast.LENGTH_LONG).show()
+            NotificationHelper.error(binding.root, "Error: No se encontró el lugar.")
             finish()
             return
         }
@@ -119,15 +118,11 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 }
                 else -> null
             }?.also {
-                Log.d(TAG, "Deep link detected: placeId = $it")
-                Toast.makeText(
-                    this,
-                    "📱 Abriendo lugar desde código QR...",
-                    Toast.LENGTH_SHORT
-                ).show()
+                if (BuildConfig.DEBUG) Log.d(TAG, "Deep link detected: placeId = $it")
+                NotificationHelper.success(binding.root, "📱 Abriendo lugar desde código QR...")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error processing deep link", e)
+            if (BuildConfig.DEBUG) Log.e(TAG, "Error processing deep link", e)
             null
         }
     }
@@ -325,7 +320,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         db.collection("lugares").document(placeId)
             .update("visitCount", FieldValue.increment(1))
             .addOnFailureListener { e ->
-                Log.w("PlaceDetails", "Error incrementando visitas", e)
+                if (BuildConfig.DEBUG) Log.w("PlaceDetails", "Error incrementando visitas", e)
             }
     }
 
@@ -357,7 +352,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
                     reviewAdapter.updateReviews(reviews)
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error al cargar reseñas: ${e.message}", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.error(binding.root, "Error al cargar reseñas: ${e.message}")
                 }
         }
     }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.joseibarra.touristnotify.databinding.ActivityPhotoGalleryBinding
@@ -16,6 +17,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPhotoGalleryBinding
     private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
     private lateinit var photoAdapter: PhotoGalleryAdapter
     private var placeId: String? = null
     private var placeName: String? = null
@@ -26,6 +28,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         placeId = intent.getStringExtra("PLACE_ID")
         placeName = intent.getStringExtra("PLACE_NAME")
@@ -43,7 +46,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
         loadPhotos()
 
         // FAB para cualquier usuario autenticado
-        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val currentUser = auth.currentUser
         if (currentUser != null) {
             binding.fabUploadPhoto.visibility = View.VISIBLE
             binding.fabUploadPhoto.setOnClickListener {
@@ -59,19 +62,61 @@ class PhotoGalleryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        photoAdapter = PhotoGalleryAdapter { photo, position ->
-            // Abrir foto en pantalla completa
-            val intent = Intent(this, FullScreenPhotoActivity::class.java).apply {
-                putExtra("PLACE_ID", placeId)
-                putExtra("PHOTO_POSITION", position)
-            }
-            startActivity(intent)
-        }
+        photoAdapter = PhotoGalleryAdapter(
+            onPhotoClick = { photo, position ->
+                val intent = Intent(this, FullScreenPhotoActivity::class.java).apply {
+                    putExtra("PLACE_ID", placeId)
+                    putExtra("PHOTO_POSITION", position)
+                }
+                startActivity(intent)
+            },
+            onLikeClick = { photo -> togglePhotoLike(photo) }
+        )
 
         binding.photosRecyclerView.apply {
             layoutManager = GridLayoutManager(this@PhotoGalleryActivity, 2)
             adapter = photoAdapter
         }
+    }
+
+    private fun togglePhotoLike(photo: PlacePhoto) {
+        val userId = auth.currentUser?.uid ?: run {
+            NotificationHelper.info(binding.root, "Inicia sesión para dar Me gusta")
+            return
+        }
+
+        db.collection("photo_likes")
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("photoId", photo.id)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    db.collection("photo_likes").add(
+                        hashMapOf("userId" to userId, "photoId" to photo.id)
+                    )
+                    db.collection("place_photos").document(photo.id)
+                        .update("likes", photo.likes + 1)
+                    // Actualizar localmente
+                    val current = photoAdapter.currentList.toMutableList()
+                    val idx = current.indexOfFirst { it.id == photo.id }
+                    if (idx != -1) {
+                        current[idx] = current[idx].copy(likes = photo.likes + 1)
+                        photoAdapter.submitList(current)
+                    }
+                } else {
+                    for (doc in documents) {
+                        db.collection("photo_likes").document(doc.id).delete()
+                    }
+                    db.collection("place_photos").document(photo.id)
+                        .update("likes", maxOf(0, photo.likes - 1))
+                    val current = photoAdapter.currentList.toMutableList()
+                    val idx = current.indexOfFirst { it.id == photo.id }
+                    if (idx != -1) {
+                        current[idx] = current[idx].copy(likes = maxOf(0, photo.likes - 1))
+                        photoAdapter.submitList(current)
+                    }
+                }
+            }
     }
 
     private fun loadPhotos() {

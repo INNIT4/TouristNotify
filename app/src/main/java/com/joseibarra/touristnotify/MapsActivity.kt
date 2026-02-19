@@ -112,7 +112,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .loadRawResourceStyle(this, R.raw.map_style)
             mMap.setMapStyle(styleOptions)
         } catch (e: Exception) {
-            Log.w("MapsActivity", "No se pudo aplicar el estilo del mapa", e)
+            if (BuildConfig.DEBUG) Log.w("MapsActivity", "No se pudo aplicar el estilo del mapa", e)
         }
 
         val alamosBounds = LatLngBounds(LatLng(26.98, -109.0), LatLng(27.06, -108.9))
@@ -246,7 +246,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error cargando ruta por IDs", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error cargando ruta por IDs", e)
                 Toast.makeText(this, "Error al cargar la ruta guardada: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -279,7 +279,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 updateRouteNavigationPanel()
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error cargando ruta", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error cargando ruta", e)
                 Toast.makeText(this, "Error cargando la ruta: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -356,7 +356,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.saveRoutePanelButton.visibility = View.GONE
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Error al guardar ruta", e)
+                if (BuildConfig.DEBUG) Log.e(TAG, "Error al guardar ruta", e)
                 NotificationHelper.error(binding.root, "Error al guardar la ruta: ${e.message}")
             }
     }
@@ -516,7 +516,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error Routes API v2 (navegación): ${e.message}", e)
+                if (BuildConfig.DEBUG) Log.e(TAG, "Error Routes API v2 (navegación): ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@MapsActivity, "Error al calcular la ruta: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -568,7 +568,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Routes API v2 error (ruta): ${e.message}", e)
+                if (BuildConfig.DEBUG) Log.e(TAG, "Routes API v2 error (ruta): ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     drawStraightRoutePolyline(validSpots)
                 }
@@ -700,7 +700,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     try {
                         document.toObject(TouristSpot::class.java).copy(id = document.id)
                     } catch (e: Exception) {
-                        Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
+                        if (BuildConfig.DEBUG) Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
                         null
                     }
                 }
@@ -721,7 +721,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     NotificationHelper.info(binding.root, "No se encontraron lugares con estos filtros")
                 }
             }.addOnFailureListener { e ->
-                Log.e("Firestore", "Error en la búsqueda", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error en la búsqueda", e)
                 Toast.makeText(this, "Error en la búsqueda: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
@@ -779,14 +779,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     try {
                         document.toObject(TouristSpot::class.java).copy(id = document.id)
                     } catch (e: Exception) {
-                        Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
+                        if (BuildConfig.DEBUG) Log.e("Firestore", "Error convirtiendo documento ${document.id}", e)
                         null
                     }
                 }
 
                 applyFilters()
             }.addOnFailureListener { e ->
-                Log.e("Firestore", "Error obteniendo documentos", e)
+                if (BuildConfig.DEBUG) Log.e("Firestore", "Error obteniendo documentos", e)
                 Toast.makeText(this, "Error leyendo Firestore: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }

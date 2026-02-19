@@ -27,70 +27,70 @@ object FirestoreErrorHandler {
             is FirebaseFirestoreException -> {
                 when (exception.code) {
                     Code.PERMISSION_DENIED -> {
-                        Log.w(TAG, "Permission denied for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Permission denied for: $operation", exception)
                         "⚠️ No tienes permiso para $operation. " +
                         "Por favor, inicia sesión o verifica tus permisos."
                     }
 
                     Code.UNAUTHENTICATED -> {
-                        Log.w(TAG, "Unauthenticated for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Unauthenticated for: $operation", exception)
                         "🔒 Debes iniciar sesión para $operation"
                     }
 
                     Code.NOT_FOUND -> {
-                        Log.w(TAG, "Document not found for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Document not found for: $operation", exception)
                         "❌ No se encontró el elemento solicitado"
                     }
 
                     Code.ALREADY_EXISTS -> {
-                        Log.w(TAG, "Document already exists for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Document already exists for: $operation", exception)
                         "⚠️ Este elemento ya existe"
                     }
 
                     Code.FAILED_PRECONDITION -> {
-                        Log.w(TAG, "Failed precondition for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Failed precondition for: $operation", exception)
                         "⚠️ No se cumplieron las condiciones necesarias para $operation"
                     }
 
                     Code.INVALID_ARGUMENT -> {
-                        Log.w(TAG, "Invalid argument for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Invalid argument for: $operation", exception)
                         "⚠️ Datos inválidos. Verifica la información e intenta nuevamente."
                     }
 
                     Code.UNAVAILABLE -> {
-                        Log.w(TAG, "Service unavailable for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Service unavailable for: $operation", exception)
                         "📡 Servicio temporalmente no disponible. Intenta más tarde."
                     }
 
                     Code.DEADLINE_EXCEEDED -> {
-                        Log.w(TAG, "Timeout for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Timeout for: $operation", exception)
                         "⏱️ La operación tardó demasiado. Verifica tu conexión."
                     }
 
                     Code.RESOURCE_EXHAUSTED -> {
-                        Log.w(TAG, "Quota exceeded for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Quota exceeded for: $operation", exception)
                         "⚠️ Se ha excedido el límite de operaciones. Intenta más tarde."
                     }
 
                     Code.CANCELLED -> {
-                        Log.i(TAG, "Operation cancelled: $operation")
+                        if (BuildConfig.DEBUG) Log.i(TAG, "Operation cancelled: $operation")
                         "❌ Operación cancelada"
                     }
 
                     Code.ABORTED -> {
-                        Log.w(TAG, "Transaction aborted for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.w(TAG, "Transaction aborted for: $operation", exception)
                         "⚠️ Operación interrumpida. Intenta nuevamente."
                     }
 
                     else -> {
-                        Log.e(TAG, "Unknown Firestore error for: $operation", exception)
+                        if (BuildConfig.DEBUG) Log.e(TAG, "Unknown Firestore error for: $operation", exception)
                         "❌ Error: ${exception.message ?: "Error desconocido"}"
                     }
                 }
             }
 
             else -> {
-                Log.e(TAG, "Non-Firestore error for: $operation", exception)
+                if (BuildConfig.DEBUG) Log.e(TAG, "Non-Firestore error for: $operation", exception)
                 "❌ Error inesperado: ${exception.message ?: "Error desconocido"}"
             }
         }
@@ -158,6 +158,7 @@ object FirestoreErrorHandler {
      * Log detallado de error para debugging
      */
     fun logDetailedError(exception: Exception, operation: String, context: Map<String, Any?> = emptyMap()) {
+        if (!BuildConfig.DEBUG) return
         Log.e(TAG, """
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             Firestore Error Details

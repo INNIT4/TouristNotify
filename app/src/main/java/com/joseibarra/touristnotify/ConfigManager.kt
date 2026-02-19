@@ -56,10 +56,10 @@ object ConfigManager {
             // Fetch y activar configuración remota
             remoteConfig?.fetchAndActivate()?.await()
             isInitialized = true
-            Log.i(TAG, "✅ Remote Config inicializado correctamente")
+            if (BuildConfig.DEBUG) Log.i(TAG, "✅ Remote Config inicializado correctamente")
 
         } catch (e: Exception) {
-            Log.w(TAG, "⚠️ Error inicializando Remote Config, usando BuildConfig", e)
+            if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Error inicializando Remote Config, usando BuildConfig", e)
             isInitialized = true // Marcar como inicializado para usar BuildConfig
         }
     }
@@ -72,7 +72,7 @@ object ConfigManager {
         // 1. Intentar Remote Config
         remoteConfig?.getString(KEY_GEMINI_API_KEY)?.let { remoteKey ->
             if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                Log.d(TAG, "🔑 Gemini API key desde Remote Config")
+                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Gemini API key desde Remote Config")
                 return remoteKey
             }
         }
@@ -80,12 +80,12 @@ object ConfigManager {
         // 2. Fallback a BuildConfig (local.properties)
         val buildKey = BuildConfig.GEMINI_API_KEY
         if (buildKey.isNotBlank() && buildKey != "your_key_here") {
-            Log.d(TAG, "🔑 Gemini API key desde BuildConfig")
+            if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Gemini API key desde BuildConfig")
             return buildKey
         }
 
         // 3. No hay key disponible
-        Log.w(TAG, "⚠️ Gemini API key no configurada")
+        if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Gemini API key no configurada")
         return ""
     }
 
@@ -95,18 +95,18 @@ object ConfigManager {
     fun getMapsApiKey(): String {
         remoteConfig?.getString(KEY_MAPS_API_KEY)?.let { remoteKey ->
             if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                Log.d(TAG, "🔑 Maps API key desde Remote Config")
+                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Maps API key desde Remote Config")
                 return remoteKey
             }
         }
 
         val buildKey = BuildConfig.MAPS_API_KEY
         if (buildKey.isNotBlank() && buildKey != "your_key_here") {
-            Log.d(TAG, "🔑 Maps API key desde BuildConfig")
+            if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Maps API key desde BuildConfig")
             return buildKey
         }
 
-        Log.w(TAG, "⚠️ Maps API key no configurada")
+        if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Maps API key no configurada")
         return ""
     }
 
@@ -116,14 +116,14 @@ object ConfigManager {
     fun getWeatherApiKey(): String {
         remoteConfig?.getString(KEY_WEATHER_API_KEY)?.let { remoteKey ->
             if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                Log.d(TAG, "🔑 Weather API key desde Remote Config")
+                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Weather API key desde Remote Config")
                 return remoteKey
             }
         }
 
         // BuildConfig no tiene WEATHER_API_KEY, usar string vacío
         // (La app funcionará con datos mock)
-        Log.d(TAG, "ℹ️ Weather API key no configurada, usando datos mock")
+        if (BuildConfig.DEBUG) Log.d(TAG, "ℹ️ Weather API key no configurada, usando datos mock")
         return ""
     }
 
@@ -133,10 +133,10 @@ object ConfigManager {
     fun getMaxDailyRoutes(): Int {
         return try {
             val value = remoteConfig?.getLong(KEY_MAX_DAILY_ROUTES)?.toInt() ?: 5
-            Log.d(TAG, "⚙️ Max daily routes: $value")
+            if (BuildConfig.DEBUG) Log.d(TAG, "⚙️ Max daily routes: $value")
             value
         } catch (e: Exception) {
-            Log.w(TAG, "Error obteniendo max_daily_routes, usando default: 5", e)
+            if (BuildConfig.DEBUG) Log.w(TAG, "Error obteniendo max_daily_routes, usando default: 5", e)
             5
         }
     }
@@ -147,10 +147,10 @@ object ConfigManager {
     fun getMaxDailyRoutesPremium(): Int {
         return try {
             val value = remoteConfig?.getLong(KEY_MAX_DAILY_ROUTES_PREMIUM)?.toInt() ?: 20
-            Log.d(TAG, "⚙️ Max daily routes premium: $value")
+            if (BuildConfig.DEBUG) Log.d(TAG, "⚙️ Max daily routes premium: $value")
             value
         } catch (e: Exception) {
-            Log.w(TAG, "Error obteniendo max_daily_routes_premium, usando default: 20", e)
+            if (BuildConfig.DEBUG) Log.w(TAG, "Error obteniendo max_daily_routes_premium, usando default: 20", e)
             20
         }
     }
@@ -162,9 +162,9 @@ object ConfigManager {
     suspend fun forceRefresh() {
         try {
             remoteConfig?.fetchAndActivate()?.await()
-            Log.i(TAG, "🔄 Remote Config actualizado")
+            if (BuildConfig.DEBUG) Log.i(TAG, "🔄 Remote Config actualizado")
         } catch (e: Exception) {
-            Log.e(TAG, "Error al actualizar Remote Config", e)
+            if (BuildConfig.DEBUG) Log.e(TAG, "Error al actualizar Remote Config", e)
         }
     }
 

@@ -15,7 +15,8 @@ import java.util.Locale
  * Adapter para mostrar fotos en la galería
  */
 class PhotoGalleryAdapter(
-    private val onPhotoClick: (PlacePhoto, Int) -> Unit
+    private val onPhotoClick: (PlacePhoto, Int) -> Unit,
+    private val onLikeClick: (PlacePhoto) -> Unit = {}
 ) : ListAdapter<PlacePhoto, PhotoGalleryAdapter.PhotoViewHolder>(PhotoDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -60,6 +61,9 @@ class PhotoGalleryAdapter(
 
             // Likes
             binding.likesTextView.text = "❤️ ${photo.likes}"
+            binding.likesTextView.setOnClickListener {
+                onLikeClick(photo)
+            }
 
             // Click en la foto
             binding.root.setOnClickListener {

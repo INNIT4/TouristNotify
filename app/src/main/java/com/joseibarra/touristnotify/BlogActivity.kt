@@ -307,8 +307,13 @@ class BlogActivity : AppCompatActivity() {
                     NotificationHelper.info(binding.root, "Ya no te gusta este artículo")
                 }
 
-                // Recargar posts
-                loadBlogPosts()
+                // Actualizar localmente sin recargar toda la lista
+                val index = blogPosts.indexOfFirst { it.id == post.id }
+                if (index != -1) {
+                    val newLikes = if (documents.isEmpty) post.likes + 1 else maxOf(0, post.likes - 1)
+                    blogPosts[index] = blogPosts[index].copy(likes = newLikes)
+                    adapter.notifyItemChanged(index)
+                }
             }
     }
 

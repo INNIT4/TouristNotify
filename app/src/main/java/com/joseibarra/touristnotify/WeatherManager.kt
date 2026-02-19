@@ -29,7 +29,7 @@ object WeatherManager {
 
             // Si no hay API key, usar datos mock
             if (apiKey.isBlank()) {
-                Log.w(TAG, "WEATHER_API_KEY no configurada, usando datos simulados")
+                if (BuildConfig.DEBUG) Log.w(TAG, "WEATHER_API_KEY no configurada, usando datos simulados")
                 return@withContext Result.success(getMockWeather())
             }
 
@@ -56,7 +56,7 @@ object WeatherManager {
             Result.success(weatherInfo)
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error obteniendo clima, usando datos mock", e)
+            if (BuildConfig.DEBUG) Log.e(TAG, "Error obteniendo clima, usando datos mock", e)
             // Fallback a datos mock si falla la API
             Result.success(getMockWeather())
         }
@@ -70,7 +70,7 @@ object WeatherManager {
             val apiKey = ConfigManager.getWeatherApiKey()
 
             if (apiKey.isBlank()) {
-                Log.w(TAG, "WEATHER_API_KEY no configurada, usando pronóstico simulado")
+                if (BuildConfig.DEBUG) Log.w(TAG, "WEATHER_API_KEY no configurada, usando pronóstico simulado")
                 return@withContext Result.success(getMockForecast())
             }
 
@@ -111,7 +111,7 @@ object WeatherManager {
             Result.success(forecast)
 
         } catch (e: Exception) {
-            Log.e(TAG, "Error obteniendo pronóstico, usando datos mock", e)
+            if (BuildConfig.DEBUG) Log.e(TAG, "Error obteniendo pronóstico, usando datos mock", e)
             Result.success(getMockForecast())
         }
     }

@@ -2,31 +2,52 @@ package com.joseibarra.touristnotify
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.joseibarra.touristnotify.databinding.ActivityPlaceDetailsBinding
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+import java.util.UUID
 
 class PlaceDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlaceDetailsBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var storage: FirebaseStorage
     private lateinit var reviewAdapter: ReviewAdapter
     private var placeId: String? = null
     private var isFavorite: Boolean = false
     private var placeName: String = ""
     private var placeCategory: String = ""
+    private var reviewImageUri: Uri? = null
+
+    private val reviewImagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                reviewImageUri = uri
+                binding.reviewImagePreview.setImageURI(uri)
+                binding.reviewImagePreview.visibility = View.VISIBLE
+                binding.removeReviewImageButton.visibility = View.VISIBLE
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +56,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        storage = FirebaseStorage.getInstance()
 
         // Obtener placeId de varias fuentes
         placeId = when {
@@ -311,6 +333,17 @@ class PlaceDetailsActivity : AppCompatActivity() {
         reviewAdapter = ReviewAdapter(emptyList())
         binding.reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.reviewsRecyclerView.adapter = reviewAdapter
+
+        binding.addReviewImageButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
+            reviewImagePickerLauncher.launch(intent)
+        }
+        binding.removeReviewImageButton.setOnClickListener {
+            reviewImageUri = null
+            binding.reviewImagePreview.setImageDrawable(null)
+            binding.reviewImagePreview.visibility = View.GONE
+            binding.removeReviewImageButton.visibility = View.GONE
+        }
     }
 
     private fun loadReviews() {
@@ -356,33 +389,72 @@ class PlaceDetailsActivity : AppCompatActivity() {
             }
 
             val placeRef = db.collection("lugares").document(currentPlaceId)
+            val imageUri = reviewImageUri
 
-            // Verificar si el usuario ya dejó una reseña
-            placeRef.collection("reviews")
-                .whereEqualTo("userId", currentUser.uid)
-                .get()
-                .addOnSuccessListener { existingReviews ->
-                    if (!existingReviews.isEmpty) {
-                        NotificationHelper.show(
-                            binding.root,
-                            "Ya dejaste una reseña para este lugar",
-                            NotificationHelper.NotificationType.WARNING,
-                            Snackbar.LENGTH_LONG,
-                            "Actualizar"
-                        ) {
-                            updateExistingReview(existingReviews.documents[0].id, rating, comment)
-                        }
-                    } else {
-                        submitNewReview(placeRef, currentUser.uid, currentUser.displayName ?: "Anónimo", rating, comment)
+            // Si hay imagen, comprimirla y subirla primero
+            if (imageUri != null) {
+                val compressed = compressReviewImage(imageUri)
+                if (compressed == null) {
+                    NotificationHelper.error(binding.root, "Error al procesar la imagen")
+                    return@requireAuth
+                }
+                val photoId = UUID.randomUUID().toString()
+                val storageRef = storage.reference
+                    .child("review_photos")
+                    .child(currentPlaceId)
+                    .child("$photoId.jpg")
+
+                binding.submitReviewButton.isEnabled = false
+                storageRef.putBytes(compressed)
+                    .continueWithTask { task ->
+                        if (!task.isSuccessful) task.exception?.let { throw it }
+                        storageRef.downloadUrl
+                    }.addOnSuccessListener { downloadUri ->
+                        checkAndSubmitReview(placeRef, currentUser, rating, comment, downloadUri.toString())
+                    }.addOnFailureListener { e ->
+                        binding.submitReviewButton.isEnabled = true
+                        NotificationHelper.error(binding.root, "Error al subir la imagen: ${e.message}")
                     }
-                }
-                .addOnFailureListener { e ->
-                    NotificationHelper.error(binding.root, "Error al verificar reseñas: ${e.message}")
-                }
+            } else {
+                checkAndSubmitReview(placeRef, currentUser, rating, comment, "")
+            }
         }
     }
 
-    private fun submitNewReview(placeRef: com.google.firebase.firestore.DocumentReference, userId: String, userName: String, rating: Float, comment: String) {
+    private fun checkAndSubmitReview(
+        placeRef: com.google.firebase.firestore.DocumentReference,
+        currentUser: com.google.firebase.auth.FirebaseUser,
+        rating: Float,
+        comment: String,
+        imageUrl: String
+    ) {
+        // Verificar si el usuario ya dejó una reseña
+        placeRef.collection("reviews")
+            .whereEqualTo("userId", currentUser.uid)
+            .get()
+            .addOnSuccessListener { existingReviews ->
+                binding.submitReviewButton.isEnabled = true
+                if (!existingReviews.isEmpty) {
+                    NotificationHelper.show(
+                        binding.root,
+                        "Ya dejaste una reseña para este lugar",
+                        NotificationHelper.NotificationType.WARNING,
+                        Snackbar.LENGTH_LONG,
+                        "Actualizar"
+                    ) {
+                        updateExistingReview(existingReviews.documents[0].id, rating, comment, imageUrl)
+                    }
+                } else {
+                    submitNewReview(placeRef, currentUser.uid, currentUser.displayName ?: "Anónimo", rating, comment, imageUrl)
+                }
+            }
+            .addOnFailureListener { e ->
+                binding.submitReviewButton.isEnabled = true
+                NotificationHelper.error(binding.root, "Error al verificar reseñas: ${e.message}")
+            }
+    }
+
+    private fun submitNewReview(placeRef: com.google.firebase.firestore.DocumentReference, userId: String, userName: String, rating: Float, comment: String, imageUrl: String) {
         db.runTransaction { transaction ->
             val snapshot = transaction.get(placeRef)
             val spot = snapshot.toObject(TouristSpot::class.java)
@@ -398,7 +470,8 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 userId = userId,
                 userName = userName,
                 rating = rating,
-                comment = comment
+                comment = comment,
+                imageUrl = imageUrl
             )
             transaction.set(placeRef.collection("reviews").document(), review)
             null
@@ -406,6 +479,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
             NotificationHelper.reviewSubmitted(binding.root)
             binding.submitRatingBar.rating = 0f
             binding.reviewEditText.text.clear()
+            clearReviewImage()
             loadPlaceDetails()
             loadReviews()
         }.addOnFailureListener { e ->
@@ -413,7 +487,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateExistingReview(reviewId: String, rating: Float, comment: String) {
+    private fun updateExistingReview(reviewId: String, rating: Float, comment: String, imageUrl: String) {
         if (comment.isNotEmpty() && comment.length < 10) {
             NotificationHelper.warning(binding.root, "La reseña debe tener al menos 10 caracteres")
             return
@@ -442,23 +516,56 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
             transaction.update(placeRef, "rating", newRating)
 
+            val updateMap = mutableMapOf<String, Any>("rating" to rating, "comment" to comment)
+            if (imageUrl.isNotBlank()) updateMap["imageUrl"] = imageUrl
+
             // Actualizar la reseña
             transaction.update(
                 placeRef.collection("reviews").document(reviewId),
-                mapOf(
-                    "rating" to rating,
-                    "comment" to comment
-                )
+                updateMap
             )
             null
         }.addOnSuccessListener {
             NotificationHelper.success(binding.root, "Reseña actualizada exitosamente")
             binding.submitRatingBar.rating = 0f
             binding.reviewEditText.text.clear()
+            clearReviewImage()
             loadPlaceDetails()
             loadReviews()
         }.addOnFailureListener { e ->
             NotificationHelper.error(binding.root, "Error al actualizar la reseña: ${e.message}")
+        }
+    }
+
+    private fun clearReviewImage() {
+        reviewImageUri = null
+        binding.reviewImagePreview.setImageDrawable(null)
+        binding.reviewImagePreview.visibility = View.GONE
+        binding.removeReviewImageButton.visibility = View.GONE
+    }
+
+    private fun compressReviewImage(uri: Uri): ByteArray? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+
+            val maxSize = 1080f
+            val scale = if (bitmap.width > bitmap.height) maxSize / bitmap.width else maxSize / bitmap.height
+            val scaled = Bitmap.createScaledBitmap(
+                bitmap,
+                (bitmap.width * scale).toInt(),
+                (bitmap.height * scale).toInt(),
+                true
+            )
+            val out = ByteArrayOutputStream()
+            scaled.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            bitmap.recycle()
+            scaled.recycle()
+            out.toByteArray()
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) Log.e("PlaceDetails", "Error comprimiendo imagen de reseña", e)
+            null
         }
     }
 

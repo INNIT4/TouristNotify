@@ -55,6 +55,7 @@ service cloud.firestore {
                          request.resource.data.rating <= 5 &&
                          request.resource.data.comment.size() <= 500 &&
                          request.resource.data.userName.size() <= 100 &&
+                         (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl.size() <= 500) &&
                          request.resource.data.keys().hasAll([
                            'userId', 'userName', 'rating', 'comment', 'timestamp'
                          ]);
@@ -64,7 +65,8 @@ service cloud.firestore {
                          resource.data.userId == request.auth.uid &&
                          request.resource.data.rating >= 1 &&
                          request.resource.data.rating <= 5 &&
-                         request.resource.data.comment.size() <= 500;
+                         request.resource.data.comment.size() <= 500 &&
+                         (!('imageUrl' in request.resource.data) || request.resource.data.imageUrl.size() <= 500);
 
         // Solo el dueño o admin pueden eliminar una review
         allow delete: if isAuthenticated() &&

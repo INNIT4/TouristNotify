@@ -8,6 +8,7 @@ data class Review(
     val userName: String = "Anónimo",
     val rating: Float = 0f,
     val comment: String = "",
+    val imageUrl: String = "",
     @ServerTimestamp
     val timestamp: Date? = null
 )

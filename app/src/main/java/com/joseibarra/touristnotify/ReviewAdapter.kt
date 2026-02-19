@@ -1,8 +1,11 @@
 package com.joseibarra.touristnotify
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.joseibarra.touristnotify.databinding.ListItemReviewBinding
 
 class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
@@ -28,6 +31,17 @@ class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<Re
             binding.userNameTextView.text = review.userName
             binding.reviewRatingBar.rating = review.rating
             binding.commentTextView.text = review.comment
+
+            if (review.imageUrl.isNotBlank()) {
+                binding.reviewImageView.visibility = View.VISIBLE
+                Glide.with(binding.root.context)
+                    .load(review.imageUrl)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.reviewImageView)
+            } else {
+                binding.reviewImageView.visibility = View.GONE
+            }
         }
     }
 }

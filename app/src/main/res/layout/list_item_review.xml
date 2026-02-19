@@ -32,4 +32,13 @@
         android:ellipsize="end"
         tools:text="Este es un comentario de la reseña. El lugar es increíble y lo recomiendo mucho." />
 
+    <ImageView
+        android:id="@+id/review_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="Foto de la reseña"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
 </LinearLayout>

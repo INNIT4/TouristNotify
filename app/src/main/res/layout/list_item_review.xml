@@ -28,6 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:maxLines="6"
+        android:ellipsize="end"
         tools:text="Este es un comentario de la reseña. El lugar es increíble y lo recomiendo mucho." />
 
 </LinearLayout>

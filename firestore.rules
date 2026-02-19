@@ -48,16 +48,23 @@ service cloud.firestore {
         // Todos pueden leer reviews
         allow read: if true;
 
-        // Solo usuarios autenticados pueden crear reviews
+        // Solo usuarios autenticados pueden crear reviews (con validaciones anti-abuso)
         allow create: if isAuthenticated() &&
                          request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.rating >= 1 &&
+                         request.resource.data.rating <= 5 &&
+                         request.resource.data.comment.size() <= 500 &&
+                         request.resource.data.userName.size() <= 100 &&
                          request.resource.data.keys().hasAll([
                            'userId', 'userName', 'rating', 'comment', 'timestamp'
                          ]);
 
-        // Solo el dueño puede actualizar su propia review
+        // Solo el dueño puede actualizar su propia review (con mismas validaciones)
         allow update: if isAuthenticated() &&
-                         resource.data.userId == request.auth.uid;
+                         resource.data.userId == request.auth.uid &&
+                         request.resource.data.rating >= 1 &&
+                         request.resource.data.rating <= 5 &&
+                         request.resource.data.comment.size() <= 500;
 
         // Solo el dueño o admin pueden eliminar una review
         allow delete: if isAuthenticated() &&

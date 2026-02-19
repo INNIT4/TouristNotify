@@ -345,7 +345,16 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 return@requireAuth
             }
 
-            val comment = binding.reviewEditText.text.toString()
+            val comment = binding.reviewEditText.text.toString().trim()
+            if (comment.isNotEmpty() && comment.length < 10) {
+                NotificationHelper.warning(binding.root, "La reseña debe tener al menos 10 caracteres")
+                return@requireAuth
+            }
+            if (comment.length > 500) {
+                NotificationHelper.warning(binding.root, "La reseña no puede superar los 500 caracteres")
+                return@requireAuth
+            }
+
             val placeRef = db.collection("lugares").document(currentPlaceId)
 
             // Verificar si el usuario ya dejó una reseña
@@ -405,6 +414,14 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateExistingReview(reviewId: String, rating: Float, comment: String) {
+        if (comment.isNotEmpty() && comment.length < 10) {
+            NotificationHelper.warning(binding.root, "La reseña debe tener al menos 10 caracteres")
+            return
+        }
+        if (comment.length > 500) {
+            NotificationHelper.warning(binding.root, "La reseña no puede superar los 500 caracteres")
+            return
+        }
         val currentPlaceId = placeId ?: return
         val placeRef = db.collection("lugares").document(currentPlaceId)
 

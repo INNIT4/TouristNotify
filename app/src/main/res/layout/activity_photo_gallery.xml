@@ -42,7 +42,7 @@
 
     </LinearLayout>
 
-    <!-- FAB para subir fotos (solo admins) -->
+    <!-- FAB para subir fotos (usuarios autenticados) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_upload_photo"
         android:layout_width="wrap_content"

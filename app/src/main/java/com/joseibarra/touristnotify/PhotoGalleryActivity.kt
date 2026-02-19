@@ -42,9 +42,9 @@ class PhotoGalleryActivity : AppCompatActivity() {
         setupRecyclerView()
         loadPhotos()
 
-        // FAB solo para admins de la Oficina de Turismo
-        val userEmail = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email
-        if (AdminConfig.canCreateBlogPosts(userEmail)) {
+        // FAB para cualquier usuario autenticado
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
             binding.fabUploadPhoto.visibility = View.VISIBLE
             binding.fabUploadPhoto.setOnClickListener {
                 val intent = Intent(this, AdminPhotoUploadActivity::class.java).apply {

@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream
 import java.util.UUID
 
 /**
- * Actividad para que la Oficina de Turismo suba fotos de lugares
+ * Actividad para que cualquier usuario autenticado suba fotos de lugares
  */
 class AdminPhotoUploadActivity : AppCompatActivity() {
 
@@ -50,26 +50,16 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
-        // Verificar autenticación antes de verificar permisos de admin
+        // Verificar autenticación
         if (!AuthManager.requireAuth(this, AuthManager.AuthRequired.UPLOAD_PHOTOS) {
-                checkAdminAndInitialize()
+                initializeUpload()
             }) {
             finish()
             return
         }
     }
 
-    private fun checkAdminAndInitialize() {
-        // Verificar autorización - Solo Oficina de Turismo
-        if (!AdminConfig.canCreateBlogPosts(auth.currentUser?.email)) {
-            NotificationHelper.error(
-                window.decorView.rootView,
-                "Acceso denegado. Solo personal autorizado de la Oficina de Turismo puede subir fotos."
-            )
-            finish()
-            return
-        }
-
+    private fun initializeUpload() {
         binding = ActivityAdminPhotoUploadBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -204,14 +194,21 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
     private fun savePhotoMetadata(photoId: String, imageUrl: String, caption: String) {
         val currentUser = auth.currentUser ?: return
 
+        val isAdmin = AdminConfig.canCreateBlogPosts(currentUser.email)
+        val displayName = if (isAdmin) {
+            "Oficina de Turismo de Álamos"
+        } else {
+            currentUser.displayName?.takeIf { it.isNotBlank() } ?: "Turista"
+        }
+
         val photo = PlacePhoto(
             id = photoId,
             placeId = placeId!!,
             placeName = placeName!!,
             imageUrl = imageUrl,
-            thumbnailUrl = imageUrl, // Mismo URL para ambos por ahora
+            thumbnailUrl = imageUrl,
             uploadedBy = currentUser.uid,
-            uploaderName = "Oficina de Turismo de Álamos",
+            uploaderName = displayName,
             caption = caption,
             uploadedAt = null, // ServerTimestamp se asignará automáticamente
             likes = 0,

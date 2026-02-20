@@ -44,7 +44,7 @@ class BlogActivity : AppCompatActivity() {
 
     private fun setupUI() {
         // RecyclerView setup
-        adapter = BlogPostAdapter(blogPosts,
+        adapter = BlogPostAdapter(
             onPostClick = { post ->
                 openPostDetails(post)
             },
@@ -118,8 +118,9 @@ class BlogActivity : AppCompatActivity() {
             blogPosts.filter { it.category == currentCategory }
         }
 
-        adapter.updatePosts(filteredPosts)
+        adapter.submitList(filteredPosts)
         binding.postsCountTextView.text = "${filteredPosts.size} artículos"
+        binding.blogRecyclerView.scrollToPosition(0)
     }
 
     private fun loadBlogPosts() {
@@ -151,7 +152,7 @@ class BlogActivity : AppCompatActivity() {
                 if (blogPosts.isEmpty()) {
                     binding.emptyStateContainer.visibility = View.VISIBLE
                     binding.blogRecyclerView.visibility = View.GONE
-                    createSamplePosts()
+                    // Removed createSamplePosts() - no more hardcoded sample data
                 } else {
                     binding.emptyStateContainer.visibility = View.GONE
                     binding.blogRecyclerView.visibility = View.VISIBLE
@@ -256,7 +257,7 @@ class BlogActivity : AppCompatActivity() {
         blogPosts.addAll(samplePosts)
         binding.emptyStateContainer.visibility = View.GONE
         binding.blogRecyclerView.visibility = View.VISIBLE
-        adapter.notifyDataSetChanged()
+        adapter.submitList(blogPosts.toList())
         binding.postsCountTextView.text = "${blogPosts.size} artículos"
     }
 
@@ -312,7 +313,7 @@ class BlogActivity : AppCompatActivity() {
                 if (index != -1) {
                     val newLikes = if (documents.isEmpty) post.likes + 1 else maxOf(0, post.likes - 1)
                     blogPosts[index] = blogPosts[index].copy(likes = newLikes)
-                    adapter.notifyItemChanged(index)
+                    filterPosts() // Re-aplicar filtro actual (que llama submitList internamente)
                 }
             }
     }

@@ -247,9 +247,14 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadPlaceDetails() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.detailsScrollView.visibility = View.GONE
+
         placeId?.let {
             db.collection("lugares").document(it).get()
                 .addOnSuccessListener { document ->
+                    binding.progressBar.visibility = View.GONE
+                    binding.detailsScrollView.visibility = View.VISIBLE
                     if (document != null && document.exists()) {
                         val spot = document.toObject(TouristSpot::class.java)
                         spot?.let { place ->
@@ -313,6 +318,10 @@ class PlaceDetailsActivity : AppCompatActivity() {
                         }
                     }
                 }
+                .addOnFailureListener { e ->
+                    binding.progressBar.visibility = View.GONE
+                    NotificationHelper.error(binding.root, "Error al cargar detalles: ${e.message}")
+                }
         }
     }
 
@@ -325,7 +334,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupReviews() {
-        reviewAdapter = ReviewAdapter(emptyList())
+        reviewAdapter = ReviewAdapter()
         binding.reviewsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.reviewsRecyclerView.adapter = reviewAdapter
 
@@ -349,7 +358,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { documents ->
                     val reviews = documents.map { doc -> doc.toObject(Review::class.java) }
-                    reviewAdapter.updateReviews(reviews)
+                    reviewAdapter.submitList(reviews)
                 }
                 .addOnFailureListener { e ->
                     NotificationHelper.error(binding.root, "Error al cargar reseñas: ${e.message}")

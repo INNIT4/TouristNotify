@@ -56,8 +56,8 @@ class EventsActivity : AppCompatActivity() {
                 events.clear()
 
                 if (documents.isEmpty) {
-                    // Si no hay eventos en Firebase, mostrar eventos de ejemplo
-                    loadSampleEvents()
+                    // No events available - show empty state instead of samples
+                    binding.emptyStateContainer.visibility = View.VISIBLE
                     return@addOnSuccessListener
                 }
 
@@ -88,8 +88,8 @@ class EventsActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 binding.progressBar.visibility = View.GONE
-                // En caso de error, mostrar eventos de ejemplo
-                loadSampleEvents()
+                binding.emptyStateContainer.visibility = View.VISIBLE
+                NotificationHelper.error(binding.root, "Error al cargar eventos: ${e.message}")
             }
     }
 

@@ -86,16 +86,41 @@ class FavoritesActivity : AppCompatActivity() {
         lifecycleScope.launch {
             favorites.clear()
 
-            favoritesList.forEach { favorite ->
-                try {
-                    val doc = db.collection("lugares").document(favorite.placeId).get().await()
-                    val place = doc.toObject(TouristSpot::class.java)?.copy(id = doc.id)
+            if (favoritesList.isEmpty()) {
+                binding.progressBar.visibility = View.GONE
+                binding.emptyTextView.visibility = View.VISIBLE
+                return@launch
+            }
+
+            val placeIds = favoritesList.map { it.placeId }
+
+            // Firestore whereIn soporta hasta 10 IDs por query
+            val chunks = placeIds.chunked(10)
+            val allPlaces = mutableListOf<TouristSpot>()
+
+            try {
+                for (chunk in chunks) {
+                    val docs = db.collection("lugares")
+                        .whereIn("__name__", chunk)
+                        .get()
+                        .await()
+
+                    docs.forEach { doc ->
+                        val place = doc.toObject(TouristSpot::class.java).copy(id = doc.id)
+                        allPlaces.add(place)
+                    }
+                }
+
+                // Crear pares (Favorite, TouristSpot) manteniendo el orden
+                favoritesList.forEach { favorite ->
+                    val place = allPlaces.find { it.id == favorite.placeId }
                     if (place != null) {
                         favorites.add(Pair(favorite, place))
                     }
-                } catch (e: Exception) {
-                    // Continuar con el siguiente
                 }
+
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) android.util.Log.e("FavoritesActivity", "Error loading places", e)
             }
 
             binding.progressBar.visibility = View.GONE

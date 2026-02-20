@@ -580,14 +580,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * Construye el cuerpo JSON para Routes API v2 con múltiples paradas.
      */
     private fun buildRoutesApiBody(spots: List<TouristSpot>): String {
-        val origin = spots.first().ubicacion!!
-        val destination = spots.last().ubicacion!!
+        val origin = spots.first().ubicacion ?: throw IllegalArgumentException("Origin ubicacion is null")
+        val destination = spots.last().ubicacion ?: throw IllegalArgumentException("Destination ubicacion is null")
 
         val intermediatesJson = if (spots.size > 2) {
-            spots.subList(1, spots.size - 1).joinToString(",") { spot ->
-                val loc = spot.ubicacion!!
-                """{"location":{"latLng":{"latitude":${loc.latitude},"longitude":${loc.longitude}}}}"""
-            }
+            spots.subList(1, spots.size - 1).mapNotNull { spot ->
+                spot.ubicacion?.let { loc ->
+                    """{"location":{"latLng":{"latitude":${loc.latitude},"longitude":${loc.longitude}}}}"""
+                }
+            }.joinToString(",")
         } else ""
 
         return """

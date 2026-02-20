@@ -29,8 +29,8 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
     private var selectedImageUri: Uri? = null
-    private var placeId: String? = null
-    private var placeName: String? = null
+    private lateinit var placeId: String
+    private lateinit var placeName: String
 
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -63,14 +63,17 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
         binding = ActivityAdminPhotoUploadBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        placeId = intent.getStringExtra("PLACE_ID")
-        placeName = intent.getStringExtra("PLACE_NAME")
+        val idFromIntent = intent.getStringExtra("PLACE_ID")
+        val nameFromIntent = intent.getStringExtra("PLACE_NAME")
 
-        if (placeId == null || placeName == null) {
+        if (idFromIntent == null || nameFromIntent == null) {
             NotificationHelper.error(binding.root, "Error: datos del lugar no encontrados")
             finish()
             return
         }
+
+        placeId = idFromIntent
+        placeName = nameFromIntent
 
         supportActionBar?.title = "Subir Foto - $placeName"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -133,7 +136,7 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
         val photoId = UUID.randomUUID().toString()
         val storageRef = storage.reference
             .child("place_photos")
-            .child(placeId!!)
+            .child(placeId)
             .child("$photoId.jpg")
 
         val uploadTask = storageRef.putBytes(compressedImageData)
@@ -203,8 +206,8 @@ class AdminPhotoUploadActivity : AppCompatActivity() {
 
         val photo = PlacePhoto(
             id = photoId,
-            placeId = placeId!!,
-            placeName = placeName!!,
+            placeId = placeId,
+            placeName = placeName,
             imageUrl = imageUrl,
             thumbnailUrl = imageUrl,
             uploadedBy = currentUser.uid,

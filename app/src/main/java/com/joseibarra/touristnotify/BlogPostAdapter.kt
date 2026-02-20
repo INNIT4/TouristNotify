@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
@@ -14,10 +16,9 @@ import java.util.*
  * Adapter para mostrar posts del blog
  */
 class BlogPostAdapter(
-    private var posts: List<BlogPost>,
     private val onPostClick: (BlogPost) -> Unit,
     private val onLikeClick: (BlogPost) -> Unit
-) : RecyclerView.Adapter<BlogPostAdapter.BlogPostViewHolder>() {
+) : ListAdapter<BlogPost, BlogPostAdapter.BlogPostViewHolder>(BlogPostDiffCallback()) {
 
     inner class BlogPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val card: MaterialCardView = itemView.findViewById(R.id.post_card)
@@ -39,7 +40,7 @@ class BlogPostAdapter(
     }
 
     override fun onBindViewHolder(holder: BlogPostViewHolder, position: Int) {
-        val post = posts[position]
+        val post = getItem(position)
 
         holder.titleTextView.text = post.title
         holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
@@ -76,13 +77,6 @@ class BlogPostAdapter(
         }
     }
 
-    override fun getItemCount(): Int = posts.size
-
-    fun updatePosts(newPosts: List<BlogPost>) {
-        posts = newPosts
-        notifyDataSetChanged()
-    }
-
     private fun formatDate(date: Date): String {
         val now = System.currentTimeMillis()
         val diff = now - date.time
@@ -96,6 +90,16 @@ class BlogPostAdapter(
                 val sdf = SimpleDateFormat("dd MMM yyyy", Locale("es", "MX"))
                 sdf.format(date)
             }
+        }
+    }
+
+    class BlogPostDiffCallback : DiffUtil.ItemCallback<BlogPost>() {
+        override fun areItemsTheSame(oldItem: BlogPost, newItem: BlogPost): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: BlogPost, newItem: BlogPost): Boolean {
+            return oldItem == newItem
         }
     }
 }

@@ -3,12 +3,14 @@ package com.joseibarra.touristnotify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.joseibarra.touristnotify.databinding.ListItemReviewBinding
 
-class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
+class ReviewAdapter : ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(ReviewDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
         val binding = ListItemReviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -16,14 +18,7 @@ class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<Re
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
-        holder.bind(reviews[position])
-    }
-
-    override fun getItemCount() = reviews.size
-
-    fun updateReviews(newReviews: List<Review>) {
-        reviews = newReviews
-        notifyDataSetChanged()
+        holder.bind(getItem(position))
     }
 
     inner class ReviewViewHolder(private val binding: ListItemReviewBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -42,6 +37,16 @@ class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<Re
             } else {
                 binding.reviewImageView.visibility = View.GONE
             }
+        }
+    }
+
+    class ReviewDiffCallback : DiffUtil.ItemCallback<Review>() {
+        override fun areItemsTheSame(oldItem: Review, newItem: Review): Boolean {
+            return oldItem.userId == newItem.userId && oldItem.createdAt == newItem.createdAt
+        }
+
+        override fun areContentsTheSame(oldItem: Review, newItem: Review): Boolean {
+            return oldItem == newItem
         }
     }
 }

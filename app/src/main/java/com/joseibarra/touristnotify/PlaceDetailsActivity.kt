@@ -61,7 +61,10 @@ class PlaceDetailsActivity : AppCompatActivity() {
         placeId = when {
             // 1. Desde deep link (QR escaneado con cámara nativa)
             intent?.data != null -> {
-                handleDeepLink(intent.data)
+                DeepLinkParser.parsePlaceId(intent.data)?.also {
+                    if (BuildConfig.DEBUG) Log.d(TAG, "Deep link detected: placeId = $it")
+                    NotificationHelper.success(binding.root, "📱 Abriendo lugar desde código QR...")
+                }
             }
             // 2. Desde navegación normal de la app
             intent.hasExtra("PLACE_ID") -> {
@@ -85,46 +88,6 @@ class PlaceDetailsActivity : AppCompatActivity() {
         setupReviews()
         loadReviews()
         checkFavoriteStatus()
-    }
-
-    /**
-     * Procesa deep links de códigos QR
-     * Soporta formatos:
-     * - touristnotify://place/{placeId}
-     * - https://touristnotify.app/place/{placeId}
-     */
-    private fun handleDeepLink(uri: Uri?): String? {
-        if (uri == null) return null
-
-        return try {
-            when (uri.scheme) {
-                // touristnotify://place/abc123
-                "touristnotify" -> {
-                    if (uri.host == "place") {
-                        uri.lastPathSegment
-                    } else {
-                        null
-                    }
-                }
-                // https://touristnotify.app/place/abc123
-                "https", "http" -> {
-                    if (uri.host != "touristnotify.app") return null
-                    val pathSegments = uri.pathSegments
-                    if (pathSegments.size >= 2 && pathSegments[0] == "place") {
-                        pathSegments[1]
-                    } else {
-                        null
-                    }
-                }
-                else -> null
-            }?.also {
-                if (BuildConfig.DEBUG) Log.d(TAG, "Deep link detected: placeId = $it")
-                NotificationHelper.success(binding.root, "📱 Abriendo lugar desde código QR...")
-            }
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) Log.e(TAG, "Error processing deep link", e)
-            null
-        }
     }
 
     private fun setupLockedFeaturesUI() {

@@ -9,8 +9,26 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import android.view.View
 
+/**
+ * Helper para mostrar notificaciones al usuario en formato Material Design
+ *
+ * Proporciona métodos para mostrar Snackbars con diferentes tipos:
+ * - SUCCESS: Notificaciones de éxito (verde)
+ * - ERROR: Mensajes de error (rojo)
+ * - INFO: Información general (azul)
+ * - WARNING: Advertencias (naranja)
+ *
+ * Ejemplo de uso:
+ * ```kotlin
+ * NotificationHelper.success(binding.root, "Guardado exitosamente")
+ * NotificationHelper.error(binding.root, "Error al guardar")
+ * ```
+ */
 object NotificationHelper {
 
+    /**
+     * Tipos de notificación disponibles
+     */
     enum class NotificationType {
         SUCCESS, ERROR, INFO, WARNING
     }

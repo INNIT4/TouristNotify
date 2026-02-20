@@ -4,6 +4,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Manager centralizado para gestionar favoritos de usuarios
+ *
+ * Proporciona operaciones CRUD para favoritos almacenados en Firestore:
+ * - Agregar lugares a favoritos
+ * - Eliminar favoritos
+ * - Obtener lista de favoritos del usuario
+ * - Verificar si un lugar está en favoritos
+ *
+ * Requiere autenticación: Todas las operaciones verifican que el usuario esté autenticado.
+ * Los favoritos están asociados al userId de Firebase Auth.
+ */
 object FavoritesManager {
 
     private val db = FirebaseFirestore.getInstance()

@@ -40,17 +40,23 @@ object UsageManager {
      * @return Pair<Boolean, String> - (puede generar?, mensaje explicativo)
      */
     suspend fun canGenerateRoute(context: Context): Pair<Boolean, String> {
+        // Actualizar status premium si es necesario
+        refreshPremiumStatus()
+
         // Resetear contador si es un nuevo día
         resetIfNewDay(context)
 
         val currentCount = getCurrentDailyRoutesCount(context)
         val limit = getMaxDailyRoutes(context)
+        val isPremium = isUserPremiumCached()
 
         return if (currentCount < limit) {
             val remaining = limit - currentCount
-            Pair(true, "Tienes $remaining rutas IA disponibles hoy")
+            val tierInfo = if (isPremium) " (Premium)" else ""
+            Pair(true, "Tienes $remaining rutas IA disponibles hoy$tierInfo")
         } else {
-            Pair(false, "Has alcanzado el límite diario de $limit rutas con IA. Vuelve mañana para generar más.")
+            val upgradeMsg = if (!isPremium) " Mejora a Premium para más rutas." else ""
+            Pair(false, "Has alcanzado el límite diario de $limit rutas con IA.$upgradeMsg Vuelve mañana para generar más.")
         }
     }
 
@@ -58,6 +64,9 @@ object UsageManager {
      * Registra una ruta generada con IA
      */
     suspend fun recordRouteGeneration(context: Context): Boolean {
+        // Actualizar status premium si es necesario
+        refreshPremiumStatus()
+
         resetIfNewDay(context)
 
         val currentCount = getCurrentDailyRoutesCount(context)
@@ -108,17 +117,89 @@ object UsageManager {
         return prefs.getInt(KEY_DAILY_ROUTES_COUNT, 0)
     }
 
+    // Cache para evitar consultas repetidas a Firestore
+    private var premiumStatusCache: Pair<String?, Boolean>? = null // (userId, isPremium)
+    private var premiumCacheTimestamp: Long = 0
+    private const val PREMIUM_CACHE_TTL_MS = 5 * 60 * 1000L // 5 minutos
+
     /**
      * Obtiene el límite máximo de rutas por día para el usuario actual
      * Usa ConfigManager (Remote Config) con fallback a defaults
+     * Considera el tier premium del usuario (usa cache)
      */
     private fun getMaxDailyRoutes(context: Context): Int {
-        // TODO: Implementar lógica de usuarios premium cuando exista
-        // Por ahora todos tienen el mismo límite
         return try {
-            ConfigManager.getMaxDailyRoutes()
+            if (isUserPremiumCached()) {
+                ConfigManager.getMaxDailyRoutesPremium()
+            } else {
+                ConfigManager.getMaxDailyRoutes()
+            }
         } catch (e: Exception) {
             DEFAULT_MAX_DAILY_ROUTES
+        }
+    }
+
+    /**
+     * Verifica si el usuario es premium usando el cache
+     * (versión sync para compatibilidad)
+     */
+    private fun isUserPremiumCached(): Boolean {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email
+
+        if (userId == null) return false
+
+        // Los admins tienen premium automático
+        if (AdminConfig.isTourismOfficeUser(userEmail)) {
+            return true
+        }
+
+        // Usar cache si está disponible
+        val now = System.currentTimeMillis()
+        if (premiumStatusCache?.first == userId &&
+            (now - premiumCacheTimestamp) < PREMIUM_CACHE_TTL_MS) {
+            return premiumStatusCache?.second ?: false
+        }
+
+        // Si no hay cache, asumir no premium (se actualizará en próxima llamada suspend)
+        return false
+    }
+
+    /**
+     * Actualiza el cache de status premium consultando Firestore
+     * Debe llamarse desde funciones suspend antes de verificar límites
+     */
+    private suspend fun refreshPremiumStatus() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email
+
+        // Los admins siempre son premium
+        if (AdminConfig.isTourismOfficeUser(userEmail)) {
+            premiumStatusCache = Pair(userId, true)
+            premiumCacheTimestamp = System.currentTimeMillis()
+            return
+        }
+
+        // Consultar Firestore solo si el cache ha expirado
+        val now = System.currentTimeMillis()
+        if (premiumStatusCache?.first == userId &&
+            (now - premiumCacheTimestamp) < PREMIUM_CACHE_TTL_MS) {
+            return // Cache válido
+        }
+
+        try {
+            val db = FirebaseFirestore.getInstance()
+            val userDoc = db.collection("users")
+                .document(userId)
+                .get()
+                .await()
+
+            val isPremium = userDoc.getBoolean("isPremium") ?: false
+
+            premiumStatusCache = Pair(userId, isPremium)
+            premiumCacheTimestamp = now
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) android.util.Log.w("UsageManager", "Error refreshing premium status", e)
         }
     }
 
@@ -129,6 +210,32 @@ object UsageManager {
         val current = getCurrentDailyRoutesCount(context)
         val limit = getMaxDailyRoutes(context)
         return maxOf(0, limit - current)
+    }
+
+    /**
+     * Verifica si el usuario actual es premium (versión sync usando cache)
+     * Para verificación actualizada, usar isUserPremiumAsync()
+     */
+    fun isUserPremium(): Boolean {
+        return isUserPremiumCached()
+    }
+
+    /**
+     * Verifica si el usuario es premium con consulta a Firestore
+     * Actualiza el cache automáticamente
+     */
+    suspend fun isUserPremiumAsync(): Boolean {
+        refreshPremiumStatus()
+        return isUserPremiumCached()
+    }
+
+    /**
+     * Invalida el cache de premium status
+     * Útil después de una compra premium o cambio de tier
+     */
+    fun invalidatePremiumCache() {
+        premiumStatusCache = null
+        premiumCacheTimestamp = 0
     }
 
     /**
@@ -175,12 +282,15 @@ object UsageManager {
         val limit = getMaxDailyRoutes(context)
         val remaining = getRemainingRoutes(context)
         val percentage = if (limit > 0) (current.toFloat() / limit * 100).toInt() else 0
+        val isPremium = isUserPremiumCached()
 
         return UsageStats(
             routesUsedToday = current,
             routesLimitToday = limit,
             routesRemainingToday = remaining,
-            usagePercentage = percentage
+            usagePercentage = percentage,
+            isPremiumUser = isPremium,
+            premiumLimit = ConfigManager.getMaxDailyRoutesPremium()
         )
     }
 }
@@ -192,5 +302,7 @@ data class UsageStats(
     val routesUsedToday: Int,
     val routesLimitToday: Int,
     val routesRemainingToday: Int,
-    val usagePercentage: Int
+    val usagePercentage: Int,
+    val isPremiumUser: Boolean = false,
+    val premiumLimit: Int = 20
 )

@@ -65,66 +65,56 @@ object ConfigManager {
     }
 
     /**
-     * Obtiene la API key de Gemini
+     * Helper privado para obtener API keys con fallback
      * Prioridad: Remote Config > BuildConfig > empty
      */
-    fun getGeminiApiKey(): String {
+    private fun getApiKey(
+        remoteConfigKey: String,
+        buildConfigKey: String?,
+        keyName: String
+    ): String {
         // 1. Intentar Remote Config
-        remoteConfig?.getString(KEY_GEMINI_API_KEY)?.let { remoteKey ->
+        remoteConfig?.getString(remoteConfigKey)?.let { remoteKey ->
             if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Gemini API key desde Remote Config")
+                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 $keyName API key desde Remote Config")
                 return remoteKey
             }
         }
 
-        // 2. Fallback a BuildConfig (local.properties)
-        val buildKey = BuildConfig.GEMINI_API_KEY
-        if (buildKey.isNotBlank() && buildKey != "your_key_here") {
-            if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Gemini API key desde BuildConfig")
-            return buildKey
+        // 2. Fallback a BuildConfig (si existe)
+        buildConfigKey?.let { buildKey ->
+            if (buildKey.isNotBlank() && buildKey != "your_key_here") {
+                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 $keyName API key desde BuildConfig")
+                return buildKey
+            }
         }
 
         // 3. No hay key disponible
-        if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Gemini API key no configurada")
+        if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ $keyName API key no configurada")
         return ""
+    }
+
+    /**
+     * Obtiene la API key de Gemini
+     * Prioridad: Remote Config > BuildConfig > empty
+     */
+    fun getGeminiApiKey(): String {
+        return getApiKey(KEY_GEMINI_API_KEY, BuildConfig.GEMINI_API_KEY, "Gemini")
     }
 
     /**
      * Obtiene la API key de Maps
      */
     fun getMapsApiKey(): String {
-        remoteConfig?.getString(KEY_MAPS_API_KEY)?.let { remoteKey ->
-            if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Maps API key desde Remote Config")
-                return remoteKey
-            }
-        }
-
-        val buildKey = BuildConfig.MAPS_API_KEY
-        if (buildKey.isNotBlank() && buildKey != "your_key_here") {
-            if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Maps API key desde BuildConfig")
-            return buildKey
-        }
-
-        if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Maps API key no configurada")
-        return ""
+        return getApiKey(KEY_MAPS_API_KEY, BuildConfig.MAPS_API_KEY, "Maps")
     }
 
     /**
      * Obtiene la API key del clima
      */
     fun getWeatherApiKey(): String {
-        remoteConfig?.getString(KEY_WEATHER_API_KEY)?.let { remoteKey ->
-            if (remoteKey.isNotBlank() && remoteKey != "your_key_here") {
-                if (BuildConfig.DEBUG) Log.d(TAG, "🔑 Weather API key desde Remote Config")
-                return remoteKey
-            }
-        }
-
-        // BuildConfig no tiene WEATHER_API_KEY, usar string vacío
-        // (La app funcionará con datos mock)
-        if (BuildConfig.DEBUG) Log.d(TAG, "ℹ️ Weather API key no configurada, usando datos mock")
-        return ""
+        // BuildConfig no tiene WEATHER_API_KEY, usar null
+        return getApiKey(KEY_WEATHER_API_KEY, null, "Weather")
     }
 
     /**

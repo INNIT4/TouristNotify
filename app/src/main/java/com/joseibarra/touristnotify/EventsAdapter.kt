@@ -3,9 +3,9 @@ package com.joseibarra.touristnotify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
@@ -15,12 +15,10 @@ import java.util.*
  * Adapter para mostrar la lista de eventos en un RecyclerView
  */
 class EventsAdapter(
-    private val events: List<Event>,
     private val onEventClick: (Event) -> Unit
-) : RecyclerView.Adapter<EventsAdapter.EventViewHolder>() {
+) : ListAdapter<Event, EventsAdapter.EventViewHolder>(EventDiffCallback()) {
 
     private val dateFormat = SimpleDateFormat("d 'de' MMMM, yyyy", Locale("es", "MX"))
-    private val timeFormat = SimpleDateFormat("HH:mm", Locale("es", "MX"))
 
     inner class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val card: MaterialCardView = itemView.findViewById(R.id.event_card)
@@ -39,7 +37,7 @@ class EventsAdapter(
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        val event = events[position]
+        val event = getItem(position)
 
         holder.titleTextView.text = event.title
         holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(event.category) + " " + event.category
@@ -65,18 +63,22 @@ class EventsAdapter(
         holder.card.setOnClickListener {
             onEventClick(event)
         }
-
-        // Aplicar animación de fade in
-        val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in)
-        holder.itemView.startAnimation(animation)
     }
-
-    override fun getItemCount(): Int = events.size
 
     private fun isSameDay(date1: Date, date2: Date): Boolean {
         val cal1 = Calendar.getInstance().apply { time = date1 }
         val cal2 = Calendar.getInstance().apply { time = date2 }
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
+
+    class EventDiffCallback : DiffUtil.ItemCallback<Event>() {
+        override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
+            return oldItem == newItem
+        }
     }
 }

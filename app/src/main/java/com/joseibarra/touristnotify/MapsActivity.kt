@@ -122,19 +122,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.setOnMarkerClickListener { marker ->
             val spot = marker.tag as? TouristSpot
-            spot?.let {
+            if (spot != null) {
                 val intent = Intent(this, PlaceDetailsActivity::class.java).apply {
-                    putExtra("PLACE_ID", it.id)
-                    putExtra("PLACE_NAME", it.nombre)
-                    putExtra("PLACE_CATEGORY", it.categoria)
-                    putExtra("PLACE_DESCRIPTION", it.descripcion)
-                    putExtra("GOOGLE_PLACE_ID", it.googlePlaceId)
-                    it.ubicacion?.let { geo ->
+                    putExtra("PLACE_ID", spot.id)
+                    putExtra("PLACE_NAME", spot.nombre)
+                    putExtra("PLACE_CATEGORY", spot.categoria)
+                    putExtra("PLACE_DESCRIPTION", spot.descripcion)
+                    putExtra("GOOGLE_PLACE_ID", spot.googlePlaceId)
+                    spot.ubicacion?.let { geo ->
                         putExtra("PLACE_LATITUDE", geo.latitude)
                         putExtra("PLACE_LONGITUDE", geo.longitude)
                     }
                 }
                 placeDetailsLauncher.launch(intent)
+            } else if (BuildConfig.DEBUG) {
+                android.util.Log.w(TAG, "Marker clicked but tag is not TouristSpot: ${marker.tag?.javaClass?.simpleName}")
             }
             true
         }

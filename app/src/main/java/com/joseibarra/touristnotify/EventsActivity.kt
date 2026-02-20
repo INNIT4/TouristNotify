@@ -37,7 +37,7 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = EventsAdapter(events) { event ->
+        adapter = EventsAdapter { event ->
             openEventDetails(event)
         }
         binding.eventsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -80,7 +80,7 @@ class EventsActivity : AppCompatActivity() {
                         .thenBy { it.startDate ?: Date(0) }
                 )
 
-                adapter.notifyDataSetChanged()
+                adapter.submitList(events.toList())
 
                 if (events.isEmpty()) {
                     showEmptyState()

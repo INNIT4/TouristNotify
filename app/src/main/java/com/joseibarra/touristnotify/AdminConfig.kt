@@ -2,27 +2,30 @@ package com.joseibarra.touristnotify
 
 /**
  * Configuración de permisos administrativos para la aplicación
+ *
+ * Los emails autorizados ahora se gestionan desde Firebase Remote Config
+ * para permitir actualizaciones sin necesidad de release de app.
+ *
+ * Fallback: Si Remote Config falla, usa emails hardcoded en ConfigManager.
  */
 object AdminConfig {
 
     /**
-     * Emails autorizados de la Oficina de Turismo de Álamos
+     * Obtiene los emails autorizados de la Oficina de Turismo de Álamos
+     * desde Firebase Remote Config (con fallback a valores hardcoded)
+     *
      * Solo estos usuarios pueden crear y administrar contenido del blog
      */
-    private val AUTHORIZED_TOURISM_EMAILS = setOf(
-        "turismo@alamos.gob.mx",
-        "admin@turismoalamos.gob.mx",
-        "info@turismoalamos.gob.mx",
-        "comunicacion@alamos.gob.mx",
-        "director.turismo@alamos.gob.mx"
-    )
+    private fun getAuthorizedTourismEmails(): Set<String> {
+        return ConfigManager.getAuthorizedAdminEmails()
+    }
 
     /**
      * Verifica si un email pertenece al personal autorizado de turismo
      */
     fun isTourismOfficeUser(email: String?): Boolean {
         if (email.isNullOrBlank()) return false
-        return AUTHORIZED_TOURISM_EMAILS.contains(email.lowercase().trim())
+        return getAuthorizedTourismEmails().contains(email.lowercase().trim())
     }
 
     /**
@@ -35,14 +38,14 @@ object AdminConfig {
 
         // SOLO permitir emails explícitamente autorizados
         // Sin fallbacks por seguridad
-        return AUTHORIZED_TOURISM_EMAILS.contains(normalizedEmail)
+        return getAuthorizedTourismEmails().contains(normalizedEmail)
     }
 
     /**
      * Obtiene la lista de emails autorizados (para propósitos de auditoría)
      */
     fun getAuthorizedEmails(): Set<String> {
-        return AUTHORIZED_TOURISM_EMAILS.toSet()
+        return getAuthorizedTourismEmails()
     }
 
     /**

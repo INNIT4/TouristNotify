@@ -129,8 +129,12 @@ class PreferencesActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    // Primera vez: seed silencioso sin mensajes técnicos visibles al usuario
-                    seedDatabaseWithSampleData(budget, time, interests, travelType, pace, mobility, customRequest)
+                    // Base de datos vacía: mostrar mensaje al usuario
+                    Toast.makeText(
+                        this@PreferencesActivity,
+                        "No hay lugares turísticos disponibles aún. Por favor, contacta a la oficina de turismo.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@addOnSuccessListener
                 }
 
@@ -342,84 +346,6 @@ class PreferencesActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
             }
         }
-    }
-    
-    private fun seedDatabaseWithSampleData(
-        budget: String,
-        time: String,
-        interests: List<String>,
-        travelType: String,
-        pace: String,
-        mobility: String,
-        customRequest: String
-    ) {
-        val sampleSpots = listOf(
-            TouristSpot(
-                nombre = "Plaza de Armas",
-                descripcion = "El corazón histórico y social de Álamos, rodeado de arcos y edificios coloniales.",
-                categoria = "Historia",
-                ubicacion = GeoPoint(AppConstants.ALAMOS_LAT, AppConstants.ALAMOS_LNG),
-                googlePlaceId = "ChIJ-c-fJ8rS1oYREj9T7o-Z1A0"
-            ),
-            TouristSpot(
-                nombre = "Museo Costumbrista de Sonora",
-                descripcion = "Un viaje a través de la historia, cultura y tradiciones de la región de Sonora.",
-                categoria = "Cultura",
-                ubicacion = GeoPoint(27.0267, -108.9395),
-                googlePlaceId = "ChIJ-c-fJ8rS1oYRY2q9JdE4j2s"
-            ),
-            TouristSpot(
-                nombre = "Mirador El Perico",
-                descripcion = "Ofrece las vistas panorámicas más espectaculares de Álamos y sus alrededores.",
-                categoria = "Aire Libre",
-                ubicacion = GeoPoint(27.0315, -108.9344),
-                googlePlaceId = "ChIJy1Z5zsrS1oYRmY3G8F0B2Fw"
-            ),
-            TouristSpot(
-                nombre = "Templo de la Purísima Concepción",
-                descripcion = "Una joya arquitectónica de tres naves y una imponente fachada barroca.",
-                categoria = "Historia",
-                ubicacion = GeoPoint(27.0279, -108.9393),
-                googlePlaceId = "ChIJc-cfJ8rS1oYR4B-ZJdE4j2s"
-            ),
-            TouristSpot(
-                nombre = "Palacio Municipal de Álamos",
-                descripcion = "Edificio histórico sede del gobierno local, con un característico reloj en su torre.",
-                categoria = "Cultura",
-                ubicacion = GeoPoint(27.0272, -108.9404),
-                googlePlaceId = "ChIJe-cfJ8rS1oYReJ9T7o-Z1A0"
-            ),
-            TouristSpot(
-                nombre = "Callejón del Beso",
-                descripcion = "Un estrecho y romántico callejón lleno de leyendas locales.",
-                categoria = "Cultura",
-                ubicacion = GeoPoint(27.0258, -108.9398),
-                googlePlaceId = null
-            )
-        )
-
-        val batch = db.batch()
-        sampleSpots.forEach { spot ->
-            // ID determinista basado en el nombre: si el seed se llama dos veces,
-            // sobreescribe el mismo documento en lugar de crear duplicados
-            val docId = spot.nombre
-                .lowercase()
-                .replace(" ", "_")
-                .replace(Regex("[^a-z0-9_]"), "")
-            val docRef = db.collection("lugares").document(docId)
-            batch.set(docRef, spot)
-        }
-
-        batch.commit()
-            .addOnSuccessListener {
-                if (BuildConfig.DEBUG) Log.d("Firestore", "Lugares base añadidos con éxito.")
-                // Lugares cargados, generar ruta sin notificar al usuario
-                fetchPlacesAndThenGenerateRoute(budget, time, interests, travelType, pace, mobility, customRequest)
-            }
-            .addOnFailureListener { e ->
-                if (BuildConfig.DEBUG) Log.e("Firestore", "Error al añadir datos de ejemplo", e)
-                Toast.makeText(this, "Error al inicializar la base de datos.", Toast.LENGTH_SHORT).show()
-            }
     }
 
     private fun navigateToMapWithRoute(placeNames: ArrayList<String>) {

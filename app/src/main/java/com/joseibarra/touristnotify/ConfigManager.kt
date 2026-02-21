@@ -25,6 +25,7 @@ object ConfigManager {
     private const val KEY_WEATHER_API_KEY = "weather_api_key"
     private const val KEY_MAX_DAILY_ROUTES = "max_daily_routes"
     private const val KEY_MAX_DAILY_ROUTES_PREMIUM = "max_daily_routes_premium"
+    private const val KEY_AUTHORIZED_ADMIN_EMAILS = "authorized_admin_emails"
 
     /**
      * Inicializa Firebase Remote Config
@@ -48,7 +49,9 @@ object ConfigManager {
                         // Las API keys no tienen defaults por seguridad
                         KEY_GEMINI_API_KEY to "",
                         KEY_MAPS_API_KEY to "",
-                        KEY_WEATHER_API_KEY to ""
+                        KEY_WEATHER_API_KEY to "",
+                        // Admin emails como CSV (fallback en BuildConfig si Remote Config falla)
+                        KEY_AUTHORIZED_ADMIN_EMAILS to "turismo@alamos.gob.mx,admin@turismoalamos.gob.mx"
                     )
                 )
             }
@@ -142,6 +145,56 @@ object ConfigManager {
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) Log.w(TAG, "Error obteniendo max_daily_routes_premium, usando default: 20", e)
             20
+        }
+    }
+
+    /**
+     * Obtiene la lista de emails administrativos autorizados
+     *
+     * Formato en Remote Config: CSV separado por comas
+     * Ejemplo: "turismo@alamos.gob.mx,admin@turismoalamos.gob.mx,info@turismoalamos.gob.mx"
+     *
+     * @return Set de emails en minúsculas (normalizados)
+     */
+    fun getAuthorizedAdminEmails(): Set<String> {
+        return try {
+            // Intentar Remote Config primero
+            val csvEmails = remoteConfig?.getString(KEY_AUTHORIZED_ADMIN_EMAILS)
+
+            if (!csvEmails.isNullOrBlank()) {
+                val emails = csvEmails.split(",")
+                    .map { it.trim().lowercase() }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+
+                if (emails.isNotEmpty()) {
+                    if (BuildConfig.DEBUG) Log.d(TAG, "🔒 Admin emails desde Remote Config: ${emails.size} emails")
+                    return emails
+                }
+            }
+
+            // Fallback a valores hardcoded (seguridad)
+            val fallbackEmails = setOf(
+                "turismo@alamos.gob.mx",
+                "admin@turismoalamos.gob.mx",
+                "info@turismoalamos.gob.mx",
+                "comunicacion@alamos.gob.mx",
+                "director.turismo@alamos.gob.mx"
+            )
+
+            if (BuildConfig.DEBUG) Log.w(TAG, "⚠️ Usando emails admin hardcoded como fallback")
+            fallbackEmails
+
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) Log.e(TAG, "Error obteniendo admin emails, usando fallback", e)
+            // Fallback final a emails hardcoded
+            setOf(
+                "turismo@alamos.gob.mx",
+                "admin@turismoalamos.gob.mx",
+                "info@turismoalamos.gob.mx",
+                "comunicacion@alamos.gob.mx",
+                "director.turismo@alamos.gob.mx"
+            )
         }
     }
 

@@ -86,6 +86,18 @@ class ThemedRoutesActivity : AppCompatActivity() {
     /**
      * Carga rutas predefinidas cuando no hay datos en Firebase
      * Esto permite que la app funcione sin configuración inicial
+     *
+     * TODO: Migrar a Firebase Remote Config para permitir actualizaciones sin release
+     * FORMATO RECOMENDADO EN REMOTE CONFIG:
+     * Key: "themed_routes_json"
+     * Value: JSON array con estructura ThemedRoute
+     * Beneficios:
+     * - Actualizar rutas sin actualización de app
+     * - Agregar/quitar rutas dinámicamente
+     * - Personalizar contenido por región/temporada
+     * - A/B testing de rutas destacadas
+     *
+     * IMPORTANTE: Mantener estas rutas hardcoded como fallback offline
      */
     private fun loadPredefinedRoutes() {
         routes.clear()

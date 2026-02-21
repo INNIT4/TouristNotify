@@ -61,7 +61,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadUserData() {
         if (!isNetworkAvailable()) {
-            Toast.makeText(this, "Sin conexión a internet. Algunos datos pueden no cargarse.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.msg_no_connection_partial_load), Toast.LENGTH_LONG).show()
         }
 
         val user = auth.currentUser ?: run {
@@ -127,7 +127,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 // Uso de rutas IA (local, sin red)
                 val usageStats = UsageManager.getUsageStats(this@ProfileActivity)
-                binding.aiUsageText.text = "Rutas IA hoy: ${usageStats.routesUsedToday}/${usageStats.routesLimitToday}"
+                binding.aiUsageText.text = getString(R.string.label_routes_ai_usage, usageStats.routesUsedToday, usageStats.routesLimitToday)
                 binding.aiUsageProgress.progress = usageStats.usagePercentage
 
             } catch (e: Exception) {
@@ -163,13 +163,13 @@ class ProfileActivity : AppCompatActivity() {
         val nickname = binding.nicknameEditText.text.toString().trim()
 
         if (nickname.isBlank()) {
-            Toast.makeText(this, "El nombre de usuario no puede estar vacío", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_username_empty), Toast.LENGTH_SHORT).show()
             return
         }
 
         // Validar formato mínimo: al menos 3 caracteres, sin espacios
         if (nickname.length < 3) {
-            Toast.makeText(this, "El nombre de usuario debe tener al menos 3 caracteres", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_username_min_3_chars), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -183,7 +183,7 @@ class ProfileActivity : AppCompatActivity() {
 
                 val takenByOther = existing.documents.any { it.id != userId }
                 if (takenByOther) {
-                    Toast.makeText(this@ProfileActivity, "❌ Ese nombre de usuario ya está en uso", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProfileActivity, getString(R.string.error_username_taken), Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
@@ -192,9 +192,9 @@ class ProfileActivity : AppCompatActivity() {
                     .update("nickname", nickname)
                     .await()
 
-                Toast.makeText(this@ProfileActivity, "✅ Perfil actualizado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.msg_profile_updated), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error al guardar: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.error_profile_save_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -206,29 +206,29 @@ class ProfileActivity : AppCompatActivity() {
         val confirmPasswordInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.confirm_password_input)
 
         AlertDialog.Builder(this)
-            .setTitle("Cambiar Contraseña")
+            .setTitle(getString(R.string.title_change_password))
             .setView(dialogView)
-            .setPositiveButton("Cambiar") { _, _ ->
+            .setPositiveButton(getString(R.string.btn_change)) { _, _ ->
                 val currentPassword = currentPasswordInput.text.toString()
                 val newPassword = newPasswordInput.text.toString()
                 val confirmPassword = confirmPasswordInput.text.toString()
 
                 when {
                     currentPassword.isBlank() -> {
-                        Toast.makeText(this, "Ingresa tu contraseña actual", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.error_current_password_required), Toast.LENGTH_SHORT).show()
                     }
                     newPassword.length < 6 -> {
-                        Toast.makeText(this, "La nueva contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.msg_password_min_6_chars), Toast.LENGTH_SHORT).show()
                     }
                     newPassword != confirmPassword -> {
-                        Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.msg_passwords_no_match), Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         changePassword(currentPassword, newPassword)
                     }
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.btn_cancel), null)
             .show()
     }
 
@@ -245,48 +245,42 @@ class ProfileActivity : AppCompatActivity() {
                 // Cambiar contraseña
                 user.updatePassword(newPassword).await()
 
-                Toast.makeText(this@ProfileActivity, "✅ Contraseña cambiada exitosamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.msg_password_changed_success), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.error_password_change_failed, e.message), Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun showDeleteAccountDialog() {
         AlertDialog.Builder(this)
-            .setTitle("⚠️ Eliminar Cuenta")
-            .setMessage("Esta acción es irreversible. Se eliminarán todos tus datos:\n\n" +
-                    "• Rutas guardadas\n" +
-                    "• Favoritos\n" +
-                    "• Check-ins\n" +
-                    "• Reseñas\n" +
-                    "• Estadísticas\n\n" +
-                    "¿Estás seguro de que deseas continuar?")
-            .setPositiveButton("Eliminar") { _, _ ->
+            .setTitle(getString(R.string.title_delete_account))
+            .setMessage(getString(R.string.msg_delete_account_warning))
+            .setPositiveButton(getString(R.string.btn_delete)) { _, _ ->
                 showDeleteAccountPasswordDialog()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.btn_cancel), null)
             .show()
     }
 
     private fun showDeleteAccountPasswordDialog() {
         val input = com.google.android.material.textfield.TextInputEditText(this)
         input.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-        input.hint = "Contraseña"
+        input.hint = getString(R.string.hint_password)
 
         AlertDialog.Builder(this)
-            .setTitle("Confirmar Eliminación")
-            .setMessage("Por seguridad, ingresa tu contraseña para confirmar:")
+            .setTitle(getString(R.string.title_confirm_deletion))
+            .setMessage(getString(R.string.msg_confirm_deletion_password))
             .setView(input)
-            .setPositiveButton("Confirmar") { _, _ ->
+            .setPositiveButton(getString(R.string.btn_confirm)) { _, _ ->
                 val password = input.text.toString()
                 if (password.isNotBlank()) {
                     deleteAccount(password)
                 } else {
-                    Toast.makeText(this, "Ingresa tu contraseña", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.error_password_required), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.btn_cancel), null)
             .show()
     }
 
@@ -319,7 +313,7 @@ class ProfileActivity : AppCompatActivity() {
                 // Eliminar cuenta de Firebase Auth
                 user.delete().await()
 
-                Toast.makeText(this@ProfileActivity, "Cuenta eliminada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.msg_account_deleted), Toast.LENGTH_SHORT).show()
 
                 // Volver al login
                 val intent = Intent(this@ProfileActivity, LoginActivity::class.java)
@@ -328,23 +322,23 @@ class ProfileActivity : AppCompatActivity() {
                 finish()
 
             } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ProfileActivity, getString(R.string.error_account_deletion_failed, e.message), Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun performLogout() {
         AlertDialog.Builder(this)
-            .setTitle("Cerrar Sesión")
-            .setMessage("¿Estás seguro de que deseas cerrar sesión?")
-            .setPositiveButton("Cerrar Sesión") { _, _ ->
+            .setTitle(getString(R.string.title_logout))
+            .setMessage(getString(R.string.msg_confirm_logout))
+            .setPositiveButton(getString(R.string.btn_logout)) { _, _ ->
                 // Cerrar sesión de Firebase
                 auth.signOut()
 
                 // Desactivar modo invitado
                 AuthManager.disableGuestMode(this)
 
-                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.msg_logout_success), Toast.LENGTH_SHORT).show()
 
                 // Volver al login
                 val intent = Intent(this, LoginActivity::class.java)
@@ -352,7 +346,7 @@ class ProfileActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.btn_cancel), null)
             .show()
     }
 }

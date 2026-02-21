@@ -1,4 +1,238 @@
 <resources>
     <string name="app_name">TouristNotify</string>
     <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- ==================== COMMON / SHARED ==================== -->
+    <!-- Buttons -->
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_close">Cerrar</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_confirm">Confirmar</string>
+    <string name="btn_understood">Entendido</string>
+    <string name="btn_update">Actualizar</string>
+    <string name="btn_change">Cambiar</string>
+    <string name="btn_import">Importar</string>
+    <string name="btn_start">Comenzar</string>
+    <string name="btn_next">Siguiente</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+
+    <!-- Common errors -->
+    <string name="error_generic">Error: %s</string>
+    <string name="error_user_not_authenticated">Error: Usuario no autenticado</string>
+    <string name="error_user_not_authenticated_short">Usuario no autenticado</string>
+    <string name="error_place_not_found">Error: lugar no encontrado</string>
+    <string name="error_no_internet">Sin conexión a internet. No se pueden cargar los lugares.</string>
+
+    <!-- Common messages -->
+    <string name="msg_fill_all_fields">Por favor, rellena todos los campos</string>
+    <string name="msg_no_places_found">No se encontraron lugares</string>
+    <string name="msg_login_required_like">Inicia sesión para dar Me gusta</string>
+
+    <!-- ==================== AUTH: Register ==================== -->
+    <string name="msg_invalid_email">Por favor, ingresa un email válido</string>
+    <string name="msg_password_min_6_chars">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="msg_passwords_no_match">Las contraseñas no coinciden</string>
+    <string name="msg_password_needs_letter_digit">La contraseña debe contener al menos una letra y un número</string>
+    <string name="title_account_created">Cuenta creada</string>
+    <string name="msg_verify_email_sent">Te enviamos un correo de verificación a %s.\n\nVerifica tu correo para activar todas las funciones de la app.</string>
+    <string name="error_registration_failed">Error en el registro. Verifica los datos e intenta de nuevo</string>
+
+    <!-- ==================== AUTH: Login ==================== -->
+    <string name="error_auth_failed">Error de autenticación. Verifica tus credenciales</string>
+    <string name="msg_guest_mode">Modo invitado activado. Algunas funciones estarán limitadas.</string>
+
+    <!-- ==================== AUTH: Forgot Password ==================== -->
+    <string name="msg_reset_email_sent">Correo de restablecimiento enviado.</string>
+    <string name="msg_reset_email_check">Si el correo existe, recibirás un enlace de restablecimiento.</string>
+    <string name="msg_enter_email">Por favor, ingresa tu correo electrónico</string>
+
+    <!-- ==================== PROFILE ==================== -->
+    <string name="msg_no_connection_partial_load">Sin conexión a internet. Algunos datos pueden no cargarse.</string>
+    <string name="label_routes_ai_usage">Rutas IA hoy: %1$d/%2$d</string>
+    <string name="error_username_empty">El nombre de usuario no puede estar vacío</string>
+    <string name="error_username_min_3_chars">El nombre de usuario debe tener al menos 3 caracteres</string>
+    <string name="error_username_taken">Ese nombre de usuario ya está en uso</string>
+    <string name="msg_profile_updated">Perfil actualizado</string>
+    <string name="error_profile_save_failed">Error al guardar: %s</string>
+    <string name="title_change_password">Cambiar Contraseña</string>
+    <string name="error_current_password_required">Ingresa tu contraseña actual</string>
+    <string name="msg_password_changed_success">Contraseña cambiada exitosamente</string>
+    <string name="error_password_change_failed">Error: %s</string>
+    <string name="title_delete_account">Eliminar Cuenta</string>
+    <string name="msg_delete_account_warning">Esta acción es irreversible. Se eliminarán todos tus datos:\n\n• Rutas guardadas\n• Favoritos\n• Check-ins\n• Reseñas\n• Estadísticas\n\n¿Estás seguro de que deseas continuar?</string>
+    <string name="title_confirm_deletion">Confirmar Eliminación</string>
+    <string name="msg_confirm_deletion_password">Por seguridad, ingresa tu contraseña para confirmar:</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="error_password_required">Ingresa tu contraseña</string>
+    <string name="msg_account_deleted">Cuenta eliminada</string>
+    <string name="error_account_deletion_failed">Error: %s</string>
+    <string name="title_logout">Cerrar Sesión</string>
+    <string name="msg_confirm_logout">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="msg_logout_success">Sesión cerrada</string>
+
+    <!-- ==================== PREFERENCES (AI Route) ==================== -->
+    <string name="title_daily_limit_reached">Límite diario alcanzado</string>
+    <string name="msg_daily_limit_explanation">Esto ayuda a controlar los costos del servicio de IA.</string>
+    <string name="label_ai_route_creation">La IA creará la ruta perfecta para ti\n%s</string>
+    <string name="error_budget_time_required">Por favor, ingresa presupuesto y tiempo disponible</string>
+    <string name="error_budget_must_be_positive">El presupuesto debe ser un número mayor a 0</string>
+    <string name="error_time_range_invalid">El tiempo disponible debe ser entre 0.5 y 24 horas</string>
+    <string name="error_interests_required">Selecciona al menos un interés o describe lo que buscas</string>
+    <string name="error_loading_places_critical">Error crítico al cargar lugares de la base de datos.</string>
+    <string name="error_gemini_api_not_configured">Error: API key de Gemini no configurada</string>
+    <string name="msg_route_created_success">Ruta creada con %1$d destinos\nTe quedan %2$d rutas IA hoy</string>
+    <string name="error_ai_route_failed">La IA no pudo generar una ruta con esos criterios. Intenta con diferentes preferencias.</string>
+    <string name="error_ai_error">Error de IA: %s</string>
+    <string name="error_database_init_failed">Error al inicializar la base de datos.</string>
+
+    <!-- ==================== MAPS ==================== -->
+    <string name="msg_no_places_filters">No se encontraron lugares con estos filtros</string>
+    <string name="error_saved_route_not_found">No se encontraron los lugares de la ruta guardada</string>
+    <string name="error_loading_saved_route">Error al cargar la ruta guardada: %s</string>
+    <string name="error_route_places_not_found">No se encontraron los lugares de la ruta</string>
+    <string name="error_loading_route">Error cargando la ruta: %s</string>
+    <string name="warning_add_places_first">Agrega lugares a la ruta primero</string>
+    <string name="title_save_route">Guardar Ruta</string>
+    <string name="warning_route_name_required">El nombre de la ruta no puede estar vacío</string>
+    <string name="error_no_places_to_save">Error: No hay lugares en la ruta para guardar</string>
+    <string name="error_saving_route">Error al guardar la ruta: %s</string>
+    <string name="msg_location_permission_needed">Se necesita permiso de ubicación para calcular la ruta.</string>
+    <string name="error_location_not_obtained">No se pudo obtener la ubicación actual. Inténtalo de nuevo.</string>
+    <string name="error_calculating_route">Error al calcular la ruta: %s</string>
+    <string name="error_search_failed">Error en la búsqueda: %s</string>
+    <string name="error_location_permission_denied">Permiso denegado. La ubicación actual no se puede mostrar.</string>
+    <string name="msg_no_places_in_database">No hay lugares en la base de datos.</string>
+    <string name="error_firestore_read">Error leyendo Firestore: %s</string>
+    <string name="warning_no_places_in_route">No hay lugares en la ruta</string>
+    <string name="error_google_maps_not_installed">Google Maps no está instalado</string>
+    <string name="label_route_progress">Lugar %1$d de %2$d</string>
+
+    <!-- ==================== MY ROUTES ==================== -->
+    <string name="title_delete_route">Eliminar ruta</string>
+    <string name="msg_confirm_delete_route">¿Estás seguro de que deseas eliminar \'%s\'?</string>
+    <string name="error_login_required_delete_routes">Debes iniciar sesión para eliminar rutas</string>
+    <string name="error_no_permission_delete_route">No tienes permiso para eliminar esta ruta</string>
+    <string name="msg_route_deleted_success">Ruta eliminada exitosamente</string>
+    <string name="error_deleting_route">Error al eliminar la ruta</string>
+    <string name="error_getting_user">No se pudo obtener el usuario</string>
+    <string name="error_loading_routes">Error al cargar las rutas</string>
+
+    <!-- ==================== PLACE DETAILS ==================== -->
+    <string name="msg_opening_qr_place">Abriendo lugar desde código QR…</string>
+    <string name="error_place_not_found_detail">Error: No se encontró el lugar.</string>
+    <string name="label_reviews_based_on">(Basado en %d reseñas)</string>
+    <string name="error_invalid_url">URL no válida</string>
+    <string name="error_loading_place_details">Error al cargar detalles: %s</string>
+    <string name="error_loading_reviews">Error al cargar reseñas: %s</string>
+    <string name="warning_select_rating">Por favor, selecciona una calificación</string>
+    <string name="error_place_id_not_available">Error: ID del lugar no disponible</string>
+    <string name="warning_review_min_chars">La reseña debe tener al menos 10 caracteres</string>
+    <string name="warning_review_max_chars">La reseña no puede superar los 500 caracteres</string>
+    <string name="error_processing_image">Error al procesar la imagen</string>
+    <string name="error_uploading_image">Error al subir la imagen: %s</string>
+    <string name="msg_review_already_exists">Ya dejaste una reseña para este lugar</string>
+    <string name="error_verifying_reviews">Error al verificar reseñas: %s</string>
+    <string name="msg_review_submitted_success">Reseña enviada exitosamente</string>
+    <string name="error_submitting_review">Error al enviar la reseña: %s</string>
+    <string name="msg_review_updated_success">Reseña actualizada exitosamente</string>
+    <string name="error_updating_review">Error al actualizar la reseña: %s</string>
+
+    <!-- ==================== FAVORITES ==================== -->
+    <string name="msg_removed_from_favorites">Eliminado de favoritos</string>
+
+    <!-- ==================== MENU ==================== -->
+    <string name="label_temperature">%d°C</string>
+    <string name="label_humidity">%d%%</string>
+    <string name="label_wind_speed">%d km/h</string>
+    <string name="label_feels_like">%d°C</string>
+    <string name="msg_weather_not_available">No disponible</string>
+    <string name="title_quick_settings">Configuración Rápida</string>
+    <string name="title_logout_warning">Cerrar Sesión</string>
+    <string name="msg_confirm_logout_warning">¿Estás seguro que deseas cerrar sesión? Perderás acceso a tus favoritos, rutas guardadas y estadísticas.</string>
+
+    <!-- ==================== BLOG ==================== -->
+    <string name="label_articles_count">%d artículos</string>
+    <string name="error_loading_blog_posts">Error al cargar posts: %s</string>
+    <string name="label_by_author">Por %s</string>
+    <string name="label_likes_count">%d</string>
+    <string name="label_views_count">%d</string>
+    <string name="label_see_more_category">Ver más de %s</string>
+    <string name="msg_liked_article">Te gusta este artículo</string>
+    <string name="msg_unliked_article">Ya no te gusta este artículo</string>
+    <string name="error_loading_post">Error al cargar el post</string>
+
+    <!-- ==================== ADMIN: Blog ==================== -->
+    <string name="error_admin_access_denied_blog">Acceso denegado. Solo personal autorizado de la Oficina de Turismo puede crear posts.</string>
+    <string name="error_title_required">El título es requerido</string>
+    <string name="error_content_required">El contenido es requerido</string>
+    <string name="error_category_required">Selecciona una categoría</string>
+    <string name="error_title_too_long">Título muy largo (máx. %d caracteres)</string>
+    <string name="error_content_too_long">Contenido muy largo (máx. %d caracteres)</string>
+    <string name="msg_post_published_success">Post publicado exitosamente</string>
+    <string name="error_publishing_post_failed">Error al publicar el post. Intenta de nuevo</string>
+
+    <!-- ==================== ADMIN: Places ==================== -->
+    <string name="error_api_error">Error API: %s</string>
+    <string name="msg_places_found">Se encontraron %d lugares</string>
+    <string name="title_import_place">Importar: %s</string>
+    <string name="msg_confirm_import_place">¿Deseas importar este lugar a Firebase?\n\nSelecciona la categoría:</string>
+    <string name="msg_place_imported_success">\'%s\' importado exitosamente</string>
+    <string name="error_importing_place">Error al importar: %s</string>
+    <string name="title_place_details">Detalles del Lugar</string>
+
+    <!-- ==================== ADMIN: Photo Upload ==================== -->
+    <string name="error_place_data_not_found">Error: datos del lugar no encontrados</string>
+    <string name="error_select_image_first">Selecciona una imagen primero</string>
+    <string name="error_compressing_image">Error al comprimir la imagen</string>
+    <string name="error_uploading_photo">Error al subir foto: %s</string>
+    <string name="msg_photo_uploaded_success">Foto subida exitosamente</string>
+    <string name="error_saving_photo_metadata">Error al guardar metadata: %s</string>
+
+    <!-- ==================== EVENTS ==================== -->
+    <string name="error_loading_events">Error al cargar eventos: %s</string>
+
+    <!-- ==================== NOTIFICATIONS ==================== -->
+    <string name="error_location_permissions_required">Se requieren permisos de ubicación</string>
+    <string name="warning_notifications_foreground_only">Las notificaciones funcionarán solo cuando la app esté abierta</string>
+    <string name="msg_notifications_enabled">Notificaciones habilitadas</string>
+    <string name="msg_notifications_disabled">Notificaciones desactivadas</string>
+    <string name="msg_all_permissions_granted">Todos los permisos concedidos</string>
+    <string name="msg_configuring_notifications">Configurando notificaciones…</string>
+    <string name="msg_places_monitored">%d lugares monitoreados\nRecibirás notificaciones al acercarte</string>
+    <string name="msg_notifications_configured">Notificaciones configuradas para %d lugares</string>
+    <string name="error_configuring_notifications">Error al configurar notificaciones</string>
+    <string name="error_configuring_geofences">Error al configurar geofences</string>
+
+    <!-- ==================== OFFLINE ==================== -->
+    <string name="label_connected">Conectado</string>
+    <string name="label_disconnected">Sin conexión</string>
+    <string name="label_places_count">%d lugares</string>
+    <string name="label_events_count">%d eventos</string>
+    <string name="label_posts_count">%d posts</string>
+    <string name="msg_never">Nunca</string>
+    <string name="msg_sync_success">Datos sincronizados correctamente</string>
+    <string name="error_sync_failed">Error al sincronizar: %s</string>
+    <string name="title_clear_offline_data">Limpiar datos offline</string>
+    <string name="msg_confirm_clear_offline_data">¿Estás seguro? Se eliminarán todos los datos descargados.</string>
+    <string name="msg_offline_data_cleared">Datos offline eliminados</string>
+
+    <!-- ==================== STATS ==================== -->
+    <string name="error_loading_stats">Error al cargar estadísticas: %s</string>
+    <string name="msg_no_badges_earned">Aún no has ganado insignias. ¡Sigue explorando!</string>
+    <string name="label_your_explorations">Tus\nExploraciones</string>
+
+    <!-- ==================== PHOTO GALLERY ==================== -->
+    <string name="msg_no_photos_yet">No hay fotos aún\n\nSé el primero en compartir fotos de este lugar</string>
+    <string name="error_loading_photos">Error al cargar fotos:\n%s</string>
+
+    <!-- ==================== TOP PLACES ==================== -->
+    <string name="error_loading_top_places">Error al cargar los lugares populares</string>
+
+    <!-- ==================== ONBOARDING ==================== -->
+    <!-- btn_start and btn_next already defined above -->
+
+    <!-- ==================== USAGE MANAGER ==================== -->
+    <string name="msg_routes_available">Tienes %1$d rutas IA disponibles hoy%2$s</string>
+    <string name="msg_daily_limit_reached">Has alcanzado el límite diario de %1$d rutas con IA.%2$s Vuelve mañana para generar más.</string>
 </resources>

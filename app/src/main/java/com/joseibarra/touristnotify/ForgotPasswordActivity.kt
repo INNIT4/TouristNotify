@@ -35,15 +35,15 @@ class ForgotPasswordActivity : AppCompatActivity() {
             auth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(this, "Correo de restablecimiento enviado.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.msg_reset_email_sent), Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
                         // Mensaje genérico para no revelar si el correo existe en el sistema
-                        Toast.makeText(this, "Si el correo existe, recibirás un enlace de restablecimiento.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, getString(R.string.msg_reset_email_check), Toast.LENGTH_LONG).show()
                     }
                 }
         } else {
-            Toast.makeText(this, "Por favor, ingresa tu correo electrónico", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_enter_email), Toast.LENGTH_SHORT).show()
         }
     }
 }

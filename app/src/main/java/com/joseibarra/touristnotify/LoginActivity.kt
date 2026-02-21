@@ -70,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
                         // SEGURIDAD: Mensaje de error genérico para no revelar información
                         Toast.makeText(
                             baseContext,
-                            "Error de autenticación. Verifica tus credenciales",
+                            getString(R.string.error_auth_failed),
                             Toast.LENGTH_SHORT
                         ).show()
 
@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
         } else {
-            Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_fill_all_fields), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -121,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
 
         Toast.makeText(
             this,
-            "Modo invitado activado. Algunas funciones estarán limitadas.",
+            getString(R.string.msg_guest_mode),
             Toast.LENGTH_LONG
         ).show()
 

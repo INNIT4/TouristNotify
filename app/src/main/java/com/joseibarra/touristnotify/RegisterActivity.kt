@@ -37,25 +37,25 @@ class RegisterActivity : AppCompatActivity() {
 
         // Validar que los campos no estén vacíos
         if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-            Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_fill_all_fields), Toast.LENGTH_SHORT).show()
             return
         }
 
         // Validar formato de email
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Por favor, ingresa un email válido", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_invalid_email), Toast.LENGTH_SHORT).show()
             return
         }
 
         // Validar longitud mínima de contraseña
         if (password.length < 6) {
-            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_password_min_6_chars), Toast.LENGTH_SHORT).show()
             return
         }
 
         // Validar que las contraseñas coincidan
         if (password != confirmPassword) {
-            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.msg_passwords_no_match), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -63,7 +63,7 @@ class RegisterActivity : AppCompatActivity() {
         val hasLetter = password.any { it.isLetter() }
         val hasDigit = password.any { it.isDigit() }
         if (!hasLetter || !hasDigit) {
-            Toast.makeText(this, "La contraseña debe contener al menos una letra y un número", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.msg_password_needs_letter_digit), Toast.LENGTH_LONG).show()
             return
         }
 
@@ -82,16 +82,16 @@ class RegisterActivity : AppCompatActivity() {
 
                     // Informar al usuario y navegar al menú
                     AlertDialog.Builder(this)
-                        .setTitle("Cuenta creada")
-                        .setMessage("Te enviamos un correo de verificación a $email.\n\nVerifica tu correo para activar todas las funciones de la app.")
-                        .setPositiveButton("Entendido") { _, _ -> navigateToMenu() }
+                        .setTitle(getString(R.string.title_account_created))
+                        .setMessage(getString(R.string.msg_verify_email_sent, email))
+                        .setPositiveButton(getString(R.string.btn_understood)) { _, _ -> navigateToMenu() }
                         .setCancelable(false)
                         .show()
                 } else {
                     // SEGURIDAD: Mensaje de error genérico
                     Toast.makeText(
                         baseContext,
-                        "Error en el registro. Verifica los datos e intenta de nuevo",
+                        getString(R.string.error_registration_failed),
                         Toast.LENGTH_SHORT
                     ).show()
 

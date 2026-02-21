@@ -37,7 +37,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -52,7 +51,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import kotlin.math.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -71,6 +69,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var currentPlaceIndex = 0
     private var isNavigatingRoute = false
     private val okHttpClient = OkHttpClient()
+    private lateinit var routeRenderer: RouteRenderer
     // Generación para evitar que callbacks viejos de Glide añadan marcadores duplicados
     private var markerGeneration = 0
 
@@ -104,6 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        routeRenderer = RouteRenderer(mMap, okHttpClient)
 
         // Ocultar los puntos de interés por defecto de Google Maps (iglesias, tiendas, etc.)
         // para que solo se vean nuestros marcadores personalizados
@@ -211,7 +211,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         filteredSpots.forEach { addMarkerForTouristSpot(it) }
 
         if (filteredSpots.isEmpty() && allSpots.isNotEmpty()) {
-            NotificationHelper.info(binding.root, "No se encontraron lugares con estos filtros")
+            NotificationHelper.info(binding.root, getString(R.string.msg_no_places_filters))
         }
     }
 
@@ -224,7 +224,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { documents ->
                 clearAllMarkers()
                 if (documents.isEmpty) {
-                    Toast.makeText(this, "No se encontraron los lugares de la ruta guardada", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.error_saved_route_not_found), Toast.LENGTH_LONG).show()
                     return@addOnSuccessListener
                 }
 
@@ -249,7 +249,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             .addOnFailureListener { e ->
                 if (BuildConfig.DEBUG) Log.e("Firestore", "Error cargando ruta por IDs", e)
-                Toast.makeText(this, "Error al cargar la ruta guardada: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.error_loading_saved_route, e.message), Toast.LENGTH_LONG).show()
             }
     }
 
@@ -262,7 +262,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { documents ->
                 clearAllMarkers()
                 if (documents.isEmpty) {
-                    Toast.makeText(this, "No se encontraron los lugares de la ruta", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.error_route_places_not_found), Toast.LENGTH_LONG).show()
                     return@addOnSuccessListener
                 }
 
@@ -282,7 +282,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             .addOnFailureListener { e ->
                 if (BuildConfig.DEBUG) Log.e("Firestore", "Error cargando ruta", e)
-                Toast.makeText(this, "Error cargando la ruta: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.error_loading_route, e.message), Toast.LENGTH_LONG).show()
             }
     }
 
@@ -297,7 +297,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (currentRouteSpots.isNotEmpty()) {
                     showSaveRouteDialog()
                 } else {
-                    NotificationHelper.warning(binding.root, "Agrega lugares a la ruta primero")
+                    NotificationHelper.warning(binding.root, getString(R.string.warning_add_places_first))
                 }
             }
         }
@@ -309,30 +309,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val descriptionEditText = dialogView.findViewById<EditText>(R.id.route_description_edit_text)
 
         AlertDialog.Builder(this)
-            .setTitle("Guardar Ruta")
+            .setTitle(getString(R.string.title_save_route))
             .setView(dialogView)
-            .setPositiveButton("Guardar") { _, _ ->
+            .setPositiveButton(getString(R.string.btn_save)) { _, _ ->
                 val name = nameEditText.text.toString()
                 val description = descriptionEditText.text.toString()
                 if (name.isNotBlank()) {
                     saveRouteToFirestore(name, description)
                 } else {
-                    NotificationHelper.warning(binding.root, "El nombre de la ruta no puede estar vacío")
+                    NotificationHelper.warning(binding.root, getString(R.string.warning_route_name_required))
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.btn_cancel), null)
             .show()
     }
 
     private fun saveRouteToFirestore(name: String, description: String) {
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            Toast.makeText(this, "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_user_not_authenticated), Toast.LENGTH_SHORT).show()
             return
         }
 
         if (currentRouteSpots.isEmpty()) {
-            Toast.makeText(this, "Error: No hay lugares en la ruta para guardar", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_no_places_to_save), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -359,7 +359,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             .addOnFailureListener { e ->
                 if (BuildConfig.DEBUG) Log.e(TAG, "Error al guardar ruta", e)
-                NotificationHelper.error(binding.root, "Error al guardar la ruta: ${e.message}")
+                NotificationHelper.error(binding.root, getString(R.string.error_saving_route, e.message))
             }
     }
 
@@ -372,7 +372,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun addMarkerForTouristSpot(spot: TouristSpot, routeIndex: Int = -1) {
         spot.ubicacion ?: return
         val position = LatLng(spot.ubicacion.latitude, spot.ubicacion.longitude)
-        val categoryColor = getCategoryColor(spot.categoria)
+        val categoryColor = CategoryColorMapper.getColor(spot.categoria)
 
         if (spot.imagenUrl.isNotBlank()) {
             // Captura la generación actual — si cambia antes de que Glide responda, ignoramos el callback
@@ -391,9 +391,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                         if (capturedGen != markerGeneration) return  // Callback obsoleto, descartamos
                         val markerBitmap = if (routeIndex >= 1) {
-                            createCircularBitmapWithNumber(resource, routeIndex, categoryColor)
+                            MarkerBitmapFactory.createCircularWithNumber(resource, routeIndex, categoryColor, resources)
                         } else {
-                            createCircularBitmapWithBorder(resource, categoryColor)
+                            MarkerBitmapFactory.createCircularWithBorder(resource, categoryColor, resources)
                         }
                         addMarkerToMap(spot, position, markerBitmap)
                     }
@@ -411,38 +411,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun addFallbackMarker(spot: TouristSpot, position: LatLng, routeIndex: Int, categoryColor: Int) {
         val bitmap = if (routeIndex >= 1) {
-            createNumberedCircleMarker(routeIndex, categoryColor)
+            MarkerBitmapFactory.createNumberedCircle(routeIndex, categoryColor, resources)
         } else {
-            createColoredCircleMarker(categoryColor)
+            MarkerBitmapFactory.createColoredCircle(categoryColor)
         }
         addMarkerToMap(spot, position, bitmap)
-    }
-
-    /** Círculo de color sólido con borde blanco — usado en modo mapa normal (sin número) */
-    private fun createColoredCircleMarker(backgroundColor: Int): Bitmap {
-        val size = 80
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val cx = size / 2f
-        val cy = size / 2f
-        val radius = size / 2f - 5f
-
-        // Sombra suave
-        paint.color = Color.argb(60, 0, 0, 0)
-        canvas.drawCircle(cx + 2f, cy + 2f, radius, paint)
-
-        // Relleno de color de categoría
-        paint.color = backgroundColor
-        canvas.drawCircle(cx, cy, radius, paint)
-
-        // Borde blanco
-        paint.color = Color.WHITE
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 3.5f
-        canvas.drawCircle(cx, cy, radius, paint)
-
-        return bitmap
     }
 
     private fun addMarkerToMap(spot: TouristSpot, position: LatLng, bitmap: Bitmap) {
@@ -463,7 +436,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     private fun getDirectionsTo(destination: LatLng) {
         if (!isLocationPermissionGranted()) {
-            Toast.makeText(this, "Se necesita permiso de ubicación para calcular la ruta.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.msg_location_permission_needed), Toast.LENGTH_LONG).show()
             return
         }
 
@@ -472,7 +445,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val origin = LatLng(location.latitude, location.longitude)
                 calculateAndDrawRoute(origin, destination)
             } else {
-                Toast.makeText(this, "No se pudo obtener la ubicación actual. Inténtalo de nuevo.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.error_location_not_obtained), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -520,7 +493,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) Log.e(TAG, "Error Routes API v2 (navegación): ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MapsActivity, "Error al calcular la ruta: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MapsActivity, getString(R.string.error_calculating_route, e.message), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -695,7 +668,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { documents ->
                 clearAllMarkers()
                 if (documents.isEmpty) {
-                    Toast.makeText(this, "No se encontraron lugares", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.msg_no_places_found), Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
 
@@ -721,11 +694,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 filteredResults.forEach { addMarkerForTouristSpot(it) }
 
                 if (filteredResults.isEmpty()) {
-                    NotificationHelper.info(binding.root, "No se encontraron lugares con estos filtros")
+                    NotificationHelper.info(binding.root, getString(R.string.msg_no_places_filters))
                 }
             }.addOnFailureListener { e ->
                 if (BuildConfig.DEBUG) Log.e("Firestore", "Error en la búsqueda", e)
-                Toast.makeText(this, "Error en la búsqueda: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.error_search_failed, e.message), Toast.LENGTH_LONG).show()
             }
     }
 
@@ -748,7 +721,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableMyLocation()
             } else {
-                Toast.makeText(this, "Permiso denegado. La ubicación actual no se puede mostrar.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.error_location_permission_denied), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -767,14 +740,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun cargarLugaresDesdeFirestore() {
         if (!isNetworkAvailable()) {
-            Toast.makeText(this, "Sin conexión a internet. No se pueden cargar los lugares.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_LONG).show()
             return
         }
         clearAllMarkers()
         db.collection("lugares").get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    Toast.makeText(this, "No hay lugares en la base de datos.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.msg_no_places_in_database), Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
 
@@ -790,7 +763,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 applyFilters()
             }.addOnFailureListener { e ->
                 if (BuildConfig.DEBUG) Log.e("Firestore", "Error obteniendo documentos", e)
-                Toast.makeText(this, "Error leyendo Firestore: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.error_firestore_read, e.message), Toast.LENGTH_LONG).show()
             }
     }
 
@@ -819,7 +792,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (currentRouteSpots.isNotEmpty()) {
                     showSaveRouteDialog()
                 } else {
-                    NotificationHelper.warning(binding.root, "No hay lugares en la ruta")
+                    NotificationHelper.warning(binding.root, getString(R.string.warning_no_places_in_route))
                 }
             }
         }
@@ -871,7 +844,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (mapIntent.resolveActivity(packageManager) != null) {
                     startActivity(mapIntent)
                 } else {
-                    NotificationHelper.error(binding.root, "Google Maps no está instalado")
+                    NotificationHelper.error(binding.root, getString(R.string.error_google_maps_not_installed))
                 }
             }
         }
@@ -882,9 +855,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val currentSpot = currentRouteSpots[currentPlaceIndex]
 
-        binding.routeProgressText.text = "Lugar ${currentPlaceIndex + 1} de ${currentRouteSpots.size}"
+        binding.routeProgressText.text = getString(R.string.label_route_progress, currentPlaceIndex + 1, currentRouteSpots.size)
 
-        val estimatedMinutes = calculateEstimatedTime(currentRouteSpots.size)
+        val estimatedMinutes = routeRenderer.calculateEstimatedTime(currentRouteSpots.size)
         val hours = estimatedMinutes / 60
         val minutes = estimatedMinutes % 60
         binding.routeTimeEstimateText.text = if (hours > 0) {
@@ -917,12 +890,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun calculateEstimatedTime(placeCount: Int): Int {
-        val timePerPlace = 15
-        val timeBetweenPlaces = 5
-        return (placeCount * timePerPlace) + ((placeCount - 1) * timeBetweenPlaces)
-    }
-
     private fun closeRouteNavigation() {
         isNavigatingRoute = false
         binding.routeNavigationPanel.visibility = View.GONE
@@ -931,90 +898,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         finish()
     }
 
-    // =============== HELPERS DE BITMAP PARA MARCADORES ===============
-
-    /**
-     * Círculo con imagen de lugar + borde de color de categoría.
-     */
-    private fun createCircularBitmapWithBorder(source: Bitmap, borderColor: Int): Bitmap {
-        val borderPx = dpToPx(3)
-        val size = source.width + borderPx * 2
-        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = borderColor })
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f - dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
-        canvas.drawBitmap(source, borderPx.toFloat(), borderPx.toFloat(), null)
-        return output
-    }
-
-    /**
-     * Círculo con imagen de lugar + número de parada en badge superior-derecho.
-     */
-    private fun createCircularBitmapWithNumber(source: Bitmap, number: Int, borderColor: Int): Bitmap {
-        val borderPx = dpToPx(3)
-        val size = source.width + borderPx * 2
-        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-
-        // Borde de color de categoría
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = borderColor })
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f - dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
-        canvas.drawBitmap(source, borderPx.toFloat(), borderPx.toFloat(), null)
-
-        // Badge con número
-        val badgeRadius = dpToPx(10).toFloat()
-        val badgeX = size - badgeRadius
-        val badgeY = badgeRadius
-        canvas.drawCircle(badgeX, badgeY, badgeRadius + dpToPx(1), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
-        canvas.drawCircle(badgeX, badgeY, badgeRadius, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#1A73E8") })
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            textSize = dpToPx(10).toFloat()
-            typeface = Typeface.DEFAULT_BOLD
-            textAlign = Paint.Align.CENTER
-        }
-        canvas.drawText(number.toString(), badgeX, badgeY - (textPaint.descent() + textPaint.ascent()) / 2f, textPaint)
-        return output
-    }
-
-    /**
-     * Círculo de color con número (fallback cuando no hay imagen).
-     */
-    private fun createNumberedCircleMarker(number: Int, backgroundColor: Int): Bitmap {
-        val sizePx = dpToPx(44)
-        val output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        canvas.drawCircle(sizePx / 2f, sizePx / 2f, sizePx / 2f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
-        canvas.drawCircle(sizePx / 2f, sizePx / 2f, sizePx / 2f - dpToPx(2), Paint(Paint.ANTI_ALIAS_FLAG).apply { color = backgroundColor })
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            textSize = dpToPx(16).toFloat()
-            typeface = Typeface.DEFAULT_BOLD
-            textAlign = Paint.Align.CENTER
-        }
-        canvas.drawText(number.toString(), sizePx / 2f, sizePx / 2f - (textPaint.descent() + textPaint.ascent()) / 2f, textPaint)
-        return output
-    }
-
-    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
-
-    private fun getCategoryColor(category: String): Int = when (category.lowercase()) {
-        "museo" -> Color.parseColor("#9C27B0")
-        "restaurante", "gastronomía" -> Color.parseColor("#FF5722")
-        "hotel", "hospedaje" -> Color.parseColor("#2196F3")
-        "iglesia", "templo" -> Color.parseColor("#00BCD4")
-        "parque", "naturaleza" -> Color.parseColor("#4CAF50")
-        "tienda", "comercio" -> Color.parseColor("#FFC107")
-        else -> Color.parseColor("#F44336")
-    }
-
-    private fun getCategoryHue(category: String): Float = when (category.lowercase()) {
-        "museo" -> BitmapDescriptorFactory.HUE_VIOLET
-        "restaurante", "gastronomía" -> BitmapDescriptorFactory.HUE_ORANGE
-        "hotel", "hospedaje" -> BitmapDescriptorFactory.HUE_BLUE
-        "iglesia", "templo" -> BitmapDescriptorFactory.HUE_CYAN
-        "parque", "naturaleza" -> BitmapDescriptorFactory.HUE_GREEN
-        "tienda", "comercio" -> BitmapDescriptorFactory.HUE_YELLOW
-        else -> BitmapDescriptorFactory.HUE_RED
-    }
 }

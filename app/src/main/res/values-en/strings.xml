@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TouristNotify</string>
+    <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- Accessibility: password toggle (A11Y-011) -->
+    <string name="a11y_password_toggle_show">Show password</string>
+    <string name="a11y_password_toggle_hide">Hide password</string>
+    <string name="a11y_confirm_password_toggle_show">Show confirm password</string>
+    <string name="a11y_confirm_password_toggle_hide">Hide confirm password</string>
+
+    <!-- Login / Register -->
+    <string name="login_button">Sign In</string>
+    <string name="login_loading">Signing in…</string>
+    <string name="register_button">Create Account</string>
+    <string name="register_loading">Creating account…</string>
+    <string name="fill_all_fields">Please fill in all fields</string>
+    <string name="invalid_email">Please enter a valid email address</string>
+    <string name="password_min_length">Password must be at least 10 characters</string>
+    <string name="passwords_dont_match">Passwords do not match</string>
+    <string name="password_complexity">Password must contain at least one letter and one number</string>
+    <string name="error_auth_invalid_credentials">Incorrect email or password</string>
+    <string name="error_auth_too_many_attempts">Too many attempts. Wait %1$d s before trying again.</string>
+    <string name="error_auth_no_account">No account found with this email</string>
+    <string name="error_auth_wrong_password">Incorrect password</string>
+    <string name="error_auth_network">Connection error. Check your internet</string>
+    <string name="error_auth_generic">Authentication error. Please verify your credentials</string>
+    <string name="error_register_email_exists">An account already exists with this email. Would you like to sign in?</string>
+    <string name="error_register_weak_password">Password is too weak. Try a stronger one</string>
+    <string name="error_register_network">Connection error. Check your internet and try again</string>
+    <string name="error_register_generic">Registration error. Please verify your details and try again</string>
+    <string name="account_created_title">Account created</string>
+    <string name="account_created_message">We sent a verification email to %s.\n\nVerify your email to activate all app features.</string>
+    <string name="understood">Got it</string>
+    <string name="guest_mode_activated">Guest mode activated. Some features will be limited.</string>
+    <string name="skip_login">Continue as guest</string>
+
+    <!-- Menu -->
+    <string name="welcome_question">What would you like to do today?</string>
+    <string name="weather_estimated">%s (estimated)</string>
+    <string name="weather_unavailable">Unavailable</string>
+    <string name="quick_settings_title">Quick Settings</string>
+    <string name="session_active">Active session: %s</string>
+    <string name="guest_mode">Guest Mode</string>
+    <string name="no_session">No session</string>
+    <string name="close_session">Sign Out</string>
+    <string name="exit_guest_mode">Exit Guest Mode</string>
+    <string name="logout_title">Sign Out</string>
+    <string name="logout_message">Are you sure you want to sign out? You will lose access to your favorites, saved routes, and statistics.</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search places…</string>
+    <string name="search_min_chars">Type at least 2 characters to search</string>
+
+    <!-- Place Details -->
+    <string name="place_not_found">Error: Place not found.</string>
+    <string name="qr_opening">Opening place from QR code…</string>
+    <string name="reviews_based_on">Based on %d reviews</string>
+    <string name="favorite_added">Added to favorites</string>
+    <string name="favorite_removed">Removed from favorites</string>
+    <string name="checkin_success">Check-in successful!</string>
+    <string name="checkin_already_today">You already checked in here today</string>
+    <string name="checkin_error">Check-in error: %s</string>
+    <string name="select_rating">Please select a rating</string>
+    <string name="place_id_unavailable">Error: Place ID not available</string>
+    <string name="review_already_exists">You already left a review for this place</string>
+    <string name="review_update">Update</string>
+    <string name="review_submitted">Review submitted successfully</string>
+    <string name="review_updated">Review updated successfully</string>
+    <string name="url_invalid">Invalid URL</string>
+    <string name="error_loading_place">Error loading place details</string>
+    <string name="error_loading_reviews">Error loading reviews</string>
+    <string name="error_submit_review">Error submitting review: %s</string>
+    <string name="error_update_review">Error updating review: %s</string>
+    <string name="error_verify_reviews">Error verifying reviews: %s</string>
+    <string name="favorite_label_active">⭐ Favorite</string>
+    <string name="favorite_label_inactive">☆ Add</string>
+    <string name="anonymous">Anonymous</string>
+
+    <!-- AI Route Generation -->
+    <string name="daily_limit_title">Daily limit reached</string>
+    <string name="daily_limit_message">%s\n\nThis helps control AI service costs.</string>
+    <string name="ai_usage_subtitle">AI will create the perfect route for you\n%s</string>
+    <string name="ai_usage_format">%d/%d AI routes used today</string>
+    <string name="enter_budget_and_time">Please enter budget and available time</string>
+    <string name="budget_invalid">Budget must be a number greater than 0</string>
+    <string name="time_invalid">Available time must be between 0.5 and 24 hours</string>
+    <string name="select_interest">Select at least one interest or describe what you are looking for</string>
+    <string name="api_key_missing">Error: Gemini API key not configured</string>
+    <string name="ai_timeout">Generation took too long. Try again with simpler preferences.</string>
+    <string name="ai_network_error">Connection error. Check your internet and try again.</string>
+    <string name="ai_generic_error">Error generating route. Please try again.</string>
+    <string name="ai_empty_response">AI could not generate a route with those criteria. Try different preferences.</string>
+    <string name="ai_route_created">✨ Route created with %1$d destinations\nYou have %2$d AI routes left today</string>
+    <string name="ai_progress_1">🔍 Analyzing your preferences…</string>
+    <string name="ai_progress_2">🗺️ Exploring %d available places…</string>
+    <string name="ai_progress_3">🤔 Calculating the best combination…</string>
+    <string name="ai_progress_4">✨ Optimizing your experience…</string>
+    <string name="ai_progress_5">📍 Selecting the perfect destinations…</string>
+    <string name="db_init_error">Error initializing the database.</string>
+    <string name="db_load_error">Critical error loading places from database.</string>
+
+    <!-- Blog -->
+    <string name="articles_count_format">%d articles</string>
+    <string name="blog_like_added">You like this article</string>
+    <string name="blog_like_removed">You no longer like this article</string>
+    <string name="blog_like_error">Error processing your reaction</string>
+    <string name="blog_load_error">Error loading posts: %s</string>
+
+    <!-- Events -->
+    <string name="date_to_confirm">Date to be confirmed</string>
+
+    <!-- Routes -->
+    <string name="delete_route_title">Delete route</string>
+    <string name="delete_route_message">Are you sure you want to delete \'%s\'?</string>
+    <string name="delete">Delete</string>
+    <string name="route_deleted">Route deleted successfully</string>
+    <string name="route_delete_error">Error deleting route</string>
+    <string name="routes_load_error">Error loading routes</string>
+    <string name="login_required_delete">You must sign in to delete routes</string>
+    <string name="no_permission_delete">You do not have permission to delete this route</string>
+    <string name="user_not_found">Could not retrieve user</string>
+    <string name="confirm">Confirm</string>
+    <string name="change">Change</string>
+    <string name="no_description">No description</string>
+    <string name="stops_count">%d stops</string>
+    <string name="created_ago">Created %s</string>
+    <string name="unknown_date">Unknown date</string>
+
+    <!-- Profile -->
+    <string name="nickname_min_length">Nickname must be at least 3 characters</string>
+    <string name="profile_title">My Profile</string>
+    <string name="profile_no_internet">No internet connection. Some data may not load.</string>
+    <string name="profile_username_empty">Username cannot be empty</string>
+    <string name="profile_username_taken">That username is already taken</string>
+    <string name="profile_updated">Profile updated</string>
+    <string name="profile_save_error">Error saving: %s</string>
+    <string name="change_password_title">Change Password</string>
+    <string name="enter_current_password">Enter your current password</string>
+    <string name="new_password_min_length">New password must be at least 6 characters</string>
+    <string name="password_changed">Password changed successfully</string>
+    <string name="password_change_error">Error: %s</string>
+    <string name="delete_account_title">Delete Account</string>
+    <string name="delete_account_message">This action is irreversible. All your data will be deleted:\n\n• Saved routes\n• Favorites\n• Check-ins\n• Reviews\n• Statistics\n\nAre you sure you want to continue?</string>
+    <string name="confirm_delete_title">Confirm Deletion</string>
+    <string name="confirm_delete_message">For security, enter your password to confirm:</string>
+    <string name="enter_password">Enter your password</string>
+    <string name="account_deleted">Account deleted</string>
+    <string name="export_data_button">Export my data</string>
+    <string name="export_data_title">Export personal data</string>
+    <string name="export_data_message">A JSON file will be generated with your profile, favorites, check-ins, routes, and reviews (GDPR Art. 20 — data portability). The file will be shared from your device.</string>
+    <string name="exporting_data">Exporting data…</string>
+    <string name="export_data_success">Data exported successfully</string>
+    <string name="export_data_error">Error exporting data: %s</string>
+    <string name="logout_confirm_simple">Are you sure you want to sign out?</string>
+    <string name="session_closed">Session closed</string>
+    <string name="no_email">No email</string>
+    <string name="password_hint">Password</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Explore Álamos</string>
+    <string name="onboarding_desc_1">Discover historic places, cultural events, and unique experiences in this Pueblo Mágico</string>
+    <string name="onboarding_title_2">Smart Notifications</string>
+    <string name="onboarding_desc_2">Receive automatic alerts when you are near interesting tourist spots</string>
+    <string name="onboarding_title_3">Create Personalized Routes</string>
+    <string name="onboarding_desc_3">Generate itineraries with AI or explore curated routes designed by experts</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_start">Get Started</string>
+
+    <!-- Forgot Password -->
+    <string name="reset_email_sent">Password reset email sent.</string>
+    <string name="reset_email_fallback">If the email exists, you will receive a reset link.</string>
+    <string name="enter_email_please">Please enter your email address</string>
+
+    <!-- Proximity -->
+    <string name="location_permission_required">Location permissions required</string>
+    <string name="notifications_background_only">Notifications will only work while the app is open</string>
+    <string name="notifications_enabled">Notifications enabled</string>
+    <string name="notifications_disabled">Notifications disabled</string>
+    <string name="geofence_error">Error setting up geofences</string>
+    <string name="user_not_authenticated">User not authenticated</string>
+    <string name="location_permission">location</string>
+    <string name="notification_permission">notifications</string>
+    <string name="permissions_granted">All permissions granted</string>
+    <string name="permissions_missing">Missing permissions: %s</string>
+    <string name="configuring_notifications">Configuring notifications…</string>
+    <string name="radius_meters_format">%1$d m</string>
+    <string name="places_monitored">%1$d places monitored\nYou will receive notifications when nearby</string>
+    <string name="notification_configured">Notifications configured for %d places</string>
+    <string name="notification_config_error">Error configuring notifications</string>
+
+    <!-- Categories -->
+    <string name="category_all">All</string>
+    <string name="category_tips">Tips</string>
+    <string name="category_history">History</string>
+    <string name="category_food">Food</string>
+    <string name="category_culture">Culture</string>
+
+    <!-- Map filters -->
+    <string name="filter_museums">Museums</string>
+    <string name="filter_restaurants">Restaurants</string>
+    <string name="filter_hotels">Hotels</string>
+    <string name="filter_churches">Churches</string>
+    <string name="filter_parks">Parks</string>
+    <string name="filter_shops">Shops</string>
+
+    <!-- Top Places -->
+    <string name="top_places_load_error">Error loading popular places</string>
+
+    <!-- Photo Gallery -->
+    <string name="no_photos_yet">📸\n\nNo photos yet\n\nBe the first to share photos of this place</string>
+    <string name="photos_load_error">Error loading photos:\n%s</string>
+    <string name="gallery_title">Gallery: %s</string>
+    <string name="place_not_found_error">Error: place not found</string>
+
+    <!-- Auth dialog -->
+    <string name="auth_required_for_action">To %s you need to create an account or sign in.\n\nWould you like to continue?</string>
+    <string name="later">Not now</string>
+
+    <!-- General -->
+    <string name="error_generic">An error occurred. Please try again.</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="retry">Retry</string>
+    <string name="loading">Loading…</string>
+    <string name="auth_required">Authentication required</string>
+
+    <!-- Accessibility -->
+    <string name="cd_app_logo">TouristNotify logo</string>
+    <string name="cd_weather_icon">Current weather icon</string>
+    <string name="cd_close_navigation">Close navigation</string>
+    <string name="cd_lock_icon">Authentication required</string>
+    <string name="cd_menu_icon">Feature icon</string>
+    <string name="cd_like_button">Like</string>
+    <string name="cd_remove_favorite">Remove from favorites</string>
+    <string name="cd_share_route">Share route</string>
+    <string name="cd_delete_route">Delete route</string>
+
+    <!-- AI Route Preferences -->
+    <string name="interest_food">Food</string>
+    <string name="interest_culture">Culture</string>
+    <string name="interest_history">History</string>
+    <string name="interest_outdoors">Outdoors</string>
+    <string name="interest_photography">Photography</string>
+    <string name="interest_architecture">Architecture</string>
+    <string name="interest_shopping">Shopping</string>
+    <string name="interest_relax">Relaxation</string>
+    <string name="travel_type_solo">Solo</string>
+    <string name="travel_type_couple">As a couple</string>
+    <string name="travel_type_family">With family</string>
+    <string name="travel_type_friends">With friends</string>
+    <string name="travel_type_unspecified">Not specified</string>
+    <string name="pace_relaxed">Relaxed</string>
+    <string name="pace_moderate">Moderate</string>
+    <string name="pace_intense">Intense</string>
+    <string name="mobility_walking">On foot</string>
+    <string name="mobility_car">By car</string>
+    <string name="mobility_mixed">Mixed</string>
+
+    <!-- AI disclaimer -->
+    <string name="ai_disclaimer_title">🤖 AI-Powered Generation</string>
+    <string name="ai_disclaimer_message">To generate your personalized route, LUPITA will send your preferences (budget, time, interests, specific request) to the Google Gemini AI service.\n\n• This data may be temporarily stored by Google according to their usage policies.\n• You can review our Privacy Policy for more information.\n• This feature is optional — you can always browse places and events without using AI.\n\nDo you agree to continue?</string>
+    <string name="ai_disclaimer_accept">Accept and generate</string>
+    <string name="ai_disclaimer_cancel">Cancel</string>
+
+    <!-- BG Location disclosure -->
+    <string name="bg_location_title">Background location</string>
+    <string name="bg_location_disclosure">LUPITA uses your location in the background to send you notifications when you are near tourist spots, even when the app is closed or not in use.\n\n• This feature is optional.\n• You can disable it at any time from Device Settings or Profile → Proximity Notifications.\n• Your location is never shared with third parties.\n\nWould you like to allow LUPITA to access your location in the background?</string>
+    <string name="bg_location_continue">Allow</string>
+    <string name="bg_location_decline">Not now</string>
+    <string name="bg_location_skipped">Proximity notifications disabled. You can enable them later.</string>
+
+    <!-- Share place -->
+    <string name="share_place">🔗 Share place</string>
+    <string name="share_place_via">Share this place with others</string>
+    <string name="share_place_text">Visit %1$s in Álamos, Sonora!\n%2$s</string>
+    <string name="share_via">Share via…</string>
+
+    <!-- Remove favorite confirmation -->
+    <string name="remove_favorite_title">Remove favorite</string>
+    <string name="remove_favorite_message">Remove \"%1$s\" from your favorites?</string>
+
+    <!-- Accessibility (A11Y) -->
+    <string name="a11y_chip_active">%1$s, filter active</string>
+    <string name="a11y_chip_inactive">%1$s, filter inactive</string>
+    <string name="a11y_event_item">%1$s. Category: %2$s. Location: %3$s. Date: %4$s.</string>
+    <string name="a11y_place_marker">%1$s — %2$s</string>
+    <string name="a11y_profile_photo">Profile photo of %1$s</string>
+    <string name="a11y_featured">Featured</string>
+    <string name="a11y_like_count">%1$d likes</string>
+    <string name="a11y_view_count">%1$d views</string>
+    <string name="a11y_rating">Rating: %1$.1f out of 5</string>
+    <string name="a11y_places_list_button">View accessible places list</string>
+    <!-- Menu card titles -->
+    <string name="menu_card_generate_route">Generate\nAI Route</string>
+    <string name="menu_card_themed_routes">Preset\nRoutes</string>
+    <string name="menu_card_my_routes">My\nRoutes</string>
+    <string name="menu_card_view_map">View\nMap</string>
+    <string name="menu_card_contacts">Emergency\nContacts</string>
+    <string name="menu_card_top_places">Top 10 Places</string>
+    <string name="menu_card_top_places_subtitle">most visited</string>
+    <string name="menu_card_favorites">My\nFavorites</string>
+    <string name="menu_card_events">Events\nin Álamos</string>
+    <string name="menu_card_blog">Travel\nBlog</string>
+    <string name="menu_card_proximity">Proximity\nNotif.</string>
+
+    <string name="a11y_card_generate_route">Generate Route with Artificial Intelligence</string>
+    <string name="a11y_card_themed_routes">Preset Routes</string>
+    <string name="a11y_card_my_routes">My saved routes</string>
+    <string name="a11y_card_view_map">View tourist places map</string>
+    <string name="a11y_card_contacts">Emergency Contacts</string>
+    <string name="a11y_card_top_places">Top 10 most visited places</string>
+    <string name="a11y_card_favorites">My Favorites</string>
+    <string name="a11y_card_events">Events in Álamos</string>
+    <string name="a11y_card_blog">Travel tips blog</string>
+    <string name="a11y_card_proximity">Proximity Notifications</string>
+    <string name="a11y_website_link">Website: %1$s</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_link">Privacy Policy</string>
+    <string name="privacy_policy_updated">Last updated: 2026-04-26</string>
+    <string name="register_privacy_notice">By creating an account you accept our <![CDATA[<u><font color="#006A67">Privacy Policy</font></u>]]></string>
+    <string name="onboarding_privacy_notice">By continuing you accept our <![CDATA[<u><font color="#006A67">Privacy Policy</font></u>]]></string>
+    <string name="privacy_policy_content"><![CDATA[
+**PRIVACY NOTICE — TouristNotify (LUPITA)**
+
+Controller: José Ibarra / TouristNotify
+Contact: joseinnit04@outlook.com
+
+**Data we collect**
+• Email address and password (authentication)
+• Nickname / display name (personalization)
+• Profile photo (optional)
+• Precise location (geofencing and map)
+• Check-in history (visited places with date/time)
+• Favorites and saved routes
+• Reviews and ratings
+• Prompts sent to the AI service (Google Gemini) to generate routes
+
+**Who we share your data with**
+• Google Firebase (Auth, Firestore, Storage, Analytics, Crashlytics)
+• Google Maps Platform
+• Google Gemini AI (only the text of the route generation prompt)
+• OpenWeatherMap (only geographic coordinates of Álamos, Sonora)
+
+**Your rights (GDPR Art. 15-21 / LFPDPPP Art. 22-27)**
+You have the right to: Access, rectify, erase, port, and object to the processing of your data.
+Exercise your rights from Menu → My Profile (edit, export data, delete account).
+
+**International transfers**
+Data is processed on Google LLC servers (USA) under EU Standard Contractual Clauses.
+
+**Retention**
+Data is kept while your account is active. When you delete your account, all your data is removed from our systems within 30 days.
+
+**Changes to this policy**
+We will notify you of significant changes through an in-app notice.
+
+NOTE: This is a provisional notice. The final legal text is pending review by legal counsel.
+    ]]></string>
+</resources>

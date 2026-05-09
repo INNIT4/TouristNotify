@@ -41,8 +41,20 @@ class AdminPlacesActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         if (!Places.isInitialized()) {
             val placesKey = getString(R.string.places_api_key)
-            if (placesKey.isNotEmpty()) Places.initialize(applicationContext, placesKey)
+            if (placesKey.isNotEmpty()) {
+                Places.initialize(applicationContext, placesKey)
+            }
         }
+
+        if (!Places.isInitialized()) {
+            AlertDialog.Builder(this)
+                .setTitle("Error de configuración")
+                .setMessage("Google Places API no está configurada. Verifica la API key en local.properties.")
+                .setPositiveButton("Cerrar") { _, _ -> finish() }
+                .show()
+            return
+        }
+
         placesClient = Places.createClient(this)
 
         setupRecyclerView()

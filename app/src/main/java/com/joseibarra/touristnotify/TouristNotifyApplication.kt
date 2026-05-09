@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
+import com.google.android.libraries.places.api.Places
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,14 @@ class TouristNotifyApplication : MultiDexApplication() {
             .build()
 
         FirebaseFirestore.getInstance().firestoreSettings = settings
+
+        // Inicializar Places SDK una vez al arranque
+        if (!Places.isInitialized()) {
+            val placesKey = getString(R.string.places_api_key)
+            if (placesKey.isNotEmpty()) {
+                Places.initialize(applicationContext, placesKey)
+            }
+        }
 
         // Inicializar ConfigManager (Remote Config)
         applicationScope.launch {

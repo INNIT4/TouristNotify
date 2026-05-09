@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import com.joseibarra.touristnotify.databinding.ActivityMenuBinding
 import kotlinx.coroutines.launch
 
@@ -27,98 +28,13 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Aplicar estilos bloqueados si es usuario invitado
-        setupLockedFeaturesUI()
+        setupMenuGrid()
 
         loadWeather()
 
         // Búsqueda global (click en el texto de bienvenida)
         binding.welcomeText.setOnClickListener {
             val intent = Intent(this, GlobalSearchActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-        }
-
-        binding.buttonGenerateRoute.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
-                val intent = Intent(this, PreferencesActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonMyRoutes.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_ROUTES) {
-                val intent = Intent(this, MyRoutesActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonViewMap.setOnClickListener {
-            val intent = Intent(this, MapsActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-        }
-
-        binding.buttonContacts.setOnClickListener {
-            val intent = Intent(this, ContactsActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-        }
-
-        binding.buttonTopPlaces.setOnClickListener {
-            val intent = Intent(this, TopPlacesActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-        }
-
-        binding.buttonFavorites.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_FAVORITES) {
-                val intent = Intent(this, FavoritesActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonStats.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.VIEW_STATS) {
-                val intent = Intent(this, StatsActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonEvents.setOnClickListener {
-            val intent = Intent(this, EventsActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-        }
-
-        binding.buttonThemedRoutes.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.THEMED_ROUTES) {
-                val intent = Intent(this, ThemedRoutesActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonBlog.setOnClickListener {
-            val intent = Intent(this, BlogActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-        }
-
-        binding.buttonProximityNotifications.setOnClickListener {
-            AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
-                val intent = Intent(this, ProximityNotificationsActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-        }
-
-        binding.buttonOffline.setOnClickListener {
-            val intent = Intent(this, OfflineSettingsActivity::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
         }
@@ -138,15 +54,170 @@ class MenuActivity : AppCompatActivity() {
 
     }
 
-    private fun setupLockedFeaturesUI() {
-        // Aplicar estilo bloqueado a elementos premium si es usuario invitado
-        AuthManager.applyLockedStyleIfGuest(binding.buttonGenerateRoute, binding.lockIconGenerateRoute)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonMyRoutes, binding.lockIconMyRoutes)
-        // Contactos de emergencia están disponibles para todos (no se bloquean)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonFavorites, binding.lockIconFavorites)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonStats, binding.lockIconStats)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonProximityNotifications, binding.lockIconProximity)
-        AuthManager.applyLockedStyleIfGuest(binding.buttonThemedRoutes, binding.lockIconThemedRoutes)
+    private fun setupMenuGrid() {
+        val menuItems = listOf(
+            MenuItemData(
+                id = MenuItemId.GENERATE_ROUTE,
+                titleRes = R.string.menu_card_generate_route,
+                iconEmoji = "🤖",
+                colorScheme = MenuColorScheme.PRIMARY,
+                isLarge = true,
+                requiresAuth = AuthManager.AuthRequired.GENERATE_ROUTES,
+                a11yDescRes = R.string.a11y_card_generate_route
+            ),
+            MenuItemData(
+                id = MenuItemId.THEMED_ROUTES,
+                titleRes = R.string.menu_card_themed_routes,
+                iconEmoji = "🗺️",
+                colorScheme = MenuColorScheme.SECONDARY,
+                isLarge = true,
+                requiresAuth = AuthManager.AuthRequired.THEMED_ROUTES,
+                a11yDescRes = R.string.a11y_card_themed_routes
+            ),
+            MenuItemData(
+                id = MenuItemId.MY_ROUTES,
+                titleRes = R.string.menu_card_my_routes,
+                iconEmoji = "📍",
+                colorScheme = MenuColorScheme.TERTIARY,
+                isLarge = true,
+                requiresAuth = AuthManager.AuthRequired.MY_ROUTES,
+                a11yDescRes = R.string.a11y_card_my_routes
+            ),
+            MenuItemData(
+                id = MenuItemId.VIEW_MAP,
+                titleRes = R.string.menu_card_view_map,
+                iconEmoji = "🗾",
+                colorScheme = MenuColorScheme.PRIMARY,
+                isLarge = true,
+                a11yDescRes = R.string.a11y_card_view_map
+            ),
+            MenuItemData(
+                id = MenuItemId.TOP_PLACES,
+                titleRes = R.string.menu_card_top_places,
+                subtitleRes = R.string.menu_card_top_places_subtitle,
+                iconEmoji = "🏆",
+                colorScheme = MenuColorScheme.PRIMARY,
+                spanFull = true,
+                showArrow = true,
+                a11yDescRes = R.string.a11y_card_top_places
+            ),
+            MenuItemData(
+                id = MenuItemId.CONTACTS,
+                titleRes = R.string.menu_card_contacts,
+                iconEmoji = "🚨",
+                colorScheme = MenuColorScheme.TERTIARY,
+                showArrow = true,
+                a11yDescRes = R.string.a11y_card_contacts
+            ),
+            MenuItemData(
+                id = MenuItemId.FAVORITES,
+                titleRes = R.string.menu_card_favorites,
+                iconEmoji = "❤️",
+                colorScheme = MenuColorScheme.SECONDARY,
+                showArrow = true,
+                requiresAuth = AuthManager.AuthRequired.MY_FAVORITES,
+                a11yDescRes = R.string.a11y_card_favorites
+            ),
+            MenuItemData(
+                id = MenuItemId.EVENTS,
+                titleRes = R.string.menu_card_events,
+                iconEmoji = "🎭",
+                colorScheme = MenuColorScheme.SECONDARY,
+                showArrow = true,
+                a11yDescRes = R.string.a11y_card_events
+            ),
+            MenuItemData(
+                id = MenuItemId.BLOG,
+                titleRes = R.string.menu_card_blog,
+                iconEmoji = "✍️",
+                colorScheme = MenuColorScheme.TERTIARY,
+                showArrow = true,
+                a11yDescRes = R.string.a11y_card_blog
+            ),
+            MenuItemData(
+                id = MenuItemId.PROXIMITY,
+                titleRes = R.string.menu_card_proximity,
+                iconEmoji = "📡",
+                colorScheme = MenuColorScheme.PRIMARY,
+                showArrow = true,
+                requiresAuth = AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS,
+                a11yDescRes = R.string.a11y_card_proximity
+            )
+        ).toMutableList()
+
+        val currentEmail = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email
+        if (AdminConfig.isTourismOfficeUser(currentEmail)) {
+            menuItems.add(MenuItemData(
+                id = MenuItemId.ADMIN_PANEL,
+                titleRes = R.string.menu_card_admin_panel,
+                iconEmoji = "⚙️",
+                colorScheme = MenuColorScheme.TERTIARY,
+                spanFull = true,
+                showArrow = true,
+                a11yDescRes = R.string.menu_card_admin_panel
+            ))
+        }
+
+        val adapter = MenuAdapter(menuItems, AuthManager.isAuthenticated()) { id ->
+            handleMenuClick(id)
+        }
+
+        val gridLayoutManager = GridLayoutManager(this, 2)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) = adapter.getSpanSize(position)
+        }
+
+        binding.menuRecycler.layoutManager = gridLayoutManager
+        binding.menuRecycler.adapter = adapter
+    }
+
+    private fun handleMenuClick(id: MenuItemId) {
+        when (id) {
+            MenuItemId.GENERATE_ROUTE -> AuthManager.requireAuth(this, AuthManager.AuthRequired.GENERATE_ROUTES) {
+                startActivity(com.joseibarra.touristnotify.wizard.RouteWizardActivity.newIntent(this))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.THEMED_ROUTES -> AuthManager.requireAuth(this, AuthManager.AuthRequired.THEMED_ROUTES) {
+                startActivity(Intent(this, ThemedRoutesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.MY_ROUTES -> AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_ROUTES) {
+                startActivity(Intent(this, MyRoutesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.VIEW_MAP -> {
+                startActivity(Intent(this, MapsActivity::class.java))
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            }
+            MenuItemId.CONTACTS -> {
+                startActivity(Intent(this, ContactsActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.TOP_PLACES -> {
+                startActivity(Intent(this, TopPlacesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.FAVORITES -> AuthManager.requireAuth(this, AuthManager.AuthRequired.MY_FAVORITES) {
+                startActivity(Intent(this, FavoritesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.EVENTS -> {
+                startActivity(Intent(this, EventsActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.BLOG -> {
+                startActivity(Intent(this, BlogActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.PROXIMITY -> AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
+                startActivity(Intent(this, ProximityNotificationsActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.ADMIN_PANEL -> {
+                startActivity(Intent(this, AdminPlacesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+        }
     }
 
     private fun loadWeather() {
@@ -160,10 +231,8 @@ class MenuActivity : AppCompatActivity() {
                 binding.weatherDetailsContainer.visibility = View.VISIBLE
                 binding.weatherRecommendationsTextView.visibility = View.VISIBLE
 
-                // Actualizar UI con datos del clima
                 binding.weatherEmojiTextView.text = WeatherManager.getWeatherEmoji(weather.icon)
                 binding.weatherTempTextView.text = "${weather.temperature.toInt()}°C"
-                // Indicar cuando los datos son estimados (sin API key o sin red)
                 binding.weatherDescriptionTextView.text = if (weather.isMock) {
                     "${weather.description} (estimado)"
                 } else {
@@ -174,13 +243,12 @@ class MenuActivity : AppCompatActivity() {
                 binding.weatherWindTextView.text = "💨 ${weather.windSpeed.toInt()} km/h"
                 binding.weatherFeelsLikeTextView.text = "🌡️ ${weather.feelsLike.toInt()}°C"
 
-                // Generar recomendaciones
                 val recommendations = WeatherManager.getWeatherRecommendations(weather)
                 binding.weatherRecommendationsTextView.text = recommendations
             }.onFailure { e ->
                 binding.weatherProgressBar.visibility = View.GONE
                 binding.weatherTempTextView.text = "--°C"
-                binding.weatherDescriptionTextView.text = "No disponible"
+                binding.weatherDescriptionTextView.text = getString(R.string.weather_unavailable)
                 binding.weatherEmojiTextView.text = "🌤️"
             }
         }
@@ -193,20 +261,17 @@ class MenuActivity : AppCompatActivity() {
         val profileButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.profile_button)
         val logoutButton = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.logout_button)
 
-        // Cargar estado actual
         darkModeSwitch.isChecked = TouristNotifyApplication.isDarkModeEnabled(this)
 
-        // Mostrar estado de autenticación
         val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         val isGuest = AuthManager.isGuestMode(this)
 
         authStatusText.text = when {
-            currentUser != null -> "✅ Sesión activa: ${currentUser.email}"
-            isGuest -> "👤 Modo Invitado"
-            else -> "❌ Sin sesión"
+            currentUser != null -> getString(R.string.session_active, currentUser.email ?: "")
+            isGuest -> getString(R.string.guest_mode)
+            else -> getString(R.string.no_session)
         }
 
-        // Configurar botón de perfil (solo visible si está autenticado)
         if (currentUser != null) {
             profileButton.visibility = View.VISIBLE
             profileButton.setOnClickListener {
@@ -218,10 +283,9 @@ class MenuActivity : AppCompatActivity() {
             profileButton.visibility = View.GONE
         }
 
-        // Configurar botón de logout
         if (currentUser != null || isGuest) {
             logoutButton.visibility = View.VISIBLE
-            logoutButton.text = if (currentUser != null) "Cerrar Sesión" else "Salir del Modo Invitado"
+            logoutButton.text = if (currentUser != null) getString(R.string.close_session) else getString(R.string.exit_guest_mode)
             logoutButton.setOnClickListener {
                 performLogout()
             }
@@ -230,14 +294,13 @@ class MenuActivity : AppCompatActivity() {
         }
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("⚙️ Configuración Rápida")
+            .setTitle(getString(R.string.quick_settings_title))
             .setView(dialogView)
-            .setPositiveButton("Cerrar", null)
+            .setPositiveButton(getString(R.string.close), null)
             .create()
 
         darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             TouristNotifyApplication.setDarkMode(this, isChecked)
-            // El tema se aplicará automáticamente al recrear la actividad
             recreate()
         }
 
@@ -246,22 +309,17 @@ class MenuActivity : AppCompatActivity() {
 
     private fun performLogout() {
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("⚠️ Cerrar Sesión")
-            .setMessage("¿Estás seguro que deseas cerrar sesión? Perderás acceso a tus favoritos, rutas guardadas y estadísticas.")
-            .setPositiveButton("Cerrar Sesión") { _, _ ->
-                // Cerrar sesión de Firebase
+            .setTitle(getString(R.string.logout_title))
+            .setMessage(getString(R.string.logout_message))
+            .setPositiveButton(getString(R.string.close_session)) { _, _ ->
                 com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
-
-                // Desactivar modo invitado
                 AuthManager.disableGuestMode(this)
-
-                // Volver a LoginActivity
                 val intent = Intent(this, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 

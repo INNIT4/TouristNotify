@@ -7,24 +7,41 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import kotlinx.coroutines.tasks.await
 
 /**
- * Manager centralizado para gestionar configuración de la app
+ * Manager centralizado para gestionar configuración de la app.
+ *
  * Soporta múltiples fuentes con fallback automático:
  * 1. Firebase Remote Config (producción)
  * 2. BuildConfig (desarrollo/fallback)
  * 3. Valores por defecto
+ *
+ * **NOTA DE SEGURIDAD (P1-3)**: Las API keys que se devuelven aquí están en
+ * el APK (vía BuildConfig) y son extraíbles. El plan de hardening está en
+ * `.claude/docs/api_keys_hardening.md`:
+ *   - GEMINI_API_KEY → migrar a Cloud Function `generateRoute` (App Check protected)
+ *   - WEATHER_API_KEY → migrar a Cloud Function `getWeather` (con caché)
+ *   - DIRECTIONS_API_KEY → migrar igual que Gemini
+ *   - MAPS_API_KEY → restringir por package+SHA1 en Cloud Console (no migrable)
+ *
+ * Mientras tanto: TODO ejecutar las restricciones por package+SHA1 en Google
+ * Cloud Console (sección 1 del documento de hardening).
  */
 object ConfigManager {
 
     private const val TAG = "ConfigManager"
+    @Volatile
     private var remoteConfig: FirebaseRemoteConfig? = null
+    @Volatile
     private var isInitialized = false
 
     // Claves de configuración
     private const val KEY_GEMINI_API_KEY = "gemini_api_key"
     private const val KEY_MAPS_API_KEY = "maps_api_key"
     private const val KEY_WEATHER_API_KEY = "weather_api_key"
+    private const val KEY_DIRECTIONS_API_KEY = "directions_api_key"
     private const val KEY_MAX_DAILY_ROUTES = "max_daily_routes"
     private const val KEY_MAX_DAILY_ROUTES_PREMIUM = "max_daily_routes_premium"
+    private const val KEY_USE_V2_ROUTE_GENERATOR = AppConstants.RC_USE_V2_ROUTE_GENERATOR
+    private const val KEY_MAX_PROMPT_LENGTH = AppConstants.RC_MAX_PROMPT_LENGTH
 
     /**
      * Inicializa Firebase Remote Config
@@ -32,6 +49,9 @@ object ConfigManager {
      */
     suspend fun initialize(context: Context) {
         if (isInitialized) return
+        synchronized(this) {
+            if (isInitialized) return
+        }
 
         try {
             remoteConfig = FirebaseRemoteConfig.getInstance().apply {
@@ -48,7 +68,9 @@ object ConfigManager {
                         // Las API keys no tienen defaults por seguridad
                         KEY_GEMINI_API_KEY to "",
                         KEY_MAPS_API_KEY to "",
-                        KEY_WEATHER_API_KEY to ""
+                        KEY_WEATHER_API_KEY to "",
+                        KEY_USE_V2_ROUTE_GENERATOR to true,
+                        KEY_MAX_PROMPT_LENGTH to AppConstants.DEFAULT_MAX_PROMPT_LENGTH
                     )
                 )
             }
@@ -127,6 +149,16 @@ object ConfigManager {
         return ""
     }
 
+    /** Directions / Routes API key (Routes API v2 + Directions API). */
+    fun getDirectionsApiKey(): String {
+        remoteConfig?.getString(KEY_DIRECTIONS_API_KEY)?.let { remoteKey ->
+            if (remoteKey.isNotBlank() && remoteKey != "your_key_here") return remoteKey
+        }
+        val buildKey = BuildConfig.DIRECTIONS_API_KEY
+        if (buildKey.isNotBlank() && buildKey != "your_key_here") return buildKey
+        return ""
+    }
+
     /**
      * Obtiene el límite máximo de rutas diarias para usuarios estándar
      */
@@ -152,6 +184,28 @@ object ConfigManager {
         } catch (e: Exception) {
             Log.w(TAG, "Error obteniendo max_daily_routes_premium, usando default: 20", e)
             20
+        }
+    }
+
+    /**
+     * Feature flag: usa el nuevo pipeline de generación de rutas V2 (JSON structured output).
+     * Puede desactivarse desde Remote Config para hacer rollback sin publicar.
+     */
+    fun useV2RouteGenerator(): Boolean {
+        return try {
+            remoteConfig?.getBoolean(KEY_USE_V2_ROUTE_GENERATOR) ?: true
+        } catch (e: Exception) {
+            true
+        }
+    }
+
+    /** Longitud máxima del prompt enviado a Gemini (en caracteres). */
+    fun getMaxPromptLength(): Int {
+        return try {
+            remoteConfig?.getLong(KEY_MAX_PROMPT_LENGTH)?.toInt()
+                ?: AppConstants.DEFAULT_MAX_PROMPT_LENGTH
+        } catch (e: Exception) {
+            AppConstants.DEFAULT_MAX_PROMPT_LENGTH
         }
     }
 

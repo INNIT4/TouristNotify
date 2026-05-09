@@ -4,14 +4,15 @@ import android.content.Intent
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.joseibarra.touristnotify.databinding.ListItemRouteBinding
 
 class RouteAdapter(
-    private var routes: List<Route>,
     private val onItemClicked: (Route) -> Unit,
     private val onDeleteClicked: (Route, Int) -> Unit
-) : RecyclerView.Adapter<RouteAdapter.RouteViewHolder>() {
+) : ListAdapter<Route, RouteAdapter.RouteViewHolder>(RouteDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         val binding = ListItemRouteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,23 +20,18 @@ class RouteAdapter(
     }
 
     override fun onBindViewHolder(holder: RouteViewHolder, position: Int) {
-        val route = routes[position]
-        holder.bind(route, position)
+        holder.bind(getItem(position), position)
     }
 
-    override fun getItemCount() = routes.size
-
     fun updateRoutes(newRoutes: List<Route>) {
-        routes = newRoutes
-        notifyDataSetChanged()
+        submitList(newRoutes)
     }
 
     fun removeRoute(position: Int) {
-        val mutableRoutes = routes.toMutableList()
-        if (position in mutableRoutes.indices) {
-            mutableRoutes.removeAt(position)
-            routes = mutableRoutes
-            notifyItemRemoved(position)
+        val current = currentList.toMutableList()
+        if (position in current.indices) {
+            current.removeAt(position)
+            submitList(current)
         }
     }
 
@@ -45,7 +41,6 @@ class RouteAdapter(
             binding.routeDescriptionTextView.text = route.descripcion.ifBlank { "Sin descripción" }
             binding.routeInfoTextView.text = "${route.pdis_incluidos.size} paradas"
 
-            // Mostrar fecha de creación
             route.fecha_creacion?.let { date ->
                 val now = System.currentTimeMillis()
                 val timeAgo = DateUtils.getRelativeTimeSpanString(
@@ -58,12 +53,10 @@ class RouteAdapter(
                 binding.routeDateTextView.text = "Fecha desconocida"
             }
 
-            // Click en la tarjeta completa para ver la ruta
             binding.root.setOnClickListener {
                 onItemClicked(route)
             }
 
-            // Botón de compartir
             binding.buttonShareRoute.setOnClickListener {
                 val context = binding.root.context
                 val shareText = buildString {
@@ -81,10 +74,19 @@ class RouteAdapter(
                 context.startActivity(Intent.createChooser(shareIntent, "Compartir ruta"))
             }
 
-            // Botón de eliminar
             binding.buttonDeleteRoute.setOnClickListener {
                 onDeleteClicked(route, position)
             }
+        }
+    }
+
+    class RouteDiffCallback : DiffUtil.ItemCallback<Route>() {
+        override fun areItemsTheSame(oldItem: Route, newItem: Route): Boolean {
+            return oldItem.id_ruta == newItem.id_ruta
+        }
+
+        override fun areContentsTheSame(oldItem: Route, newItem: Route): Boolean {
+            return oldItem == newItem
         }
     }
 }

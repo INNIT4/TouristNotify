@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTipoCocina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tipo de cocina (separados por coma)"
+            android:layout_marginBottom="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTipoCocina"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/swTerraza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tiene terraza"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPlatosRecomendados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Platos recomendados (uno por línea)"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPlatosRecomendados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Opciones dietéticas"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:layout_marginBottom="8dp" />
+
+        <CheckBox
+            android:id="@+id/cbVegetariano"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vegetariano" />
+
+        <CheckBox
+            android:id="@+id/cbVegano"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vegano" />
+
+        <CheckBox
+            android:id="@+id/cbSinGluten"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sin gluten" />
+
+        <CheckBox
+            android:id="@+id/cbHalal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Halal" />
+
+        <CheckBox
+            android:id="@+id/cbKosher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kosher" />
+
+        <CheckBox
+            android:id="@+id/cbSinLactosa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sin lactosa" />
+
+    </LinearLayout>
+</ScrollView>

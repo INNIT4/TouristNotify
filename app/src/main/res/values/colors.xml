@@ -69,6 +69,16 @@
     <color name="md_theme_dark_outline">#A08D84</color>
     <color name="md_theme_dark_scrim">#000000</color>
 
+    <!-- Map Marker Category Colors (AND-008) -->
+    <color name="marker_museum">#9C27B0</color>
+    <color name="marker_restaurant">#FF5722</color>
+    <color name="marker_hotel">#2196F3</color>
+    <color name="marker_church">#00BCD4</color>
+    <color name="marker_park">#4CAF50</color>
+    <color name="marker_shop">#FFC107</color>
+    <color name="marker_default">#F44336</color>
+    <color name="marker_badge_blue">#1A73E8</color>
+
     <!-- Additional UI Colors -->
     <color name="transparent">#00000000</color>
     <color name="semi_transparent_black">#80000000</color>

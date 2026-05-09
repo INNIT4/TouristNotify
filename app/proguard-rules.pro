@@ -16,10 +16,20 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Keep data classes for Firestore
--keepclassmembers class com.joseibarra.touristnotify.** {
-  *;
-}
+# Modelos de datos serializados por Firestore — mantener nombre de clase Y todos los miembros
+# (Firestore usa reflection sobre nombres de campos; R8 no debe renombrarlos)
+-keep class com.joseibarra.touristnotify.TouristSpot { *; }
+-keep class com.joseibarra.touristnotify.User { *; }
+-keep class com.joseibarra.touristnotify.Review { *; }
+-keep class com.joseibarra.touristnotify.Route { *; }
+-keep class com.joseibarra.touristnotify.Favorite { *; }
+-keep class com.joseibarra.touristnotify.CheckIn { *; }
+-keep class com.joseibarra.touristnotify.Event { *; }
+-keep class com.joseibarra.touristnotify.BlogPost { *; }
+-keep class com.joseibarra.touristnotify.WeatherInfo { *; }
+-keep class com.joseibarra.touristnotify.ForecastDay { *; }
+-keep class com.joseibarra.touristnotify.ThemedRoute { *; }
+-keep class com.joseibarra.touristnotify.PlacePhoto { *; }
 
 # Firebase Firestore
 -keep class com.google.firebase.firestore.** { *; }
@@ -36,9 +46,9 @@
 # Google Places API
 -keep class com.google.android.libraries.places.** { *; }
 
-# Google Maps Services (Directions API)
--keep class com.google.maps.** { *; }
--dontwarn com.google.maps.**
+# Google Maps Android Utils (polyline decoding, spherical math)
+-keep class com.google.maps.android.** { *; }
+-dontwarn com.google.maps.android.**
 
 # Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
@@ -63,6 +73,15 @@
 # Generative AI SDK
 -keep class com.google.ai.client.generativeai.** { *; }
 -dontwarn com.google.ai.client.generativeai.**
+
+# OkHttp3
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+# JSON parsing
+-keep class org.json.** { *; }
 
 # Preserve generic signatures
 -keepattributes Signature

@@ -43,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:accessibilityHeading="true"
             android:fontFamily="sans-serif-medium"
             android:text="Crear Cuenta"
             android:textColor="@color/white"
@@ -95,7 +96,9 @@
                     android:layout_marginBottom="16dp"
                     android:hint="Correo electrónico"
                     app:endIconMode="clear_text"
+                    app:errorEnabled="true"
                     app:helperText="Usaremos tu email para iniciar sesión"
+                    app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:startIconDrawable="@android:drawable/sym_action_email"
                     app:startIconTint="?attr/colorPrimary">
@@ -117,7 +120,10 @@
                     android:layout_marginBottom="16dp"
                     android:hint="Contraseña"
                     app:endIconMode="password_toggle"
+                    app:endIconContentDescription="@string/a11y_password_toggle_show"
+                    app:errorEnabled="true"
                     app:helperText="Mínimo 6 caracteres, incluye letra y número"
+                    app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                     app:startIconTint="?attr/colorPrimary">
@@ -139,6 +145,7 @@
                     android:layout_marginBottom="24dp"
                     android:hint="Confirmar contraseña"
                     app:endIconMode="password_toggle"
+                    app:endIconContentDescription="@string/a11y_confirm_password_toggle_show"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                     app:startIconTint="?attr/colorPrimary">
 
@@ -156,11 +163,23 @@
                     style="@style/Widget.TouristNotify.Button"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="12dp"
                     android:text="Crear Cuenta"
                     android:textSize="16sp"
                     app:icon="@android:drawable/ic_input_add"
                     app:iconGravity="textEnd" />
+
+                <!-- Aviso de política de privacidad (GDPR Art. 13 / LFPDPPP Art. 17) -->
+                <TextView
+                    android:id="@+id/privacy_policy_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/register_privacy_notice"
+                    android:textSize="12sp" />
 
                 <!-- Divider -->
                 <View

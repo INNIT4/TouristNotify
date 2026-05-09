@@ -32,9 +32,11 @@ class FullScreenPhotoAdapter : ListAdapter<PlacePhoto, FullScreenPhotoAdapter.Fu
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(photo: PlacePhoto) {
-            // Cargar imagen en pantalla completa con zoom support
+            // PEN-005: Validar URL antes de pasar a Glide. URLs file://, content://
+            // o de hosts no whitelisteados se cargan como placeholder de error.
+            val safeUrl = SafeImageUrl.sanitize(photo.imageUrl)
             Glide.with(binding.photoImageView.context)
-                .load(photo.imageUrl)
+                .load(safeUrl)
                 .placeholder(R.drawable.ic_placeholder_image)
                 .error(R.drawable.ic_error_image)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)

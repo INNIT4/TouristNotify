@@ -1,8 +1,10 @@
 package com.joseibarra.touristnotify
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.android.gms.location.LocationServices
 import com.joseibarra.touristnotify.databinding.ActivityProximityNotificationsBinding
 
 /**
@@ -37,7 +40,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
                 setupNotifications()
             }
         } else {
-            NotificationHelper.error(binding.root, "Se requieren permisos de ubicación")
+            NotificationHelper.error(binding.root, getString(R.string.location_permission_required))
         }
     }
 
@@ -49,7 +52,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         } else {
             NotificationHelper.warning(
                 binding.root,
-                "Las notificaciones funcionarán solo cuando la app esté abierta"
+                getString(R.string.notifications_background_only)
             )
             setupNotifications()
         }
@@ -59,7 +62,7 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            NotificationHelper.success(binding.root, "Notificaciones habilitadas")
+            NotificationHelper.success(binding.root, getString(R.string.notifications_enabled))
         }
     }
 
@@ -72,6 +75,14 @@ class ProximityNotificationsActivity : AppCompatActivity() {
             }) {
             finish()
             return
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Re-verificar permisos al volver desde Configuración del sistema
+        if (::binding.isInitialized) {
+            checkPermissions()
         }
     }
 
@@ -100,26 +111,25 @@ class ProximityNotificationsActivity : AppCompatActivity() {
                 }
             } else {
                 proximityManager.removeAllGeofences()
-                NotificationHelper.info(binding.root, "Notificaciones desactivadas")
+                NotificationHelper.info(binding.root, getString(R.string.notifications_disabled))
             }
         }
 
-        // Radius selection
-        binding.radiusChipGroup.setOnCheckedChangeListener { _, checkedId ->
-            val radius = when (checkedId) {
-                R.id.radius_100m_chip -> 10
-                R.id.radius_250m_chip -> 250
-                R.id.radius_500m_chip -> 500
-                R.id.radius_1km_chip -> 1000
-                else -> 10
-            }
-            saveProximityRadius(radius)
-
-            if (binding.notificationsSwitch.isChecked) {
-                // Recrear geofences con nuevo radio
-                setupNotifications()
-            }
+        // Radius slider — actualiza label en vivo y reconfigura geofences al soltar
+        binding.radiusSlider.addOnChangeListener { _, value, _ ->
+            binding.radiusValueTextView.text = getString(R.string.radius_meters_format, value.toInt())
         }
+        binding.radiusSlider.addOnSliderTouchListener(object : com.google.android.material.slider.Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: com.google.android.material.slider.Slider) {}
+            override fun onStopTrackingTouch(slider: com.google.android.material.slider.Slider) {
+                val radius = slider.value.toInt()
+                saveProximityRadius(radius)
+                if (binding.notificationsSwitch.isChecked) {
+                    proximityManager.clearCooldowns() // permite re-notificar tras cambio
+                    setupNotifications()
+                }
+            }
+        })
 
         // Request permissions button — pide lo que falte (ubicación y/o notificaciones)
         binding.requestPermissionsButton.setOnClickListener {
@@ -137,14 +147,11 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         val enabled = prefs.getBoolean("proximity_notifications_enabled", false)
         binding.notificationsSwitch.isChecked = enabled
 
-        // Load radius
-        val radius = prefs.getInt("proximity_radius", 10)
-        when (radius) {
-            10 -> binding.radius100mChip.isChecked = true
-            250 -> binding.radius250mChip.isChecked = true
-            500 -> binding.radius500mChip.isChecked = true
-            1000 -> binding.radius1kmChip.isChecked = true
-        }
+        // Load radius (default 200m, clamp al rango del slider 50-1000)
+        val radius = prefs.getInt("proximity_radius", DEFAULT_RADIUS_METERS)
+            .coerceIn(MIN_RADIUS_METERS, MAX_RADIUS_METERS)
+        binding.radiusSlider.value = radius.toFloat()
+        binding.radiusValueTextView.text = getString(R.string.radius_meters_format, radius)
     }
 
     private fun saveNotificationsEnabled(enabled: Boolean) {
@@ -169,15 +176,15 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         binding.permissionsStatusContainer.visibility = View.VISIBLE
 
         if (hasLocation && hasNotifications) {
-            binding.permissionsStatusTextView.text = "✅ Todos los permisos concedidos"
+            binding.permissionsStatusTextView.text = getString(R.string.permissions_granted)
             binding.requestPermissionsButton.visibility = View.GONE
         } else {
             val missing = mutableListOf<String>()
-            if (!hasLocation) missing.add("ubicación")
-            if (!hasNotifications) missing.add("notificaciones")
+            if (!hasLocation) missing.add(getString(R.string.location_permission))
+            if (!hasNotifications) missing.add(getString(R.string.notification_permission))
 
             binding.permissionsStatusTextView.text =
-                "⚠️ Faltan permisos: ${missing.joinToString(", ")}"
+                getString(R.string.permissions_missing, missing.joinToString(", "))
             binding.requestPermissionsButton.visibility = View.VISIBLE
         }
     }
@@ -217,9 +224,30 @@ class ProximityNotificationsActivity : AppCompatActivity() {
     }
 
     private fun requestBackgroundLocationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            backgroundLocationLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+
+        // P0-3 (compliance-auditor) — Google Play Location Policy exige
+        // un disclosure prominente con texto literal antes de pedir
+        // ACCESS_BACKGROUND_LOCATION. Sin esto, la app es rechazada en
+        // revisión y puede generar suspensión de cuenta de desarrollador.
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(R.string.bg_location_title)
+            .setMessage(R.string.bg_location_disclosure)
+            .setCancelable(false)
+            .setPositiveButton(R.string.bg_location_continue) { _, _ ->
+                backgroundLocationLauncher.launch(
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                )
+            }
+            .setNegativeButton(R.string.bg_location_decline) { _, _ ->
+                NotificationHelper.show(
+                    binding.root,
+                    getString(R.string.bg_location_skipped),
+                    NotificationHelper.NotificationType.INFO
+                )
+                binding.notificationsSwitch.isChecked = false
+            }
+            .show()
     }
 
     private fun requestNotificationPermission() {
@@ -228,29 +256,43 @@ class ProximityNotificationsActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission") // ya validado en hasLocationPermissions()
     private fun setupNotifications() {
         val prefs = getEncryptedPrefs()
-        val radius = prefs.getInt("proximity_radius", 10).toFloat()
+        val radius = prefs.getInt("proximity_radius", DEFAULT_RADIUS_METERS)
+            .coerceIn(MIN_RADIUS_METERS, MAX_RADIUS_METERS)
+            .toFloat()
 
         binding.setupProgressBar.visibility = View.VISIBLE
-        binding.setupStatusTextView.text = "Configurando notificaciones..."
+        binding.setupStatusTextView.text = getString(R.string.configuring_notifications)
         binding.setupStatusTextView.visibility = View.VISIBLE
 
-        proximityManager.setupGeofencesForAllPlaces(radius) { success, count ->
-            binding.setupProgressBar.visibility = View.GONE
+        // Intentar obtener ubicación actual para priorizar los 100 lugares más cercanos.
+        // Si falla o no hay ubicación, el manager hace fallback a los primeros 100 de Firestore.
+        val configureWith: (Location?) -> Unit = { userLocation ->
+            proximityManager.setupGeofencesForAllPlaces(radius, userLocation) { success, count ->
+                binding.setupProgressBar.visibility = View.GONE
 
-            if (success) {
-                binding.setupStatusTextView.text =
-                    "✅ $count lugares monitoreados\nRecibirás notificaciones al acercarte"
-                NotificationHelper.success(
-                    binding.root,
-                    "Notificaciones configuradas para $count lugares"
-                )
-            } else {
-                binding.setupStatusTextView.text = "❌ Error al configurar notificaciones"
-                NotificationHelper.error(binding.root, "Error al configurar geofences")
-                binding.notificationsSwitch.isChecked = false
+                if (success) {
+                    binding.setupStatusTextView.text = getString(R.string.places_monitored, count)
+                    NotificationHelper.success(
+                        binding.root,
+                        getString(R.string.notification_configured, count)
+                    )
+                } else {
+                    binding.setupStatusTextView.text = getString(R.string.notification_config_error)
+                    NotificationHelper.error(binding.root, getString(R.string.geofence_error))
+                    binding.notificationsSwitch.isChecked = false
+                }
             }
+        }
+
+        if (hasLocationPermissions()) {
+            LocationServices.getFusedLocationProviderClient(this).lastLocation
+                .addOnSuccessListener { location -> configureWith(location) }
+                .addOnFailureListener { configureWith(null) }
+        } else {
+            configureWith(null)
         }
 
         // Solicitar permiso de notificaciones si no lo tiene
@@ -263,6 +305,9 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
     companion object {
         private const val PREFS_NAME = "TouristNotifyPrefs"
+        const val MIN_RADIUS_METERS = 50
+        const val MAX_RADIUS_METERS = 1000
+        const val DEFAULT_RADIUS_METERS = 200
 
         private fun encryptedPrefs(context: Context) =
             EncryptedSharedPreferences.create(
@@ -282,7 +327,8 @@ class ProximityNotificationsActivity : AppCompatActivity() {
 
         fun getProximityRadius(context: Context): Int {
             return encryptedPrefs(context)
-                .getInt("proximity_radius", 10)
+                .getInt("proximity_radius", DEFAULT_RADIUS_METERS)
+                .coerceIn(MIN_RADIUS_METERS, MAX_RADIUS_METERS)
         }
     }
 }

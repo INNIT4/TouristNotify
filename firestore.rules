@@ -17,13 +17,18 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Verificar si el email es de un administrador de la Oficina de Turismo
+    // Verificar si el usuario tiene el custom claim de administrador.
+    // El claim debe asignarse vía Firebase Admin SDK desde un entorno servidor:
+    //   admin.auth().setCustomUserClaims(uid, { admin: true })
+    // Ver `.claude/docs/admin_setup.md` para el procedimiento completo.
+    //
+    // NOTA DE SEGURIDAD: anteriormente esta función validaba `request.auth.token.email`
+    // contra una lista hardcoded. Ese diseño permitía escalada de privilegios al
+    // registrar el email "admin" antes que el equipo legítimo. Custom claims son
+    // server-only y no pueden ser falsificados por el cliente.
     function isAdmin() {
       return isAuthenticated() &&
-             request.auth.token.email in [
-               'turismo@alamos.gob.mx',
-               'admin@touristnotify.app'
-             ];
+             request.auth.token.admin == true;
     }
 
     // Verificar que los datos de creación son válidos
@@ -40,24 +45,78 @@ service cloud.firestore {
       // Todos pueden leer lugares (modo invitado)
       allow read: if true;
 
-      // Solo admin puede crear/modificar/eliminar lugares
-      allow create, update, delete: if isAdmin();
+      // P2-1 / PEN-006 / PEN-007: Restringir updates de contadores.
+      //
+      // Antes la regla permitía cualquier valor en `visitCount`, `rating`,
+      // `reviewCount` — un usuario podía setear `rating=5.0, reviewCount=99999`
+      // y manipular el Top 10. Ahora se aplican estas restricciones cliente:
+      //
+      // - `visitCount`: solo +1 por update.
+      // - `rating`: 0 ≤ nuevo ≤ 5 (no permite valores fuera de rango).
+      // - `reviewCount`: o se incrementa exactamente +1 (nueva review) o
+      //   permanece igual (edición de review existente). No puede decrementar.
+      // - Solo se permiten estos campos. Cualquier otro debe ser admin.
+      //
+      // La validación cruzada (que rating refleje review-data) requiere
+      // Cloud Function trigger. Plan en .claude/docs/api_keys_hardening.md.
+      allow update: if isAuthenticated() && (
+        isAdmin()
+        ||
+        (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['visitCount', 'rating', 'reviewCount']) &&
+          // visitCount: si cambió, solo +1
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['visitCount']) ||
+            (request.resource.data.visitCount is number &&
+             request.resource.data.visitCount == resource.data.get('visitCount', 0) + 1)) &&
+          // rating: si cambió, debe ser número en [0, 5]
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['rating']) ||
+            (request.resource.data.rating is number &&
+             request.resource.data.rating >= 0 &&
+             request.resource.data.rating <= 5)) &&
+          // reviewCount: si cambió, +1 o mismo (no decrementar, no saltar)
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewCount']) ||
+            (request.resource.data.reviewCount is number &&
+             (request.resource.data.reviewCount == resource.data.get('reviewCount', 0) + 1 ||
+              request.resource.data.reviewCount == resource.data.get('reviewCount', 0))))
+        )
+      );
+
+      // Solo admin puede crear/eliminar lugares
+      allow create, delete: if isAdmin();
 
       // Reviews de un lugar específico
       match /reviews/{reviewId} {
         // Todos pueden leer reviews
         allow read: if true;
 
-        // Solo usuarios autenticados pueden crear reviews
+        // Solo usuarios autenticados pueden crear reviews.
+        // P2-6: Validar tamaños para prevenir inyección de datos basura
+        // (comment <=500, userName <=50, rating 1..5).
         allow create: if isAuthenticated() &&
                          request.resource.data.userId == request.auth.uid &&
                          request.resource.data.keys().hasAll([
                            'userId', 'userName', 'rating', 'comment', 'timestamp'
-                         ]);
+                         ]) &&
+                         request.resource.data.userName is string &&
+                         request.resource.data.userName.size() <= 50 &&
+                         request.resource.data.comment is string &&
+                         request.resource.data.comment.size() <= 500 &&
+                         request.resource.data.rating is number &&
+                         request.resource.data.rating >= 1 &&
+                         request.resource.data.rating <= 5;
 
-        // Solo el dueño puede actualizar su propia review
+        // Solo el dueño puede actualizar su propia review.
+        // Mismas validaciones de longitud para impedir bypass via update.
         allow update: if isAuthenticated() &&
-                         resource.data.userId == request.auth.uid;
+                         resource.data.userId == request.auth.uid &&
+                         (!('comment' in request.resource.data) ||
+                            (request.resource.data.comment is string &&
+                             request.resource.data.comment.size() <= 500)) &&
+                         (!('rating' in request.resource.data) ||
+                            (request.resource.data.rating is number &&
+                             request.resource.data.rating >= 1 &&
+                             request.resource.data.rating <= 5));
 
         // Solo el dueño o admin pueden eliminar una review
         allow delete: if isAuthenticated() &&
@@ -320,7 +379,11 @@ service cloud.firestore {
       allow read: if isAdmin();
 
       // Usuarios autenticados pueden escribir eventos (para tracking)
-      allow create: if isAuthenticated();
+      // Validar estructura para evitar inyección de datos basura
+      allow create: if isAuthenticated() &&
+                       request.resource.data.keys().hasAll(['eventType', 'timestamp']) &&
+                       request.resource.data.eventType is string &&
+                       request.resource.data.eventType.size() <= 100;
 
       // No se puede modificar o eliminar analytics
       allow update, delete: if false;

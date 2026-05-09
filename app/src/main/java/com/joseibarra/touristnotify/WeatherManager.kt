@@ -1,12 +1,17 @@
 package com.joseibarra.touristnotify
 
 import android.util.Log
+import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONObject
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Manager para obtener información del clima de Álamos, Sonora
@@ -20,100 +25,146 @@ object WeatherManager {
 
     private const val TAG = "WeatherManager"
 
+    // PERF-005: OkHttp con timeouts — reemplaza URL.readText() sin timeout
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .build()
+
+    private fun fetchUrl(url: String): String {
+        val request = Request.Builder().url(url).build()
+        return httpClient.newCall(request).execute().use { response ->
+            response.body?.string() ?: throw IOException("Respuesta vacía del servidor")
+        }
+    }
+
     /**
-     * Obtiene el clima actual de Álamos, Sonora desde OpenWeatherMap
+     * Obtiene el clima actual de Álamos, Sonora desde OpenWeatherMap.
+     * Si no hay API key, intenta la Cloud Function `getWeather`; si también falla, usa mock.
      */
     suspend fun getCurrentWeather(): Result<WeatherInfo> = withContext(Dispatchers.IO) {
         try {
             val apiKey = ConfigManager.getWeatherApiKey()
 
-            // Si no hay API key, usar datos mock
             if (apiKey.isBlank()) {
-                Log.w(TAG, "WEATHER_API_KEY no configurada, usando datos simulados")
+                val cfResult = getWeatherFromCF("current")
+                if (cfResult != null) return@withContext Result.success(cfResult)
+                Log.w(TAG, "WEATHER_API_KEY no configurada y CF no disponible, usando datos simulados")
                 return@withContext Result.success(getMockWeather())
             }
 
             val url = "https://api.openweathermap.org/data/2.5/weather?" +
                     "lat=${AppConstants.ALAMOS_LAT}&lon=${AppConstants.ALAMOS_LNG}&appid=$apiKey&units=metric&lang=es"
 
-            val response = URL(url).readText()
-            val json = JSONObject(response)
-
-            val main = json.getJSONObject("main")
-            val weather = json.getJSONArray("weather").getJSONObject(0)
-            val wind = json.getJSONObject("wind")
-
-            val weatherInfo = WeatherInfo(
-                temperature = main.getDouble("temp"),
-                feelsLike = main.getDouble("feels_like"),
-                description = weather.getString("description").replaceFirstChar { it.uppercase() },
-                icon = weather.getString("icon"),
-                humidity = main.getInt("humidity"),
-                windSpeed = wind.getDouble("speed") * 3.6, // m/s a km/h
-                timestamp = System.currentTimeMillis()
-            )
-
-            Result.success(weatherInfo)
+            val response = fetchUrl(url)
+            Result.success(parseCurrentWeatherJson(JSONObject(response)))
 
         } catch (e: Exception) {
             Log.e(TAG, "Error obteniendo clima, usando datos mock", e)
-            // Fallback a datos mock si falla la API
             Result.success(getMockWeather())
         }
     }
 
+    private fun parseCurrentWeatherJson(json: JSONObject): WeatherInfo {
+        val main = json.getJSONObject("main")
+        val weather = json.getJSONArray("weather").getJSONObject(0)
+        val wind = json.getJSONObject("wind")
+        return WeatherInfo(
+            temperature = main.getDouble("temp"),
+            feelsLike = main.getDouble("feels_like"),
+            description = weather.getString("description").replaceFirstChar { it.uppercase() },
+            icon = weather.getString("icon"),
+            humidity = main.getInt("humidity"),
+            windSpeed = wind.getDouble("speed") * 3.6,
+            timestamp = System.currentTimeMillis()
+        )
+    }
+
+    private suspend fun getWeatherFromCF(type: String): WeatherInfo? = try {
+        val data = mapOf(
+            "lat" to AppConstants.ALAMOS_LAT,
+            "lon" to AppConstants.ALAMOS_LNG,
+            "type" to type
+        )
+        val result = FirebaseFunctions.getInstance()
+            .getHttpsCallable("getWeather")
+            .call(data)
+            .await()
+        @Suppress("UNCHECKED_CAST")
+        val jsonStr = (result.data as Map<String, Any>)["json"] as? String ?: return null
+        parseCurrentWeatherJson(JSONObject(jsonStr))
+    } catch (e: Exception) {
+        if (BuildConfig.DEBUG) Log.w(TAG, "CF getWeather falló: ${e.message}")
+        null
+    }
+
     /**
-     * Obtiene el pronóstico de los próximos 5 días
+     * Obtiene el pronóstico de los próximos 5 días.
+     * Si no hay API key, intenta la Cloud Function `getWeather`; si también falla, usa mock.
      */
     suspend fun getForecast(): Result<List<ForecastDay>> = withContext(Dispatchers.IO) {
         try {
             val apiKey = ConfigManager.getWeatherApiKey()
 
             if (apiKey.isBlank()) {
-                Log.w(TAG, "WEATHER_API_KEY no configurada, usando pronóstico simulado")
+                val cfResult = getForecastFromCF()
+                if (cfResult != null) return@withContext Result.success(cfResult)
+                Log.w(TAG, "WEATHER_API_KEY no configurada y CF no disponible, usando pronóstico simulado")
                 return@withContext Result.success(getMockForecast())
             }
 
             val url = "https://api.openweathermap.org/data/2.5/forecast?" +
                     "lat=${AppConstants.ALAMOS_LAT}&lon=${AppConstants.ALAMOS_LNG}&appid=$apiKey&units=metric&lang=es"
 
-            val response = URL(url).readText()
-            val json = JSONObject(response)
-            val list = json.getJSONArray("list")
-
-            // Agrupar por día (toma el pronóstico de mediodía de cada día)
-            val forecastMap = mutableMapOf<String, ForecastDay>()
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-            for (i in 0 until list.length()) {
-                val item = list.getJSONObject(i)
-                val dt = item.getLong("dt") * 1000
-                val date = Date(dt)
-                val dayKey = dateFormat.format(date)
-
-                // Solo tomar el pronóstico del mediodía (12:00)
-                val dtTxt = item.getString("dt_txt")
-                if (dtTxt.contains("12:00:00") && forecastMap.size < 5) {
-                    val main = item.getJSONObject("main")
-                    val weather = item.getJSONArray("weather").getJSONObject(0)
-
-                    forecastMap[dayKey] = ForecastDay(
-                        date = date,
-                        tempMax = main.getDouble("temp_max"),
-                        tempMin = main.getDouble("temp_min"),
-                        description = weather.getString("description").replaceFirstChar { it.uppercase() },
-                        icon = weather.getString("icon")
-                    )
-                }
-            }
-
-            val forecast = forecastMap.values.toList()
-            Result.success(forecast)
+            val response = fetchUrl(url)
+            Result.success(parseForecastJson(JSONObject(response)))
 
         } catch (e: Exception) {
             Log.e(TAG, "Error obteniendo pronóstico, usando datos mock", e)
             Result.success(getMockForecast())
         }
+    }
+
+    private fun parseForecastJson(json: JSONObject): List<ForecastDay> {
+        val list = json.getJSONArray("list")
+        val forecastMap = mutableMapOf<String, ForecastDay>()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        for (i in 0 until list.length()) {
+            val item = list.getJSONObject(i)
+            val date = Date(item.getLong("dt") * 1000)
+            val dayKey = dateFormat.format(date)
+            val dtTxt = item.getString("dt_txt")
+            if (dtTxt.contains("12:00:00") && forecastMap.size < 5) {
+                val main = item.getJSONObject("main")
+                val weather = item.getJSONArray("weather").getJSONObject(0)
+                forecastMap[dayKey] = ForecastDay(
+                    date = date,
+                    tempMax = main.getDouble("temp_max"),
+                    tempMin = main.getDouble("temp_min"),
+                    description = weather.getString("description").replaceFirstChar { it.uppercase() },
+                    icon = weather.getString("icon")
+                )
+            }
+        }
+        return forecastMap.values.toList()
+    }
+
+    private suspend fun getForecastFromCF(): List<ForecastDay>? = try {
+        val data = mapOf(
+            "lat" to AppConstants.ALAMOS_LAT,
+            "lon" to AppConstants.ALAMOS_LNG,
+            "type" to "forecast"
+        )
+        val result = FirebaseFunctions.getInstance()
+            .getHttpsCallable("getWeather")
+            .call(data)
+            .await()
+        @Suppress("UNCHECKED_CAST")
+        val jsonStr = (result.data as Map<String, Any>)["json"] as? String ?: return null
+        parseForecastJson(JSONObject(jsonStr))
+    } catch (e: Exception) {
+        if (BuildConfig.DEBUG) Log.w(TAG, "CF getForecast falló: ${e.message}")
+        null
     }
 
     /**

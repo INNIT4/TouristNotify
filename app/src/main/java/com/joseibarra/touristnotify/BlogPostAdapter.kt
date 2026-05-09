@@ -3,10 +3,10 @@ package com.joseibarra.touristnotify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
+import com.joseibarra.touristnotify.databinding.ListItemBlogPostBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,73 +14,62 @@ import java.util.*
  * Adapter para mostrar posts del blog
  */
 class BlogPostAdapter(
-    private var posts: List<BlogPost>,
+    initialPosts: List<BlogPost> = emptyList(),
     private val onPostClick: (BlogPost) -> Unit,
     private val onLikeClick: (BlogPost) -> Unit
-) : RecyclerView.Adapter<BlogPostAdapter.BlogPostViewHolder>() {
+) : ListAdapter<BlogPost, BlogPostAdapter.BlogPostViewHolder>(BlogPostDiffCallback()) {
 
-    inner class BlogPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val card: MaterialCardView = itemView.findViewById(R.id.post_card)
-        val titleTextView: TextView = itemView.findViewById(R.id.post_title_text_view)
-        val categoryTextView: TextView = itemView.findViewById(R.id.post_category_text_view)
-        val contentPreviewTextView: TextView = itemView.findViewById(R.id.post_content_preview_text_view)
-        val authorTextView: TextView = itemView.findViewById(R.id.post_author_text_view)
-        val dateTextView: TextView = itemView.findViewById(R.id.post_date_text_view)
-        val likesTextView: TextView = itemView.findViewById(R.id.post_likes_text_view)
-        val viewsTextView: TextView = itemView.findViewById(R.id.post_views_text_view)
-        val featuredBadge: TextView = itemView.findViewById(R.id.featured_badge)
-        val likeButton: ImageView = itemView.findViewById(R.id.like_button)
+    init {
+        submitList(initialPosts)
+    }
+
+    inner class BlogPostViewHolder(private val binding: ListItemBlogPostBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(post: BlogPost) {
+            binding.postTitleTextView.text = post.title
+            binding.postCategoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
+
+            binding.postContentPreviewTextView.text = if (post.content.length > 150) {
+                post.content.substring(0, 150) + "..."
+            } else {
+                post.content
+            }
+
+            binding.postAuthorTextView.text = "Por ${post.authorName}"
+
+            binding.postDateTextView.text = if (post.publishedAt != null) {
+                formatDate(post.publishedAt)
+            } else {
+                "Hace poco"
+            }
+
+            binding.postLikesTextView.text = "❤️ ${post.likes}"
+            binding.postLikesTextView.contentDescription = "${post.likes} me gusta"
+            binding.postViewsTextView.text = "👁️ ${post.viewCount}"
+            binding.postViewsTextView.contentDescription = "${post.viewCount} vistas"
+
+            binding.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE
+
+            binding.postCard.setOnClickListener {
+                onPostClick(post)
+            }
+
+            binding.likeButton.setOnClickListener {
+                onLikeClick(post)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlogPostViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_item_blog_post, parent, false)
-        return BlogPostViewHolder(view)
+        val binding = ListItemBlogPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return BlogPostViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: BlogPostViewHolder, position: Int) {
-        val post = posts[position]
-
-        holder.titleTextView.text = post.title
-        holder.categoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
-
-        // Content preview (primeras 150 caracteres)
-        holder.contentPreviewTextView.text = if (post.content.length > 150) {
-            post.content.substring(0, 150) + "..."
-        } else {
-            post.content
-        }
-
-        holder.authorTextView.text = "Por ${post.authorName}"
-
-        // Format date
-        holder.dateTextView.text = if (post.publishedAt != null) {
-            formatDate(post.publishedAt)
-        } else {
-            "Hace poco"
-        }
-
-        holder.likesTextView.text = "❤️ ${post.likes}"
-        holder.viewsTextView.text = "👁️ ${post.viewCount}"
-
-        // Featured badge
-        holder.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE
-
-        // Click listeners
-        holder.card.setOnClickListener {
-            onPostClick(post)
-        }
-
-        holder.likeButton.setOnClickListener {
-            onLikeClick(post)
-        }
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = posts.size
-
     fun updatePosts(newPosts: List<BlogPost>) {
-        posts = newPosts
-        notifyDataSetChanged()
+        submitList(newPosts)
     }
 
     private fun formatDate(date: Date): String {
@@ -92,10 +81,22 @@ class BlogPostAdapter(
             diff < 3600000 -> "Hace ${diff / 60000} min"
             diff < 86400000 -> "Hace ${diff / 3600000}h"
             diff < 604800000 -> "Hace ${diff / 86400000} días"
-            else -> {
-                val sdf = SimpleDateFormat("dd MMM yyyy", Locale("es", "MX"))
-                sdf.format(date)
-            }
+            // PERF-011: instancia compartida — SimpleDateFormat es costoso de crear por ítem
+            else -> DATE_FORMAT.format(date)
+        }
+    }
+
+    companion object {
+        private val DATE_FORMAT = SimpleDateFormat("dd MMM yyyy", Locale("es", "MX"))
+    }
+
+    class BlogPostDiffCallback : DiffUtil.ItemCallback<BlogPost>() {
+        override fun areItemsTheSame(oldItem: BlogPost, newItem: BlogPost): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: BlogPost, newItem: BlogPost): Boolean {
+            return oldItem == newItem
         }
     }
 }

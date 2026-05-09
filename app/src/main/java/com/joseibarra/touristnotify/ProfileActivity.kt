@@ -1,23 +1,32 @@
 package com.joseibarra.touristnotify
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.auth.EmailAuthProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.joseibarra.touristnotify.databinding.ActivityProfileBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Actividad para gestionar el perfil del usuario
@@ -28,6 +37,17 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
+    private val profileRepository by lazy { UserProfileRepository(auth, db, storage) }
+    private val accountManager by lazy { AccountManager(auth, db, storage) }
+
+    // P1-3: Photo Picker API — no requiere READ_MEDIA_IMAGES (API 33+).
+    // En dispositivos más antiguos el sistema hace fallback a GetContent automáticamente.
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let { uploadProfilePhoto(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,27 +61,42 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        // Configurar botón de volver
-        binding.backButton.setOnClickListener {
-            finish()
+        binding.backButton.setOnClickListener { finish() }
+        binding.avatarCard.setOnClickListener {
+            imagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = cm.activeNetwork ?: return false
-            cm.getNetworkCapabilities(network)
-                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-        } else {
-            @Suppress("DEPRECATION")
-            cm.activeNetworkInfo?.isConnected == true
+    private fun uploadProfilePhoto(uri: Uri) {
+        val uid = auth.currentUser?.uid ?: return
+        NotificationHelper.info(binding.root, "Subiendo foto…")
+        lifecycleScope.launch {
+            profileRepository.uploadPhoto(uid, uri)
+                .onSuccess { downloadUrl ->
+                    loadProfilePhoto(downloadUrl)
+                    NotificationHelper.success(binding.root, "Foto de perfil actualizada")
+                }
+                .onFailure { e ->
+                    NotificationHelper.error(binding.root, "Error al subir foto: ${e.message}")
+                }
         }
+    }
+
+    private fun loadProfilePhoto(url: String?) {
+        // PEN-005: Validar URL contra whitelist antes de Glide
+        val safeUrl = SafeImageUrl.sanitize(url) ?: return
+        binding.avatarText.visibility = android.view.View.GONE
+        binding.avatarImage.visibility = android.view.View.VISIBLE
+        Glide.with(this)
+            .load(safeUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .circleCrop()
+            .into(binding.avatarImage)
     }
 
     private fun loadUserData() {
-        if (!isNetworkAvailable()) {
-            Toast.makeText(this, "Sin conexión a internet. Algunos datos pueden no cargarse.", Toast.LENGTH_LONG).show()
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            NotificationHelper.warning(binding.root, getString(R.string.profile_no_internet))
         }
 
         val user = auth.currentUser ?: run {
@@ -72,67 +107,41 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         // Mostrar email
-        binding.userEmailText.text = user.email ?: "Sin correo"
+        binding.userEmailText.text = user.email ?: getString(R.string.no_email)
 
         // Mostrar inicial en el avatar
         val initial = user.email?.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
         binding.avatarText.text = initial
 
-        // Cargar nickname desde Firestore
         lifecycleScope.launch {
-            try {
-                val doc = db.collection("users")
-                    .document(user.uid)
-                    .get()
-                    .await()
-
-                val nickname = doc.getString("nickname")
-                if (!nickname.isNullOrBlank()) {
-                    binding.nicknameEditText.setText(nickname)
+            profileRepository.loadProfile(user.uid)
+                .onSuccess { data ->
+                    if (!data.nickname.isNullOrBlank()) {
+                        binding.nicknameEditText.setText(data.nickname)
+                    }
+                    val displayName = data.nickname?.takeIf { it.isNotBlank() }
+                        ?: auth.currentUser?.email ?: getString(R.string.profile_title)
+                    binding.avatarImage.contentDescription = getString(R.string.a11y_profile_photo, displayName)
+                    loadProfilePhoto(data.photoUrl)
                 }
-            } catch (e: Exception) {
-                // Fallar silenciosamente, el campo quedará vacío
-            }
+            // Fail silently — field stays empty
         }
     }
 
     private fun loadStatistics() {
         val userId = auth.currentUser?.uid ?: return
-
         lifecycleScope.launch {
-            try {
-                // Lanzar las 3 queries a Firestore en paralelo
-                coroutineScope {
-                    val userDocDeferred = async {
-                        db.collection("users").document(userId).get().await()
-                    }
-                    val routesDeferred = async {
-                        db.collection("users").document(userId).collection("routes").get().await()
-                    }
-                    val checkInsDeferred = async {
-                        // checkIns se guarda en la colección raíz con userId como campo
-                        db.collection("checkIns").whereEqualTo("userId", userId).get().await()
-                    }
-
-                    val userDoc = userDocDeferred.await()
-                    val routesCount = routesDeferred.await().size()
-                    val checkInsCount = checkInsDeferred.await().size()
-
-                    binding.routesCountText.text = routesCount.toString()
-                    binding.checkinsCountText.text = checkInsCount.toString()
-
-                    val favorites = userDoc.get("favorites") as? List<*>
-                    binding.favoritesCountText.text = (favorites?.size ?: 0).toString()
+            profileRepository.loadStats(userId)
+                .onSuccess { stats ->
+                    binding.routesCountText.text = stats.routesCount.toString()
+                    binding.favoritesCountText.text = stats.favoritesCount.toString()
+                    binding.checkinsCountText.text = stats.checkInsCount.toString()
                 }
+            // Fail silently — defaults to 0
 
-                // Uso de rutas IA (local, sin red)
-                val usageStats = UsageManager.getUsageStats(this@ProfileActivity)
-                binding.aiUsageText.text = "Rutas IA hoy: ${usageStats.routesUsedToday}/${usageStats.routesLimitToday}"
-                binding.aiUsageProgress.progress = usageStats.usagePercentage
-
-            } catch (e: Exception) {
-                // Fallar silenciosamente, mostrar valores por defecto (0)
-            }
+            val usageStats = UsageManager.getUsageStats(this@ProfileActivity)
+            binding.aiUsageText.text = "Rutas IA hoy: ${usageStats.routesUsedToday}/${usageStats.routesLimitToday}"
+            binding.aiUsageProgress.progress = usageStats.usagePercentage
         }
     }
 
@@ -142,9 +151,19 @@ class ProfileActivity : AppCompatActivity() {
             saveProfileChanges()
         }
 
+        // Política de Privacidad
+        binding.privacyPolicyButton.setOnClickListener {
+            startActivity(Intent(this, PrivacyPolicyActivity::class.java))
+        }
+
         // Cambiar contraseña
         binding.changePasswordButton.setOnClickListener {
             showChangePasswordDialog()
+        }
+
+        // Exportar datos personales (GDPR Art. 20)
+        binding.exportDataButton.setOnClickListener {
+            showExportDataDialog()
         }
 
         // Eliminar cuenta
@@ -161,41 +180,26 @@ class ProfileActivity : AppCompatActivity() {
     private fun saveProfileChanges() {
         val userId = auth.currentUser?.uid ?: return
         val nickname = binding.nicknameEditText.text.toString().trim()
-
         if (nickname.isBlank()) {
-            Toast.makeText(this, "El nombre de usuario no puede estar vacío", Toast.LENGTH_SHORT).show()
+            NotificationHelper.warning(binding.root, getString(R.string.profile_username_empty))
             return
         }
-
-        // Validar formato mínimo: al menos 3 caracteres, sin espacios
         if (nickname.length < 3) {
-            Toast.makeText(this, "El nombre de usuario debe tener al menos 3 caracteres", Toast.LENGTH_SHORT).show()
+            NotificationHelper.warning(binding.root, getString(R.string.nickname_min_length))
             return
         }
-
         lifecycleScope.launch {
-            try {
-                // Verificar que ningún otro usuario tenga ese nickname
-                val existing = db.collection("users")
-                    .whereEqualTo("nickname", nickname)
-                    .get()
-                    .await()
-
-                val takenByOther = existing.documents.any { it.id != userId }
-                if (takenByOther) {
-                    Toast.makeText(this@ProfileActivity, "❌ Ese nombre de usuario ya está en uso", Toast.LENGTH_SHORT).show()
-                    return@launch
+            profileRepository.saveNickname(userId, nickname)
+                .onSuccess {
+                    NotificationHelper.success(binding.root, getString(R.string.profile_updated))
                 }
-
-                db.collection("users")
-                    .document(userId)
-                    .update("nickname", nickname)
-                    .await()
-
-                Toast.makeText(this@ProfileActivity, "✅ Perfil actualizado", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error al guardar: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+                .onFailure { e ->
+                    if (e.message == "nickname_taken") {
+                        NotificationHelper.warning(binding.root, getString(R.string.profile_username_taken))
+                    } else {
+                        NotificationHelper.error(binding.root, getString(R.string.profile_save_error, e.message))
+                    }
+                }
         }
     }
 
@@ -206,145 +210,188 @@ class ProfileActivity : AppCompatActivity() {
         val confirmPasswordInput = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.confirm_password_input)
 
         AlertDialog.Builder(this)
-            .setTitle("Cambiar Contraseña")
+            .setTitle(getString(R.string.change_password_title))
             .setView(dialogView)
-            .setPositiveButton("Cambiar") { _, _ ->
+            .setPositiveButton(getString(R.string.change)) { _, _ ->
                 val currentPassword = currentPasswordInput.text.toString()
                 val newPassword = newPasswordInput.text.toString()
                 val confirmPassword = confirmPasswordInput.text.toString()
 
                 when {
                     currentPassword.isBlank() -> {
-                        Toast.makeText(this, "Ingresa tu contraseña actual", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.warning(binding.root, getString(R.string.enter_current_password))
                     }
                     newPassword.length < 6 -> {
-                        Toast.makeText(this, "La nueva contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.warning(binding.root, getString(R.string.new_password_min_length))
                     }
                     newPassword != confirmPassword -> {
-                        Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                        NotificationHelper.warning(binding.root, getString(R.string.passwords_dont_match))
                     }
                     else -> {
                         changePassword(currentPassword, newPassword)
                     }
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
     private fun changePassword(currentPassword: String, newPassword: String) {
-        val user = auth.currentUser ?: return
-        val email = user.email ?: return
-
+        val email = auth.currentUser?.email ?: return
         lifecycleScope.launch {
-            try {
-                // Re-autenticar usuario
-                val credential = EmailAuthProvider.getCredential(email, currentPassword)
-                user.reauthenticate(credential).await()
-
-                // Cambiar contraseña
-                user.updatePassword(newPassword).await()
-
-                Toast.makeText(this@ProfileActivity, "✅ Contraseña cambiada exitosamente", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error: ${e.message}", Toast.LENGTH_LONG).show()
-            }
+            accountManager.changePassword(email, currentPassword, newPassword)
+                .onSuccess {
+                    NotificationHelper.success(binding.root, getString(R.string.password_changed))
+                }
+                .onFailure { e ->
+                    NotificationHelper.error(binding.root, getString(R.string.password_change_error, e.message))
+                }
         }
     }
 
     private fun showDeleteAccountDialog() {
         AlertDialog.Builder(this)
-            .setTitle("⚠️ Eliminar Cuenta")
-            .setMessage("Esta acción es irreversible. Se eliminarán todos tus datos:\n\n" +
-                    "• Rutas guardadas\n" +
-                    "• Favoritos\n" +
-                    "• Check-ins\n" +
-                    "• Reseñas\n" +
-                    "• Estadísticas\n\n" +
-                    "¿Estás seguro de que deseas continuar?")
-            .setPositiveButton("Eliminar") { _, _ ->
+            .setTitle(getString(R.string.delete_account_title))
+            .setMessage(getString(R.string.delete_account_message))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 showDeleteAccountPasswordDialog()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
     private fun showDeleteAccountPasswordDialog() {
         val input = com.google.android.material.textfield.TextInputEditText(this)
         input.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-        input.hint = "Contraseña"
+        input.hint = getString(R.string.password_hint)
 
         AlertDialog.Builder(this)
-            .setTitle("Confirmar Eliminación")
-            .setMessage("Por seguridad, ingresa tu contraseña para confirmar:")
+            .setTitle(getString(R.string.confirm_delete_title))
+            .setMessage(getString(R.string.confirm_delete_message))
             .setView(input)
-            .setPositiveButton("Confirmar") { _, _ ->
+            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
                 val password = input.text.toString()
                 if (password.isNotBlank()) {
                     deleteAccount(password)
                 } else {
-                    Toast.makeText(this, "Ingresa tu contraseña", Toast.LENGTH_SHORT).show()
+                    NotificationHelper.warning(binding.root, getString(R.string.enter_password))
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
     private fun deleteAccount(password: String) {
-        val user = auth.currentUser ?: return
-        val email = user.email ?: return
+        val email = auth.currentUser?.email ?: return
+        lifecycleScope.launch {
+            accountManager.deleteAccount(email, password, applicationContext)
+                .onSuccess {
+                    val intent = Intent(this@ProfileActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                .onFailure { e ->
+                    NotificationHelper.error(binding.root, getString(R.string.password_change_error, e.message))
+                }
+        }
+    }
+
+    private fun showExportDataDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.export_data_title))
+            .setMessage(getString(R.string.export_data_message))
+            .setPositiveButton(getString(R.string.export_data_button)) { _, _ ->
+                exportUserData()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun exportUserData() {
+        val uid = auth.currentUser?.uid ?: return
+        NotificationHelper.info(binding.root, getString(R.string.exporting_data))
 
         lifecycleScope.launch {
             try {
-                // Re-autenticar usuario
-                val credential = EmailAuthProvider.getCredential(email, password)
-                user.reauthenticate(credential).await()
+                val json = withContext(Dispatchers.IO) {
+                    coroutineScope {
+                        val profileDeferred = async {
+                            db.collection("users").document(uid).get().await()
+                        }
+                        val favoritesDeferred = async {
+                            db.collection(FirestoreCollections.USERS).document(uid)
+                                .collection(FirestoreCollections.USER_FAVORITES).get().await()
+                        }
+                        val checkInsDeferred = async {
+                            db.collection(FirestoreCollections.CHECK_INS)
+                                .whereEqualTo("userId", uid).get().await()
+                        }
+                        val routesDeferred = async {
+                            db.collection("rutas").whereEqualTo("id_usuario", uid).get().await()
+                        }
+                        val reviewsDeferred = async {
+                            db.collectionGroup("reviews").whereEqualTo("userId", uid).get().await()
+                        }
 
-                // Eliminar subcollecciones del usuario
-                val uid = user.uid
-                val userRef = db.collection("users").document(uid)
+                        val root = JSONObject()
+                        root.put("exportDate", SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(Date()))
+                        root.put("userId", uid)
 
-                for (sub in listOf("routes", "favorites", "stats", "usage")) {
-                    val docs = userRef.collection(sub).get().await()
-                    for (doc in docs.documents) doc.reference.delete().await()
+                        val profileDoc = profileDeferred.await()
+                        root.put("profile", JSONObject(profileDoc.data ?: emptyMap<String, Any>()))
+
+                        root.put("favorites", JSONArray(favoritesDeferred.await().documents.map {
+                            JSONObject(it.data ?: emptyMap<String, Any>())
+                        }))
+                        root.put("checkIns", JSONArray(checkInsDeferred.await().documents.map {
+                            JSONObject(it.data ?: emptyMap<String, Any>())
+                        }))
+                        root.put("routes", JSONArray(routesDeferred.await().documents.map {
+                            JSONObject(it.data ?: emptyMap<String, Any>())
+                        }))
+                        root.put("reviews", JSONArray(reviewsDeferred.await().documents.map {
+                            JSONObject(it.data ?: emptyMap<String, Any>())
+                        }))
+
+                        root.toString(2)
+                    }
                 }
 
-                // Eliminar check-ins del usuario (colección raíz)
-                val checkIns = db.collection("checkIns").whereEqualTo("userId", uid).get().await()
-                for (doc in checkIns.documents) doc.reference.delete().await()
+                val fileName = "lupita_datos_${SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())}.json"
+                val file = File(cacheDir, fileName)
+                file.writeText(json)
 
-                // Eliminar documento del usuario
-                userRef.delete().await()
+                val uri = FileProvider.getUriForFile(
+                    this@ProfileActivity,
+                    "${packageName}.fileprovider",
+                    file
+                )
 
-                // Eliminar cuenta de Firebase Auth
-                user.delete().await()
-
-                Toast.makeText(this@ProfileActivity, "Cuenta eliminada", Toast.LENGTH_SHORT).show()
-
-                // Volver al login
-                val intent = Intent(this@ProfileActivity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.export_data_title)))
+                NotificationHelper.success(binding.root, getString(R.string.export_data_success))
 
             } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "❌ Error: ${e.message}", Toast.LENGTH_LONG).show()
+                NotificationHelper.error(binding.root, getString(R.string.export_data_error, e.message))
             }
         }
     }
 
     private fun performLogout() {
         AlertDialog.Builder(this)
-            .setTitle("Cerrar Sesión")
-            .setMessage("¿Estás seguro de que deseas cerrar sesión?")
-            .setPositiveButton("Cerrar Sesión") { _, _ ->
+            .setTitle(getString(R.string.logout_title))
+            .setMessage(getString(R.string.logout_confirm_simple))
+            .setPositiveButton(getString(R.string.close_session)) { _, _ ->
                 // Cerrar sesión de Firebase
                 auth.signOut()
 
                 // Desactivar modo invitado
                 AuthManager.disableGuestMode(this)
-
-                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
 
                 // Volver al login
                 val intent = Intent(this, LoginActivity::class.java)
@@ -352,7 +399,7 @@ class ProfileActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 }

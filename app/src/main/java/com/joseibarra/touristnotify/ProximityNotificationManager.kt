@@ -6,7 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -24,10 +26,16 @@ class ProximityNotificationManager(private val context: Context) {
     private val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
     private val db = FirebaseFirestore.getInstance()
 
+    private val cooldownPrefs: SharedPreferences =
+        context.getSharedPreferences(COOLDOWN_PREFS_NAME, Context.MODE_PRIVATE)
+
     companion object {
         private const val CHANNEL_ID = "proximity_notifications"
         private const val CHANNEL_NAME = "Notificaciones de Proximidad"
         private const val GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000L // 24 horas
+        private const val MAX_GEOFENCES = 100 // Límite de Google
+        private const val NOTIFICATION_COOLDOWN_MS = 24 * 60 * 60 * 1000L // 24h por lugar
+        private const val COOLDOWN_PREFS_NAME = "proximity_cooldown_prefs"
     }
 
     init {
@@ -47,10 +55,17 @@ class ProximityNotificationManager(private val context: Context) {
     }
 
     /**
-     * Configurar geofences para todos los lugares turísticos
+     * Configurar geofences para todos los lugares turísticos.
+     * Si [userLocation] está disponible, prioriza los 100 lugares más cercanos
+     * (Google limita a 100 geofences activos por app). Si es null, toma los
+     * primeros 100 que devuelva Firestore.
      */
-    fun setupGeofencesForAllPlaces(radiusInMeters: Float, callback: (Boolean, Int) -> Unit) {
-        if (!hasLocationPermission()) {
+    fun setupGeofencesForAllPlaces(
+        radiusInMeters: Float,
+        userLocation: Location? = null,
+        callback: (Boolean, Int) -> Unit
+    ) {
+        if (!hasLocationPermission() || !hasBackgroundLocationPermission()) {
             callback(false, 0)
             return
         }
@@ -58,31 +73,46 @@ class ProximityNotificationManager(private val context: Context) {
         // Primero remover geofences anteriores
         removeAllGeofences()
 
-        // Cargar lugares de Firebase
-        db.collection("lugares_turisticos")
-            .limit(100) // Límite de 100 geofences (límite de Google)
+        // Cargar TODOS los lugares (sin límite Firestore) para poder priorizar por cercanía
+        db.collection(FirestoreCollections.PLACES)
             .get()
             .addOnSuccessListener { documents ->
-                val geofences = mutableListOf<Geofence>()
-
-                for (document in documents) {
+                // Mapear a (TouristSpot, distancia). distancia = Float.MAX si no hay ubicación
+                val candidates = documents.mapNotNull { document ->
                     val place = document.toObject(TouristSpot::class.java).copy(id = document.id)
-                    val location = place.ubicacion
-
-                    if (location != null) {
-                        val geofence = Geofence.Builder()
-                            .setRequestId(place.id)
-                            .setCircularRegion(
-                                location.latitude,
-                                location.longitude,
-                                radiusInMeters
-                            )
-                            .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                            .build()
-
-                        geofences.add(geofence)
+                    val location = place.ubicacion ?: return@mapNotNull null
+                    val distance = if (userLocation != null) {
+                        val results = FloatArray(1)
+                        Location.distanceBetween(
+                            userLocation.latitude, userLocation.longitude,
+                            location.latitude, location.longitude,
+                            results
+                        )
+                        results[0]
+                    } else {
+                        Float.MAX_VALUE
                     }
+                    Triple(place, location, distance)
+                }
+
+                // Si tenemos ubicación: ordenar por distancia ascendente. Si no: orden natural.
+                val prioritized = if (userLocation != null) {
+                    candidates.sortedBy { it.third }
+                } else {
+                    candidates
+                }.take(MAX_GEOFENCES)
+
+                val geofences = prioritized.map { (place, location, _) ->
+                    Geofence.Builder()
+                        .setRequestId(place.id)
+                        .setCircularRegion(
+                            location.latitude,
+                            location.longitude,
+                            radiusInMeters
+                        )
+                        .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                        .build()
                 }
 
                 if (geofences.isNotEmpty()) {
@@ -131,8 +161,12 @@ class ProximityNotificationManager(private val context: Context) {
 
     private fun getGeofencePendingIntent(): PendingIntent {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+        // FLAG_IMMUTABLE evita que un actor coresidente con el mismo permiso
+        // pueda inyectar extras en el Intent broadcast. Los geofences no
+        // requieren mutabilidad (el GeofencingClient adjunta el evento al
+        // PendingIntent existente sin modificarlo).
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT
         }
@@ -146,12 +180,30 @@ class ProximityNotificationManager(private val context: Context) {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    // AND-004: los geofences requieren ACCESS_BACKGROUND_LOCATION en API 29+.
+    // Debe solicitarse separado DESPUÉS de conceder foreground location (política Play Store).
+    fun hasBackgroundLocationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
     /**
-     * Mostrar notificación cuando el usuario entra a un geofence
+     * Mostrar notificación cuando el usuario entra a un geofence.
+     * Aplica cooldown de 24h por lugar para evitar spam si el usuario sale y
+     * vuelve a entrar al radio (típico al pasear cerca de un punto).
      */
     fun showProximityNotification(placeId: String, placeName: String) {
+        if (isInCooldown(placeId)) return
+        markNotified(placeId)
+
         // Obtener detalles del lugar
-        db.collection("lugares_turisticos").document(placeId)
+        db.collection(FirestoreCollections.PLACES).document(placeId)
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
@@ -169,7 +221,20 @@ class ProximityNotificationManager(private val context: Context) {
             }
     }
 
+    // AND-007: verificar POST_NOTIFICATIONS en API 33+ antes de notify()
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
     private fun sendNotification(place: TouristSpot) {
+        if (!hasNotificationPermission()) return
         val intent = Intent(context, PlaceDetailsActivity::class.java).apply {
             putExtra("PLACE_ID", place.id)
             putExtra("PLACE_NAME", place.nombre)
@@ -207,7 +272,27 @@ class ProximityNotificationManager(private val context: Context) {
         notificationManager.notify(place.id.hashCode(), notification)
     }
 
+    private fun isInCooldown(placeId: String): Boolean {
+        val lastNotified = cooldownPrefs.getLong("last_$placeId", 0L)
+        return System.currentTimeMillis() - lastNotified < NOTIFICATION_COOLDOWN_MS
+    }
+
+    private fun markNotified(placeId: String) {
+        cooldownPrefs.edit()
+            .putLong("last_$placeId", System.currentTimeMillis())
+            .apply()
+    }
+
+    /**
+     * Limpia el cooldown de todos los lugares. Útil cuando el usuario reconfigura
+     * los geofences o cambia el radio — quiere ver notificaciones frescas.
+     */
+    fun clearCooldowns() {
+        cooldownPrefs.edit().clear().apply()
+    }
+
     private fun sendSimpleNotification(placeName: String) {
+        if (!hasNotificationPermission()) return
         val intent = Intent(context, MenuActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,

@@ -36,9 +36,10 @@ class PhotoGalleryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(photo: PlacePhoto, position: Int) {
-            // Cargar imagen con Glide
+            // PEN-005: Validar URL antes de Glide para impedir SSRF / file://
+            val safeUrl = SafeImageUrl.sanitize(photo.imageUrl)
             Glide.with(binding.photoImageView.context)
-                .load(photo.imageUrl)
+                .load(safeUrl)
                 .placeholder(R.drawable.ic_placeholder_image)
                 .error(R.drawable.ic_error_image)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -60,6 +61,7 @@ class PhotoGalleryAdapter(
 
             // Likes
             binding.likesTextView.text = "❤️ ${photo.likes}"
+            binding.likesTextView.contentDescription = "${photo.likes} me gusta"
 
             // Click en la foto
             binding.root.setOnClickListener {

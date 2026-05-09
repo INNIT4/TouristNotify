@@ -22,7 +22,7 @@ object NotificationHelper {
         view: View,
         message: String,
         type: NotificationType = NotificationType.INFO,
-        duration: Int = Snackbar.LENGTH_SHORT,
+        duration: Int = Snackbar.LENGTH_LONG,
         actionText: String? = null,
         actionCallback: (() -> Unit)? = null
     ) {
@@ -70,7 +70,7 @@ object NotificationHelper {
     }
 
     // Métodos de conveniencia
-    fun success(view: View, message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    fun success(view: View, message: String, duration: Int = Snackbar.LENGTH_LONG) {
         show(view, message, NotificationType.SUCCESS, duration)
     }
 
@@ -78,7 +78,7 @@ object NotificationHelper {
         show(view, message, NotificationType.ERROR, duration)
     }
 
-    fun info(view: View, message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+    fun info(view: View, message: String, duration: Int = Snackbar.LENGTH_LONG) {
         show(view, message, NotificationType.INFO, duration)
     }
 

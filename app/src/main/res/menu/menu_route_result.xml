@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_mapa"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="Mapa" />
+
+    <item
+        android:id="@+id/nav_itinerario"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Itinerario" />
+
+    <item
+        android:id="@+id/nav_editar"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Editar" />
+
+    <item
+        android:id="@+id/nav_compartir"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="Compartir" />
+
+</menu>

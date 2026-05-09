@@ -27,17 +27,9 @@ class TopPlacesActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = TopPlacesAdapter(emptyList()) { place ->
+        adapter = TopPlacesAdapter { place ->
             val intent = Intent(this, PlaceDetailsActivity::class.java).apply {
-                putExtra("PLACE_ID", place.id)
-                putExtra("PLACE_NAME", place.nombre)
-                putExtra("PLACE_CATEGORY", place.categoria)
-                putExtra("PLACE_DESCRIPTION", place.descripcion)
-                putExtra("GOOGLE_PLACE_ID", place.googlePlaceId)
-                place.ubicacion?.let {
-                    putExtra("PLACE_LATITUDE", it.latitude)
-                    putExtra("PLACE_LONGITUDE", it.longitude)
-                }
+                putExtra(PlaceSummary.EXTRA_KEY, PlaceSummary.fromTouristSpot(place))
             }
             startActivity(intent)
         }
@@ -75,7 +67,7 @@ class TopPlacesActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 binding.emptyTextView.visibility = View.VISIBLE
                 binding.topPlacesRecyclerView.visibility = View.GONE
-                binding.emptyTextView.text = "Error al cargar los lugares populares"
+                binding.emptyTextView.text = getString(R.string.top_places_load_error)
                 NotificationHelper.error(binding.root, "Error: ${e.message}")
             }
     }

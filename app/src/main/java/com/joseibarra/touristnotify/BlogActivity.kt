@@ -119,7 +119,7 @@ class BlogActivity : AppCompatActivity() {
         }
 
         adapter.updatePosts(filteredPosts)
-        binding.postsCountTextView.text = "${filteredPosts.size} artículos"
+        binding.postsCountTextView.text = getString(R.string.articles_count_format, filteredPosts.size)
     }
 
     private fun loadBlogPosts() {
@@ -161,7 +161,7 @@ class BlogActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 binding.progressBar.visibility = View.GONE
                 binding.emptyStateContainer.visibility = View.VISIBLE
-                NotificationHelper.error(binding.root, "Error al cargar posts: ${e.message}")
+                NotificationHelper.error(binding.root, getString(R.string.blog_load_error, e.message))
             }
     }
 
@@ -257,7 +257,7 @@ class BlogActivity : AppCompatActivity() {
         binding.emptyStateContainer.visibility = View.GONE
         binding.blogRecyclerView.visibility = View.VISIBLE
         adapter.notifyDataSetChanged()
-        binding.postsCountTextView.text = "${blogPosts.size} artículos"
+        binding.postsCountTextView.text = getString(R.string.articles_count_format, blogPosts.size)
     }
 
     private fun openPostDetails(post: BlogPost) {
@@ -280,35 +280,34 @@ class BlogActivity : AppCompatActivity() {
             .whereEqualTo("postId", post.id)
             .get()
             .addOnSuccessListener { documents ->
+                val newLikes: Int
                 if (documents.isEmpty) {
-                    // Agregar like
                     val like = hashMapOf(
                         "userId" to userId,
                         "postId" to post.id,
                         "timestamp" to System.currentTimeMillis()
                     )
                     db.collection("blog_likes").add(like)
-
-                    // Incrementar contador
-                    db.collection("blog_posts").document(post.id)
-                        .update("likes", post.likes + 1)
-
-                    NotificationHelper.success(binding.root, "Te gusta este artículo")
+                    newLikes = post.likes + 1
+                    db.collection("blog_posts").document(post.id).update("likes", newLikes)
+                    NotificationHelper.success(binding.root, getString(R.string.blog_like_added))
                 } else {
-                    // Quitar like
                     for (doc in documents) {
                         db.collection("blog_likes").document(doc.id).delete()
                     }
-
-                    // Decrementar contador
-                    db.collection("blog_posts").document(post.id)
-                        .update("likes", maxOf(0, post.likes - 1))
-
-                    NotificationHelper.info(binding.root, "Ya no te gusta este artículo")
+                    newLikes = maxOf(0, post.likes - 1)
+                    db.collection("blog_posts").document(post.id).update("likes", newLikes)
+                    NotificationHelper.info(binding.root, getString(R.string.blog_like_removed))
                 }
-
-                // Recargar posts
-                loadBlogPosts()
+                // PERF-010: actualización optimista del ítem — evita recargar toda la lista
+                val updatedList = adapter.currentList.map { p ->
+                    if (p.id == post.id) p.copy(likes = newLikes) else p
+                }
+                adapter.submitList(updatedList)
+            }
+            .addOnFailureListener { e ->
+                android.util.Log.e("BlogActivity", "Error al procesar like: ${e.message}", e)
+                NotificationHelper.error(binding.root, getString(R.string.blog_like_error))
             }
     }
 

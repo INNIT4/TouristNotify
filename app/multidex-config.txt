@@ -1,0 +1,7 @@
+com/joseibarra/touristnotify/TouristNotifyApplication.class
+com/joseibarra/touristnotify/TouristNotifyApplication$Companion.class
+com/joseibarra/touristnotify/TouristNotifyApplication$onCreate$1.class
+com/joseibarra/touristnotify/TouristNotifyApplication$onCreate$2.class
+com/joseibarra/touristnotify/BuildConfig.class
+com/joseibarra/touristnotify/AppConstants.class
+com/joseibarra/touristnotify/ConfigManager.class

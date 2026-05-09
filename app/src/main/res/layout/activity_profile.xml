@@ -35,28 +35,57 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Avatar del usuario (inicial en círculo) -->
+        <!-- Avatar del usuario (toca para cambiar foto) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/avatar_card"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="100dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             app:cardCornerRadius="50dp"
             app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/avatar_text"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/md_theme_light_primary"
-                android:gravity="center"
-                android:text="U"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent">
+
+                <!-- Inicial (fallback cuando no hay foto) -->
+                <TextView
+                    android:id="@+id/avatar_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/md_theme_light_primary"
+                    android:gravity="center"
+                    android:text="U"
+                    android:textColor="@color/white"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
+
+                <!-- Foto de perfil (visible cuando el usuario sube una) -->
+                <ImageView
+                    android:id="@+id/avatar_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="Foto de perfil" />
+
+                <!-- Ícono de cámara superpuesto -->
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="4dp"
+                    android:src="@android:drawable/ic_menu_camera"
+                    android:background="@color/md_theme_light_primary"
+                    android:padding="4dp"
+                    android:contentDescription="Cambiar foto" />
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Email del usuario -->
@@ -121,7 +150,9 @@
                     android:layout_height="wrap_content"
                     android:hint="Nombre de usuario"
                     app:prefixText="@"
-                    app:helperText="Cómo quieres que te llamen">
+                    app:helperText="Cómo quieres que te llamen"
+                    app:helperTextEnabled="true"
+                    app:errorEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/nickname_edit_text"
@@ -322,6 +353,30 @@
                     android:text="Cambiar Contraseña"
                     android:textAlignment="viewStart"
                     app:icon="@android:drawable/ic_lock_lock"
+                    app:iconGravity="start" />
+
+                <!-- Política de Privacidad -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/privacy_policy_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Política de Privacidad"
+                    android:textAlignment="viewStart"
+                    app:icon="@android:drawable/ic_dialog_info"
+                    app:iconGravity="start" />
+
+                <!-- Exportar datos (GDPR Art. 20) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/export_data_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/export_data_button"
+                    android:textAlignment="viewStart"
+                    app:icon="@android:drawable/ic_menu_share"
                     app:iconGravity="start" />
 
                 <!-- Eliminar cuenta -->

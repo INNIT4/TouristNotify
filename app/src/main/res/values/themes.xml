@@ -135,4 +135,24 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
+
+    <!-- A11Y-014: High-contrast overlay — apply via uiMode or user setting override.
+         Raises text/surface contrast to minimum 7:1 (WCAG AAA). -->
+    <style name="Theme.TouristNotify.HighContrast" parent="Theme.TouristNotify">
+        <item name="colorPrimary">#003836</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#003836</item>
+        <item name="colorOnPrimaryContainer">#FFFFFF</item>
+        <item name="colorSecondary">#003836</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#000000</item>
+        <item name="colorSurfaceVariant">#F0F0F0</item>
+        <item name="colorOnSurfaceVariant">#000000</item>
+        <item name="android:colorBackground">#FFFFFF</item>
+        <item name="colorOnBackground">#000000</item>
+        <item name="colorOutline">#000000</item>
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="android:textColorSecondary">#000000</item>
+    </style>
 </resources>

@@ -15,6 +15,7 @@ Este documento explica las reglas de seguridad de Firestore para TouristNotify, 
 ### **1. Modo Invitado (Guest Mode)**
 - ✅ Lectura pública de contenido general (lugares, blog, eventos, fotos)
 - ❌ Escritura solo con autenticación
+- Ver arquitectura completa en `MODO_INVITADO_GUIA.md`
 
 ### **2. Datos Personales**
 - ✅ Solo el dueño puede acceder a sus propios datos (favoritos, rutas, stats, check-ins)

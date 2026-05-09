@@ -1,7 +1,22 @@
 package com.joseibarra.touristnotify
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.firebase.firestore.ServerTimestamp
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.TypeParceler
 import java.util.Date
+
+// KT-011: Parceler personalizado para Date? — @Parcelize no soporta Date nativo.
+object DateParceler : Parceler<Date?> {
+    override fun create(parcel: Parcel): Date? {
+        return if (parcel.readByte() == 0.toByte()) null else Date(parcel.readLong())
+    }
+    override fun Date?.write(parcel: Parcel, flags: Int) {
+        if (this == null) { parcel.writeByte(0) } else { parcel.writeByte(1); parcel.writeLong(time) }
+    }
+}
 
 /**
  * Modelo para lugares favoritos del usuario
@@ -33,20 +48,6 @@ data class CheckIn(
 )
 
 /**
- * Modelo para estadísticas del usuario
- */
-data class UserStats(
-    val userId: String = "",
-    val totalCheckIns: Int = 0,
-    val totalFavorites: Int = 0,
-    val placesVisited: Int = 0,
-    val kmTraveled: Double = 0.0,
-    val categoriesExplored: Map<String, Int> = emptyMap(),
-    val badges: List<String> = emptyList(),
-    val lastActivity: Date? = null
-)
-
-/**
  * Modelo para eventos en Álamos
  */
 data class Event(
@@ -67,22 +68,24 @@ data class Event(
 /**
  * Modelo para posts del blog
  */
+@Parcelize
+@TypeParceler<Date?, DateParceler>
 data class BlogPost(
     val id: String = "",
     val title: String = "",
     val content: String = "",
     val excerpt: String = "",
-    val category: String = "", // Tips, Historia, Gastronomía, etc.
+    val category: String = "",
     val imageUrl: String = "",
     val authorName: String = "",
-    val authorId: String = "", // ID del usuario que creó el post
+    val authorId: String = "",
     val tags: List<String> = emptyList(),
     @ServerTimestamp
     val publishedAt: Date? = null,
     val viewCount: Int = 0,
     val likes: Int = 0,
-    val isFeatured: Boolean = false // Post destacado en la página principal
-) : java.io.Serializable
+    val isFeatured: Boolean = false
+) : Parcelable
 
 /**
  * Modelo para información del clima

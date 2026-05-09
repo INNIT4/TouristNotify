@@ -1,9 +1,11 @@
 package com.joseibarra.touristnotify
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
@@ -12,7 +14,12 @@ import com.google.android.libraries.places.api.model.PlaceTypes
 import com.google.android.libraries.places.api.net.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.joseibarra.touristnotify.admin.AdminMigrationActivity
+import com.joseibarra.touristnotify.admin.AdminPlaceEditorActivity
+import com.joseibarra.touristnotify.admin.EnrichmentService
 import com.joseibarra.touristnotify.databinding.ActivityAdminPlacesBinding
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 /**
  * Actividad administrativa para importar lugares desde Google Places API
@@ -32,6 +39,10 @@ class AdminPlacesActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = FirebaseFirestore.getInstance()
+        if (!Places.isInitialized()) {
+            val placesKey = getString(R.string.places_api_key)
+            if (placesKey.isNotEmpty()) Places.initialize(applicationContext, placesKey)
+        }
         placesClient = Places.createClient(this)
 
         setupRecyclerView()
@@ -42,7 +53,10 @@ class AdminPlacesActivity : AppCompatActivity() {
         adapter = PlaceImportAdapter(
             places = foundPlaces,
             onImportClicked = { place -> showImportDialog(place) },
-            onDetailsClicked = { place -> showPlaceDetails(place) }
+            onDetailsClicked = { place -> showPlaceDetails(place) },
+            onEditClicked = { place ->
+                startActivity(AdminPlaceEditorActivity.newIntent(this, place.placeId))
+            }
         )
         binding.placesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.placesRecyclerView.adapter = adapter
@@ -68,6 +82,161 @@ class AdminPlacesActivity : AppCompatActivity() {
         binding.buttonSearchAll.setOnClickListener {
             searchAllCategories()
         }
+
+        binding.buttonImportAll.setOnClickListener { confirmImportAll() }
+
+        binding.buttonLoadCatalog.setOnClickListener { loadCatalog() }
+        binding.buttonBulkEnrich.setOnClickListener { confirmBulkEnrich() }
+        binding.buttonGoToMigration.setOnClickListener {
+            startActivity(Intent(this, AdminMigrationActivity::class.java))
+        }
+    }
+
+    private fun loadCatalog() {
+        showLoading(true)
+        lifecycleScope.launch {
+            try {
+                val snapshot = db.collection(FirestoreCollections.PLACES).get().await()
+                val spots = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(TouristSpot::class.java)?.copy(id = doc.id)
+                }
+                foundPlaces.clear()
+                spots.forEach { spot ->
+                    foundPlaces.add(PlaceImportItem(
+                        placeId   = spot.id,
+                        name      = spot.nombre,
+                        address   = spot.direccion,
+                        latLng    = spot.ubicacion?.let {
+                            com.google.android.gms.maps.model.LatLng(it.latitude, it.longitude) },
+                        phoneNumber   = spot.telefono ?: "",
+                        website       = spot.sitioWeb ?: "",
+                        rating        = spot.rating,
+                        userRatingsTotal = spot.reviewCount,
+                        types         = listOf(spot.categoria),
+                        openingHours  = spot.horarios ?: "",
+                        priceLevel    = spot.precioNivel,
+                        hasPhotos     = spot.imagenUrl?.isNotBlank() == true
+                    ))
+                }
+                showLoading(false)
+                adapter.notifyDataSetChanged()
+                NotificationHelper.success(binding.root, "${spots.size} lugares en catálogo")
+            } catch (e: Exception) {
+                showLoading(false)
+                NotificationHelper.error(binding.root, "Error: ${e.message}")
+            }
+        }
+    }
+
+    private fun confirmBulkEnrich() {
+        AlertDialog.Builder(this)
+            .setTitle("Enriquecer todos con IA")
+            .setMessage("Gemini procesará cada lugar del catálogo (1 cada 2 s). ¿Continuar?")
+            .setPositiveButton("Enriquecer") { _, _ -> startBulkEnrichment() }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private var bulkCancelled = false
+
+    private fun startBulkEnrichment() {
+        bulkCancelled = false
+        binding.progressBulkEnrich.visibility = View.VISIBLE
+        binding.tvBulkEnrichStatus.visibility = View.VISIBLE
+        binding.buttonBulkEnrich.isEnabled = false
+
+        lifecycleScope.launch {
+            try {
+                val snapshot = db.collection(FirestoreCollections.PLACES).get().await()
+                val spots = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(TouristSpot::class.java)?.copy(id = doc.id)
+                }
+                binding.progressBulkEnrich.max = spots.size
+                val service = EnrichmentService()
+                service.enrichAll(
+                    spots = spots,
+                    throttleMs = 2000L,
+                    onProgress = { done, total, name, success ->
+                        binding.progressBulkEnrich.progress = done
+                        val status = if (success) "✓" else "✗"
+                        binding.tvBulkEnrichStatus.text = "$status $done/$total · $name"
+                    },
+                    isCancelled = { bulkCancelled }
+                )
+                binding.tvBulkEnrichStatus.text = "Enriquecimiento completo"
+            } catch (e: Exception) {
+                binding.tvBulkEnrichStatus.text = "Error: ${e.message}"
+            } finally {
+                binding.progressBulkEnrich.visibility = View.GONE
+                binding.buttonBulkEnrich.isEnabled = true
+            }
+        }
+    }
+
+    private fun confirmImportAll() {
+        if (foundPlaces.isEmpty()) {
+            NotificationHelper.info(binding.root, "No hay lugares en la lista para importar")
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Importar ${foundPlaces.size} lugares")
+            .setMessage("Se guardarán todos los resultados en Firebase. Las categorías se asignan automáticamente.")
+            .setPositiveButton("Importar todos") { _, _ -> doBulkImport() }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun doBulkImport() {
+        binding.progressImport.visibility = View.VISIBLE
+        binding.tvImportStatus.visibility = View.VISIBLE
+        binding.buttonImportAll.isEnabled = false
+
+        lifecycleScope.launch {
+            try {
+                val placesToImport = foundPlaces.toList()
+                binding.progressImport.max = placesToImport.size
+                var imported = 0
+
+                placesToImport.chunked(500).forEach { chunk ->
+                    val batch = db.batch()
+                    chunk.forEach { place ->
+                        val category = CategoryUtils.guessCategory(place.types)
+                        val newPlace = TouristSpot(
+                            id = "",
+                            nombre = place.name,
+                            descripcion = "Importado desde Google Places.",
+                            categoria = category,
+                            ubicacion = place.latLng?.let { GeoPoint(it.latitude, it.longitude) },
+                            horarios = place.openingHours,
+                            telefono = place.phoneNumber,
+                            sitioWeb = place.website,
+                            direccion = place.address,
+                            rating = place.rating,
+                            reviewCount = place.userRatingsTotal,
+                            precioEstimado = getPriceString(place.priceLevel),
+                            googlePlaceId = place.placeId,
+                            visitCount = 0
+                        )
+                        batch.set(db.collection(FirestoreCollections.PLACES).document(), newPlace)
+                        imported++
+                        binding.progressImport.progress = imported
+                        binding.tvImportStatus.text = "Importando $imported/${placesToImport.size}…"
+                    }
+                    batch.commit().await()
+                }
+
+                binding.tvImportStatus.text = "✓ $imported lugares importados"
+                foundPlaces.clear()
+                adapter.notifyDataSetChanged()
+                NotificationHelper.success(binding.root, "✓ $imported lugares importados a Firebase")
+            } catch (e: Exception) {
+                binding.tvImportStatus.text = "Error: ${e.message}"
+                NotificationHelper.error(binding.root, "Error al importar: ${e.message}")
+            } finally {
+                binding.progressImport.visibility = View.GONE
+                binding.buttonImportAll.isEnabled = true
+            }
+        }
     }
 
     private fun searchTouristSpots() {
@@ -75,10 +244,12 @@ class AdminPlacesActivity : AppCompatActivity() {
         searchPlacesByType("tourist_attraction")
     }
 
-    private fun searchPlacesByType(type: String) {
-        showLoading(true)
-        foundPlaces.clear()
-        adapter.notifyDataSetChanged()
+    private fun searchPlacesByType(type: String, accumulate: Boolean = false) {
+        if (!accumulate) {
+            showLoading(true)
+            foundPlaces.clear()
+            adapter.notifyDataSetChanged()
+        }
 
         // Coordenadas de Álamos, Sonora
         val alamosCenter = com.google.android.gms.maps.model.LatLng(AppConstants.ALAMOS_LAT, AppConstants.ALAMOS_LNG)
@@ -182,14 +353,10 @@ class AdminPlacesActivity : AppCompatActivity() {
     private fun searchAllCategories() {
         showLoading(true)
         foundPlaces.clear()
+        adapter.notifyDataSetChanged()
 
         val categories = listOf("tourist_attraction", "restaurant", "lodging", "museum")
-        var completedCategories = 0
-
-        categories.forEach { category ->
-            searchPlacesByType(category)
-            completedCategories++
-        }
+        categories.forEach { category -> searchPlacesByType(category, accumulate = true) }
     }
 
     private fun showImportDialog(place: PlaceImportItem) {

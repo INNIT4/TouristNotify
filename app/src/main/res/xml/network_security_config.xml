@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Configuración de seguridad de red.
+    - Deshabilita tráfico HTTP en claro (solo HTTPS permitido).
+    - Confía únicamente en los certificados del sistema (no custom CAs).
+    - Aplica a todas las conexiones de la app (APIs de Google, Firebase, OpenWeatherMap).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

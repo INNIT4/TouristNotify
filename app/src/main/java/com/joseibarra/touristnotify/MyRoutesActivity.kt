@@ -49,7 +49,6 @@ class MyRoutesActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         routeAdapter = RouteAdapter(
-            routes = emptyList(),
             onItemClicked = { route ->
                 val intent = Intent(this, MapsActivity::class.java).apply {
                     putStringArrayListExtra("ROUTE_PLACES_IDS", ArrayList(route.pdis_incluidos))
@@ -67,12 +66,12 @@ class MyRoutesActivity : AppCompatActivity() {
 
     private fun showDeleteConfirmation(route: Route, position: Int) {
         AlertDialog.Builder(this)
-            .setTitle("Eliminar ruta")
-            .setMessage("¿Estás seguro de que deseas eliminar '${route.nombre_ruta}'?")
-            .setPositiveButton("Eliminar") { _, _ ->
+            .setTitle(getString(R.string.delete_route_title))
+            .setMessage(getString(R.string.delete_route_message, route.nombre_ruta))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 deleteRoute(route, position)
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -80,12 +79,12 @@ class MyRoutesActivity : AppCompatActivity() {
         // SEGURIDAD: Validar que el usuario actual sea el dueño de la ruta
         val currentUserId = auth.currentUser?.uid
         if (currentUserId == null) {
-            NotificationHelper.error(binding.root, "Debes iniciar sesión para eliminar rutas")
+            NotificationHelper.error(binding.root, getString(R.string.login_required_delete))
             return
         }
 
         if (route.id_usuario != currentUserId) {
-            NotificationHelper.error(binding.root, "No tienes permiso para eliminar esta ruta")
+            NotificationHelper.error(binding.root, getString(R.string.no_permission_delete))
             return
         }
 
@@ -93,7 +92,7 @@ class MyRoutesActivity : AppCompatActivity() {
             .delete()
             .addOnSuccessListener {
                 routeAdapter.removeRoute(position)
-                NotificationHelper.success(binding.root, "Ruta eliminada exitosamente")
+                NotificationHelper.success(binding.root, getString(R.string.route_deleted))
 
                 // Verificar si no quedan más rutas
                 if (routeAdapter.itemCount == 0) {
@@ -102,14 +101,14 @@ class MyRoutesActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                NotificationHelper.error(binding.root, "Error al eliminar la ruta")
+                NotificationHelper.error(binding.root, getString(R.string.route_delete_error))
             }
     }
 
     private fun loadSavedRoutes() {
         val userId = auth.currentUser?.uid
         if (userId == null) {
-            NotificationHelper.error(binding.root, "No se pudo obtener el usuario")
+            NotificationHelper.error(binding.root, getString(R.string.user_not_found))
             binding.noRoutesTextView.visibility = View.VISIBLE
             binding.routesRecyclerView.visibility = View.GONE
             return
@@ -118,6 +117,7 @@ class MyRoutesActivity : AppCompatActivity() {
         db.collection("rutas")
             .whereEqualTo("id_usuario", userId)
             .orderBy("fecha_creacion", Query.Direction.DESCENDING)
+            .limit(100)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
@@ -133,7 +133,7 @@ class MyRoutesActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 binding.routesRecyclerView.visibility = View.GONE
                 binding.noRoutesTextView.visibility = View.VISIBLE
-                binding.noRoutesTextView.text = "Error al cargar las rutas"
+                binding.noRoutesTextView.text = getString(R.string.routes_load_error)
                 NotificationHelper.error(binding.root, "Error: ${e.message}")
             }
     }

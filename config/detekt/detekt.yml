@@ -1,0 +1,58 @@
+build:
+  maxIssues: 0
+
+style:
+  MagicNumber:
+    active: false
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'kotlinx.coroutines.*'
+  ReturnCount:
+    max: 5
+  FunctionNaming:
+    active: false
+  VariableNaming:
+    active: false
+  ClassNaming:
+    active: true
+
+complexity:
+  LongMethod:
+    threshold: 60
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 8
+  ComplexMethod:
+    threshold: 15
+  LargeClass:
+    threshold: 600
+  TooManyFunctions:
+    thresholdInFiles: 40
+    thresholdInClasses: 30
+    thresholdInInterfaces: 15
+    thresholdInObjects: 30
+    thresholdInEnums: 10
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+  NullableToStringCall:
+    active: true
+  UnreachableCode:
+    active: true
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+  TooGenericExceptionThrown:
+    active: true
+
+naming:
+  MemberNameEqualsClassName:
+    active: false
+
+comments:
+  active: false

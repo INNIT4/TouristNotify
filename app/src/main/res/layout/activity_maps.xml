@@ -19,7 +19,7 @@
         android:layout_margin="16dp"
         android:queryHint="Buscar lugares..."
         android:iconifiedByDefault="false"
-        android:background="@android:color/white" />
+        android:background="?attr/colorSurface" />
 
     <!-- Filter Chips -->
     <HorizontalScrollView
@@ -103,6 +103,20 @@
         app:fabSize="normal"
         tools:visibility="visible"
         android:contentDescription="Guardar Ruta" />
+
+    <!-- A11Y-001: accessible list button for screen reader users to browse all visible places -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/places_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="88dp"
+        android:src="@drawable/ic_route"
+        android:contentDescription="@string/a11y_places_list_button"
+        app:fabSize="mini"
+        app:tint="@color/white" />
 
     <!-- Panel de Navegación de Ruta -->
     <com.google.android.material.card.MaterialCardView
@@ -283,5 +297,18 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Botón para ocultar/mostrar controles (modo mapa expandido) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/toggle_ui_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_menu_compass"
+        android:contentDescription="Alternar controles del mapa"
+        app:fabSize="mini"
+        app:tint="@color/white" />
 
 </RelativeLayout>

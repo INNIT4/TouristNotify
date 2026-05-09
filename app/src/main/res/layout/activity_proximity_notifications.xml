@@ -147,58 +147,55 @@
                 </LinearLayout>
 
                 <!-- Radius Selection -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:text="Radio de proximidad"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="4dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Radio de proximidad"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/radius_value_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="200 m" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:text="Distancia para recibir notificaciones"
+                    android:layout_marginBottom="8dp"
+                    android:text="Desliza para ajustar la distancia (50 m – 1000 m)"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/radius_chip_group"
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/radius_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:stepSize="50"
+                    android:value="200"
+                    android:valueFrom="50"
+                    android:valueTo="1000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/radius_100m_chip"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="10m (Muy cerca)" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/radius_250m_chip"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="250m (Cerca)" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/radius_500m_chip"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="500m (Lejos)" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/radius_1km_chip"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1km (Muy lejos)" />
-                </com.google.android.material.chip.ChipGroup>
+                    android:text="⚠️ Radios &lt; 100 m pueden ser poco fiables por la precisión del GPS."
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp" />
 
                 <!-- Setup Status -->
                 <LinearLayout

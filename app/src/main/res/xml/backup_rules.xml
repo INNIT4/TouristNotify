@@ -1,13 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Backup rules for Android Auto Backup (API < 31).
    See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+
+   IMPORTANTE: TouristNotifyPrefs y TouristNotifyUsage son EncryptedSharedPreferences.
+   La clave maestra (Android Keystore) NO se respalda con Auto Backup, por lo que
+   restaurar el archivo cifrado en otro dispositivo lo deja inservible. Excluirlos
+   del backup además protege la app si en el futuro se almacenan tokens.
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- Excluir EncryptedSharedPreferences (la master key no se respalda) -->
+    <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
+    <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+
+    <!-- Excluir tokens de Firebase Auth -->
+    <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />
+
+    <!-- Excluir Room DB (cache local de Firestore) -->
+    <exclude domain="database" path="tourist_notify_db" />
+    <exclude domain="database" path="tourist_notify_db-journal" />
+    <exclude domain="database" path="tourist_notify_db-wal" />
+    <exclude domain="database" path="tourist_notify_db-shm" />
+    <exclude domain="database" path="tourist_notify_database" />
+
+    <!-- Excluir caches -->
+    <exclude domain="root" path="cache/" />
 </full-backup-content>

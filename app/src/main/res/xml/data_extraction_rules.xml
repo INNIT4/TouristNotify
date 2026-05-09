@@ -1,19 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Data extraction rules for Android 12+ (API 31+).
    See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
+
+   IMPORTANTE: TouristNotifyPrefs y TouristNotifyUsage son EncryptedSharedPreferences.
+   La clave maestra (Android Keystore) NO se respalda en cloud-backup, por lo que
+   restaurar en otro dispositivo deja el archivo cifrado inservible.
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <!-- Excluir EncryptedSharedPreferences -->
+        <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
+        <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+
+        <!-- Excluir tokens y caches -->
+        <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />
+        <exclude domain="database" path="tourist_notify_db" />
+        <exclude domain="database" path="tourist_notify_db-journal" />
+        <exclude domain="database" path="tourist_notify_db-wal" />
+        <exclude domain="database" path="tourist_notify_db-shm" />
+        <exclude domain="database" path="tourist_notify_database" />
+        <exclude domain="root" path="cache/" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <!--
+            En device-transfer (cambio de dispositivo) la master key SÍ puede
+            transferirse vía Google Backup Transport, así que es seguro incluir
+            las prefs cifradas. Pero por consistencia y para reducir superficie
+            las excluimos también.
+        -->
+        <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
+        <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+        <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />
+        <exclude domain="database" path="tourist_notify_db" />
+        <exclude domain="database" path="tourist_notify_database" />
+        <exclude domain="root" path="cache/" />
     </device-transfer>
-    -->
 </data-extraction-rules>

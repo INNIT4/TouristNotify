@@ -43,6 +43,7 @@ class ThemedRoutesAdapter(
         holder.themeTextView.text = route.theme
         holder.descriptionTextView.text = route.description
         holder.durationTextView.text = "⏱️ ${route.estimatedDuration}"
+        holder.durationTextView.contentDescription = route.estimatedDuration
         holder.difficultyTextView.text = getDifficultyEmoji(route.difficulty) + " " + route.difficulty
 
         // Aplicar color temático

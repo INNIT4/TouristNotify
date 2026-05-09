@@ -2,10 +2,17 @@ package com.joseibarra.touristnotify
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.joseibarra.touristnotify.databinding.ListItemReviewBinding
 
-class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
+class ReviewAdapter(initialReviews: List<Review> = emptyList()) :
+    ListAdapter<Review, ReviewAdapter.ReviewViewHolder>(ReviewDiffCallback()) {
+
+    init {
+        submitList(initialReviews)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
         val binding = ListItemReviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -13,14 +20,11 @@ class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<Re
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
-        holder.bind(reviews[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount() = reviews.size
-
     fun updateReviews(newReviews: List<Review>) {
-        reviews = newReviews
-        notifyDataSetChanged()
+        submitList(newReviews)
     }
 
     inner class ReviewViewHolder(private val binding: ListItemReviewBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -28,6 +32,16 @@ class ReviewAdapter(private var reviews: List<Review>) : RecyclerView.Adapter<Re
             binding.userNameTextView.text = review.userName
             binding.reviewRatingBar.rating = review.rating
             binding.commentTextView.text = review.comment
+        }
+    }
+
+    class ReviewDiffCallback : DiffUtil.ItemCallback<Review>() {
+        override fun areItemsTheSame(oldItem: Review, newItem: Review): Boolean {
+            return oldItem.userId == newItem.userId
+        }
+
+        override fun areContentsTheSame(oldItem: Review, newItem: Review): Boolean {
+            return oldItem == newItem
         }
     }
 }

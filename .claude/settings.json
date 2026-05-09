@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs wc *)",
+      "Bash(./gradlew compileDebugKotlin --no-daemon)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(git stash *)",
+      "Bash(curl -s \"https://dl.google.com/dl/android/maven2/com/google/ai/client/generativeai/generativeai/maven-metadata.xml\")",
+      "PowerShell(keytool -list -v -keystore \"$env:USERPROFILE\\\\.android\\\\debug.keystore\" -alias androiddebugkey -storepass android -keypass android 2>&1 | Select-String \"SHA1\", \"SHA256\")",
+      "PowerShell(gcloud version 2>&1)",
+      "PowerShell(firebase --version 2>&1)",
+      "Bash(firebase --version)",
+      "Bash(gcloud version *)",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/com/google/ai/client/generativeai/generativeai/maven-metadata.xml\")",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/com/google/ai/client/generativeai/maven-metadata.xml\")",
+      "Bash(curl -s \"https://dl.google.com/dl/android/maven2/com/google/ai/client/generativeai/group-index.xml\")",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/net/zetetic/android-database-sqlcipher/maven-metadata.xml\")",
+      "Bash(grep -E \"\\\\.kt$\")",
+      "Bash(./gradlew compileDebugKotlin)",
+      "Bash(./gradlew compileDebugKotlin --info)",
+      "Bash(./gradlew kspDebugKotlin)",
+      "Bash(adb logcat *)",
+      "Bash(\"C:\\\\Users\\\\josei\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" logcat *)",
+      "Bash(\"C:\\\\Users\\\\josei\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" install *)",
+      "Bash(./gradlew assembleDebug --info)",
+      "Bash(./gradlew :app:compileDebugKotlin)",
+      "Bash(grep -v \"^\\\\s*$\")",
+      "Bash(./gradlew assembleDebug --stacktrace)",
+      "Bash(./gradlew clean *)",
+      "Bash(\"C:\\\\Users\\\\josei\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" uninstall *)",
+      "Bash(\"C:\\\\Users\\\\josei\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe\" shell *)",
+      "Bash(timeout 8)",
+      "Bash(Start-Sleep -Seconds 1)",
+      "Bash(./gradlew assembleDebug --no-build-cache)"
+    ],
+    "additionalDirectories": [
+      "e:\\josei\\Desktop\\Codigos\\LUPITA\\.claude",
+      "e:\\josei\\Desktop\\Codigos\\LUPITA\\.claude\\audit",
+      "e:\\josei\\Desktop\\Codigos\\LUPITA\\.claude\\docs"
+    ]
+  }
+}

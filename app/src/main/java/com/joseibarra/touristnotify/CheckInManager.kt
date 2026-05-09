@@ -5,10 +5,14 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-object CheckInManager {
-
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+class CheckInManager(
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val clock: () -> Long = { System.currentTimeMillis() }
+) {
+    companion object {
+        val instance: CheckInManager by lazy { CheckInManager() }
+    }
 
     /**
      * Hacer check-in en un lugar
@@ -33,18 +37,15 @@ object CheckInManager {
             )
 
             // Guardar check-in
-            db.collection("checkIns")
+            db.collection(FirestoreCollections.CHECK_INS)
                 .add(checkIn)
                 .await()
 
             // Incrementar contador de visitas del lugar
-            db.collection("lugares")
+            db.collection(FirestoreCollections.PLACES)
                 .document(placeId)
                 .update("visitCount", FieldValue.increment(1))
                 .await()
-
-            // Actualizar estadísticas del usuario
-            updateUserStats(currentUser.uid, placeCategory)
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -59,7 +60,7 @@ object CheckInManager {
         return try {
             val userId = auth.currentUser?.uid ?: return Result.failure(Exception("Usuario no autenticado"))
 
-            val snapshot = db.collection("checkIns")
+            val snapshot = db.collection(FirestoreCollections.CHECK_INS)
                 .whereEqualTo("userId", userId)
                 .orderBy("checkInTime", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
@@ -82,10 +83,9 @@ object CheckInManager {
         return try {
             val userId = auth.currentUser?.uid ?: return false
 
-            // Obtener timestamp de hace 24 horas
-            val yesterday = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
+            val yesterday = clock() - (24 * 60 * 60 * 1000)
 
-            val snapshot = db.collection("checkIns")
+            val snapshot = db.collection(FirestoreCollections.CHECK_INS)
                 .whereEqualTo("userId", userId)
                 .whereEqualTo("placeId", placeId)
                 .whereGreaterThan("checkInTime", java.util.Date(yesterday))
@@ -98,30 +98,4 @@ object CheckInManager {
         }
     }
 
-    /**
-     * Actualizar estadísticas del usuario
-     */
-    private suspend fun updateUserStats(userId: String, category: String) {
-        try {
-            val statsRef = db.collection("users").document(userId).collection("stats").document("summary")
-
-            db.runTransaction { transaction ->
-                val snapshot = transaction.get(statsRef)
-                val stats = snapshot.toObject(UserStats::class.java) ?: UserStats(userId = userId)
-
-                val updatedCategories = stats.categoriesExplored.toMutableMap()
-                updatedCategories[category] = (updatedCategories[category] ?: 0) + 1
-
-                val updatedStats = stats.copy(
-                    totalCheckIns = stats.totalCheckIns + 1,
-                    categoriesExplored = updatedCategories,
-                    lastActivity = java.util.Date()
-                )
-
-                transaction.set(statsRef, updatedStats)
-            }.await()
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) android.util.Log.e("CheckInManager", "Error updating stats", e)
-        }
-    }
 }

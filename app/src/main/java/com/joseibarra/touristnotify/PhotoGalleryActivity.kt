@@ -31,12 +31,12 @@ class PhotoGalleryActivity : AppCompatActivity() {
         placeName = intent.getStringExtra("PLACE_NAME")
 
         if (placeId == null) {
-            NotificationHelper.error(binding.root, "Error: lugar no encontrado")
+            NotificationHelper.error(binding.root, getString(R.string.place_not_found_error))
             finish()
             return
         }
 
-        supportActionBar?.title = "Galería: $placeName"
+        supportActionBar?.title = getString(R.string.gallery_title, placeName)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setupRecyclerView()
@@ -89,7 +89,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
 
                 if (photos.isEmpty()) {
                     binding.emptyStateTextView.visibility = View.VISIBLE
-                    binding.emptyStateTextView.text = "📸\n\nNo hay fotos aún\n\nSé el primero en compartir fotos de este lugar"
+                    binding.emptyStateTextView.text = getString(R.string.no_photos_yet)
                 } else {
                     photoAdapter.submitList(photos)
                 }
@@ -97,7 +97,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 binding.progressBar.visibility = View.GONE
                 binding.emptyStateTextView.visibility = View.VISIBLE
-                binding.emptyStateTextView.text = "Error al cargar fotos:\n${e.message}"
+                binding.emptyStateTextView.text = getString(R.string.photos_load_error, e.message)
             }
     }
 

@@ -22,8 +22,13 @@ class BlogPostDetailActivity : AppCompatActivity() {
         binding = ActivityBlogPostDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Try to get post object first (new approach)
-        val post = intent.getSerializableExtra("POST_OBJECT") as? BlogPost
+        // KT-011: getParcelableExtra (Parcelable es más rápido que Serializable)
+        @Suppress("DEPRECATION")
+        val post = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("POST_OBJECT", BlogPost::class.java)
+        } else {
+            intent.getParcelableExtra("POST_OBJECT")
+        }
 
         if (post != null) {
             postId = post.id

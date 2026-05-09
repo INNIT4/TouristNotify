@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:accessibilityHeading="true"
             android:fontFamily="sans-serif-medium"
             android:text="Personaliza tu ruta"
             android:textColor="?attr/colorPrimary"
@@ -76,7 +77,9 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="20dp"
                     android:hint="Presupuesto en pesos (MXN)"
+                    app:errorEnabled="true"
                     app:helperText="Aproximado para toda la experiencia"
+                    app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:prefixText="$"
                     app:suffixText="MXN">
@@ -106,7 +109,9 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="20dp"
                     android:hint="Horas disponibles"
+                    app:errorEnabled="true"
                     app:helperText="Tiempo que dedicarás al recorrido"
+                    app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:suffixText="hrs">
 
@@ -419,6 +424,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="top"
                         android:inputType="textMultiLine|textCapSentences"
+                        android:maxLength="200"
                         android:maxLines="4"
                         android:minLines="3" />
                 </com.google.android.material.textfield.TextInputLayout>

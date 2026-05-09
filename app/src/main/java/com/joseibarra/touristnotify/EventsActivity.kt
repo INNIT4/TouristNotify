@@ -10,6 +10,7 @@ import com.google.firebase.firestore.Query
 import com.joseibarra.touristnotify.databinding.ActivityEventsBinding
 import java.util.*
 
+
 /**
  * Activity que muestra los eventos actuales y próximos en Álamos, Sonora
  */
@@ -18,7 +19,6 @@ class EventsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEventsBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: EventsAdapter
-    private val events = mutableListOf<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = EventsAdapter(events) { event ->
+        adapter = EventsAdapter { event ->
             openEventDetails(event)
         }
         binding.eventsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -48,24 +48,25 @@ class EventsActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
         binding.emptyStateContainer.visibility = View.GONE
 
-        db.collection("eventos")
+        // PERF-006: orderBy en Firestore (requiere índice compuesto isFeatured DESC + startDate ASC)
+        db.collection(FirestoreCollections.EVENTS)
+            .orderBy("isFeatured", Query.Direction.DESCENDING)
+            .orderBy("startDate", Query.Direction.ASCENDING)
             .limit(50)
             .get()
             .addOnSuccessListener { documents ->
                 binding.progressBar.visibility = View.GONE
-                events.clear()
 
                 if (documents.isEmpty) {
-                    // Si no hay eventos en Firebase, mostrar eventos de ejemplo
                     loadSampleEvents()
                     return@addOnSuccessListener
                 }
 
                 val currentDate = Date()
+                val events = mutableListOf<Event>()
                 for (document in documents) {
                     try {
                         val event = document.toObject(Event::class.java).copy(id = document.id)
-                        // Filtrar eventos que no han terminado
                         if (event.endDate == null || event.endDate >= currentDate) {
                             events.add(event)
                         }
@@ -74,13 +75,7 @@ class EventsActivity : AppCompatActivity() {
                     }
                 }
 
-                // Ordenar: destacados primero, luego por fecha de inicio
-                events.sortWith(
-                    compareByDescending<Event> { it.isFeatured }
-                        .thenBy { it.startDate ?: Date(0) }
-                )
-
-                adapter.notifyDataSetChanged()
+                adapter.submitList(events)
 
                 if (events.isEmpty()) {
                     showEmptyState()
@@ -94,8 +89,7 @@ class EventsActivity : AppCompatActivity() {
     }
 
     private fun loadSampleEvents() {
-        events.clear()
-
+        val sampleEvents = mutableListOf<Event>()
         val calendar = Calendar.getInstance()
 
         // Evento 1: Festival Alfonso Ortiz Tirado
@@ -104,7 +98,7 @@ class EventsActivity : AppCompatActivity() {
         calendar.set(2026, Calendar.JANUARY, 26)
         val faotEnd = calendar.time
 
-        events.add(Event(
+        sampleEvents.add(Event(
             id = "sample1",
             title = "Festival Alfonso Ortiz Tirado (FAOT)",
             description = "El evento cultural más importante de Álamos. Una semana completa de conciertos, exposiciones y actividades culturales en honor al tenor Alfonso Ortiz Tirado.",
@@ -123,7 +117,7 @@ class EventsActivity : AppCompatActivity() {
         calendar.set(2026, Calendar.NOVEMBER, 2)
         val muertosEnd = calendar.time
 
-        events.add(Event(
+        sampleEvents.add(Event(
             id = "sample2",
             title = "Celebración del Día de Muertos",
             description = "Tradición ancestral con altares, calaveras, pan de muerto y visitas al panteón. Recorridos nocturnos por el pueblo iluminado con velas.",
@@ -141,7 +135,7 @@ class EventsActivity : AppCompatActivity() {
         calendar.set(2026, Calendar.MARCH, 20)
         val cineEnd = calendar.time
 
-        events.add(Event(
+        sampleEvents.add(Event(
             id = "sample3",
             title = "Festival Internacional de Cine de Álamos",
             description = "Proyecciones de películas internacionales e independientes en locaciones únicas del pueblo. Conversatorios con directores y actores.",
@@ -153,7 +147,7 @@ class EventsActivity : AppCompatActivity() {
             organizerName = "Asociación de Cineastas"
         ))
 
-        adapter.notifyDataSetChanged()
+        adapter.submitList(sampleEvents)
         binding.emptyStateContainer.visibility = View.GONE
         binding.eventsRecyclerView.visibility = View.VISIBLE
     }

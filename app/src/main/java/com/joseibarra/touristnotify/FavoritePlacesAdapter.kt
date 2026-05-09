@@ -2,14 +2,27 @@ package com.joseibarra.touristnotify
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.joseibarra.touristnotify.databinding.ListItemFavoritePlaceBinding
 
 class FavoritePlacesAdapter(
-    private val favorites: List<Pair<Favorite, TouristSpot>>,
     private val onItemClicked: (TouristSpot) -> Unit,
     private val onRemoveClicked: (Favorite) -> Unit
-) : RecyclerView.Adapter<FavoritePlacesAdapter.FavoriteViewHolder>() {
+) : ListAdapter<Pair<Favorite, TouristSpot>, FavoritePlacesAdapter.FavoriteViewHolder>(FavoriteDiffCallback()) {
+
+    class FavoriteDiffCallback : DiffUtil.ItemCallback<Pair<Favorite, TouristSpot>>() {
+        override fun areItemsTheSame(
+            oldItem: Pair<Favorite, TouristSpot>,
+            newItem: Pair<Favorite, TouristSpot>
+        ): Boolean = oldItem.first.id == newItem.first.id
+
+        override fun areContentsTheSame(
+            oldItem: Pair<Favorite, TouristSpot>,
+            newItem: Pair<Favorite, TouristSpot>
+        ): Boolean = oldItem == newItem
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
         val binding = ListItemFavoritePlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -17,10 +30,8 @@ class FavoritePlacesAdapter(
     }
 
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
-        holder.bind(favorites[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount() = favorites.size
 
     inner class FavoriteViewHolder(private val binding: ListItemFavoritePlaceBinding) :
         RecyclerView.ViewHolder(binding.root) {

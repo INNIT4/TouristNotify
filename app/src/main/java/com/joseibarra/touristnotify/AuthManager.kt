@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
  */
 object AuthManager {
 
-    private const val PREFS_NAME = "TouristNotifyPrefs"
+    // CR P2: usar AppConstants.PREFS_NAME para evitar duplicación de la constante
     private const val KEY_GUEST_MODE = "guest_mode_enabled"
 
     /**
@@ -24,7 +24,7 @@ object AuthManager {
     private fun getEncryptedPrefs(context: Context) =
         EncryptedSharedPreferences.create(
             context,
-            PREFS_NAME,
+            AppConstants.PREFS_NAME,
             MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build(),
@@ -82,17 +82,17 @@ object AuthManager {
             return true
         }
 
-        // Mostrar diálogo pidiendo login
-        AlertDialog.Builder(context)
-            .setTitle("Iniciar sesión")
-            .setMessage("Para $actionName necesitas crear una cuenta o iniciar sesión.\n\n¿Deseas continuar?")
-            .setPositiveButton("Iniciar sesión") { _, _ ->
-                // Ir a LoginActivity
-                val intent = Intent(context, LoginActivity::class.java)
+        // Mostrar diálogo pidiendo login (strings localizados desde resources)
+        val ctx = context
+        AlertDialog.Builder(ctx)
+            .setTitle(ctx.getString(R.string.login_button))
+            .setMessage(ctx.getString(R.string.auth_required_for_action, actionName))
+            .setPositiveButton(ctx.getString(R.string.login_button)) { _, _ ->
+                val intent = Intent(ctx, LoginActivity::class.java)
                 intent.putExtra("RETURN_AFTER_LOGIN", true)
-                context.startActivity(intent)
+                ctx.startActivity(intent)
             }
-            .setNegativeButton("Ahora no", null)
+            .setNegativeButton(ctx.getString(R.string.later), null)
             .show()
 
         return false
@@ -126,7 +126,6 @@ object AuthManager {
         const val UPLOAD_PHOTOS = "subir fotos"
         const val LEAVE_REVIEWS = "dejar reseñas"
         const val PROXIMITY_NOTIFICATIONS = "activar notificaciones de proximidad"
-        const val VIEW_STATS = "ver estadísticas personales"
         const val MY_ROUTES = "ver tus rutas guardadas"
         const val MY_FAVORITES = "ver tus favoritos"
         const val THEMED_ROUTES = "acceder a rutas predeterminadas"

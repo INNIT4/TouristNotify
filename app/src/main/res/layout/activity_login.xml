@@ -29,7 +29,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginTop="48dp"
-            android:contentDescription="@string/app_name"
+            android:contentDescription="@string/cd_app_logo"
             android:padding="16dp"
             android:src="@drawable/ic_travel"
             app:layout_constraintEnd_toEndOf="parent"
@@ -90,6 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
+                    android:accessibilityHeading="true"
                     android:fontFamily="sans-serif-medium"
                     android:text="Iniciar Sesión"
                     android:textColor="?attr/colorOnSurface"
@@ -124,6 +125,7 @@
                     android:layout_marginBottom="8dp"
                     android:hint="Contraseña"
                     app:endIconMode="password_toggle"
+                    app:endIconContentDescription="@string/a11y_password_toggle_show"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                     app:startIconTint="?attr/colorPrimary">
 

@@ -2,13 +2,14 @@ package com.joseibarra.touristnotify
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.joseibarra.touristnotify.databinding.ListItemTopPlaceBinding
 
 class TopPlacesAdapter(
-    private var places: List<TouristSpot>,
     private val onItemClicked: (TouristSpot) -> Unit
-) : RecyclerView.Adapter<TopPlacesAdapter.TopPlaceViewHolder>() {
+) : ListAdapter<TouristSpot, TopPlacesAdapter.TopPlaceViewHolder>(PlaceDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopPlaceViewHolder {
         val binding = ListItemTopPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -16,14 +17,11 @@ class TopPlacesAdapter(
     }
 
     override fun onBindViewHolder(holder: TopPlaceViewHolder, position: Int) {
-        holder.bind(places[position], position + 1)
+        holder.bind(getItem(position), position + 1)
     }
 
-    override fun getItemCount() = places.size
-
     fun updatePlaces(newPlaces: List<TouristSpot>) {
-        places = newPlaces
-        notifyDataSetChanged()
+        submitList(newPlaces)
     }
 
     inner class TopPlaceViewHolder(private val binding: ListItemTopPlaceBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -34,7 +32,6 @@ class TopPlacesAdapter(
             binding.visitCountTextView.text = "${place.visitCount} visitas"
             binding.ratingTextView.text = String.format("%.1f ⭐", place.rating)
 
-            // Color especial para el top 3
             val rankColor = when (rank) {
                 1 -> binding.root.context.getColor(R.color.md_theme_light_tertiary)
                 2 -> binding.root.context.getColor(R.color.md_theme_light_secondary)
@@ -43,7 +40,6 @@ class TopPlacesAdapter(
             }
             binding.rankTextView.setTextColor(rankColor)
 
-            // Emoji para top 3
             val emoji = when (rank) {
                 1 -> "🥇"
                 2 -> "🥈"
@@ -55,6 +51,16 @@ class TopPlacesAdapter(
             binding.root.setOnClickListener {
                 onItemClicked(place)
             }
+        }
+    }
+
+    class PlaceDiffCallback : DiffUtil.ItemCallback<TouristSpot>() {
+        override fun areItemsTheSame(oldItem: TouristSpot, newItem: TouristSpot): Boolean {
+            return oldItem.nombre == newItem.nombre
+        }
+
+        override fun areContentsTheSame(oldItem: TouristSpot, newItem: TouristSpot): Boolean {
+            return oldItem == newItem
         }
     }
 }

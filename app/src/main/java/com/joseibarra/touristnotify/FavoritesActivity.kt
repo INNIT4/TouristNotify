@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.touristnotify.databinding.ActivityFavoritesBinding
 import kotlinx.coroutines.launch
@@ -16,7 +17,6 @@ class FavoritesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFavoritesBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: FavoritePlacesAdapter
-    private val favorites = mutableListOf<Pair<Favorite, TouristSpot>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,6 @@ class FavoritesActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = FavoritePlacesAdapter(
-            favorites = favorites,
             onItemClicked = { place ->
                 openPlaceDetails(place)
             },
@@ -61,7 +60,10 @@ class FavoritesActivity : AppCompatActivity() {
         binding.emptyTextView.visibility = View.GONE
 
         lifecycleScope.launch {
-            val result = FavoritesManager.getFavorites()
+            // CR-006: migración one-time del path legacy antes de cargar favoritos
+            FavoritesManager.instance.migrateFromLegacyPath(this@FavoritesActivity)
+
+            val result = FavoritesManager.instance.getFavorites()
 
             result.onSuccess { favoritesList ->
                 if (favoritesList.isEmpty()) {
@@ -83,61 +85,78 @@ class FavoritesActivity : AppCompatActivity() {
     }
 
     private fun loadPlaceDetails(favoritesList: List<Favorite>) {
-        lifecycleScope.launch {
-            favorites.clear()
-
-            favoritesList.forEach { favorite ->
-                try {
-                    val doc = db.collection("lugares").document(favorite.placeId).get().await()
-                    val place = doc.toObject(TouristSpot::class.java)?.copy(id = doc.id)
-                    if (place != null) {
-                        favorites.add(Pair(favorite, place))
-                    }
-                } catch (e: Exception) {
-                    // Continuar con el siguiente
-                }
-            }
-
+        if (favoritesList.isEmpty()) {
             binding.progressBar.visibility = View.GONE
-            if (favorites.isEmpty()) {
+            binding.emptyTextView.visibility = View.VISIBLE
+            return
+        }
+        lifecycleScope.launch {
+            try {
+                // PERF-002: whereIn en lugar de N reads secuenciales (1 round-trip por chunk de 30 IDs)
+                val idToFavorite = favoritesList.associateBy { it.placeId }
+                val loadedFavorites = mutableListOf<Pair<Favorite, TouristSpot>>()
+
+                idToFavorite.keys.toList().chunked(30).forEach { chunk ->
+                    val docs = db.collection(FirestoreCollections.PLACES)
+                        .whereIn(FieldPath.documentId(), chunk)
+                        .get()
+                        .await()
+                    docs.documents.forEach { doc ->
+                        val place = doc.toObject(TouristSpot::class.java)?.copy(id = doc.id)
+                        val favorite = idToFavorite[doc.id]
+                        if (place != null && favorite != null) {
+                            loadedFavorites.add(Pair(favorite, place))
+                        }
+                    }
+                }
+
+                binding.progressBar.visibility = View.GONE
+                if (loadedFavorites.isEmpty()) {
+                    binding.emptyTextView.visibility = View.VISIBLE
+                } else {
+                    binding.favoritesRecyclerView.visibility = View.VISIBLE
+                    adapter.submitList(loadedFavorites)
+                }
+            } catch (e: Exception) {
+                binding.progressBar.visibility = View.GONE
+                android.util.Log.e("FavoritesActivity", "Error cargando detalles de favoritos", e)
                 binding.emptyTextView.visibility = View.VISIBLE
-            } else {
-                binding.favoritesRecyclerView.visibility = View.VISIBLE
-                adapter.notifyDataSetChanged()
             }
         }
     }
 
     private fun removeFavorite(favorite: Favorite) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.remove_favorite_title))
+            .setMessage(getString(R.string.remove_favorite_message, favorite.placeName))
+            .setPositiveButton(getString(R.string.delete)) { _, _ -> doRemoveFavorite(favorite) }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun doRemoveFavorite(favorite: Favorite) {
         lifecycleScope.launch {
-            val result = FavoritesManager.removeFavorite(favorite.placeId)
+            val result = FavoritesManager.instance.removeFavorite(favorite.placeId)
 
             result.onSuccess {
-                favorites.removeIf { it.first.placeId == favorite.placeId }
-                adapter.notifyDataSetChanged()
-                NotificationHelper.success(binding.root, "Eliminado de favoritos")
+                val updatedList = adapter.currentList.filter { it.first.placeId != favorite.placeId }
+                adapter.submitList(updatedList)
+                NotificationHelper.success(binding.root, getString(R.string.favorite_removed))
 
-                if (favorites.isEmpty()) {
+                if (updatedList.isEmpty()) {
                     binding.favoritesRecyclerView.visibility = View.GONE
                     binding.emptyTextView.visibility = View.VISIBLE
                 }
             }.onFailure { e ->
-                NotificationHelper.error(binding.root, "Error: ${e.message}")
+                android.util.Log.e("FavoritesActivity", "Error al eliminar favorito: ${e.message}", e)
+                NotificationHelper.error(binding.root, getString(R.string.error_generic))
             }
         }
     }
 
     private fun openPlaceDetails(place: TouristSpot) {
         val intent = Intent(this, PlaceDetailsActivity::class.java).apply {
-            putExtra("PLACE_ID", place.id)
-            putExtra("PLACE_NAME", place.nombre)
-            putExtra("PLACE_CATEGORY", place.categoria)
-            putExtra("PLACE_DESCRIPTION", place.descripcion)
-            putExtra("GOOGLE_PLACE_ID", place.googlePlaceId)
-            place.ubicacion?.let {
-                putExtra("PLACE_LATITUDE", it.latitude)
-                putExtra("PLACE_LONGITUDE", it.longitude)
-            }
+            putExtra(PlaceSummary.EXTRA_KEY, PlaceSummary.fromTouristSpot(place))
         }
         startActivity(intent)
     }

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUPITA Admin</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+.header { background: #006A67; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 18px; }
+.header button { background: #fff; color: #006A67; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.tabs { display: flex; background: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 24px; }
+.tab { padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; color: #666; }
+.tab.active { border-bottom-color: #006A67; color: #006A67; font-weight: 600; }
+.content { padding: 24px; max-width: 1500px; margin: 0 auto; }
+.card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #f8f8f8; font-weight: 600; position: sticky; top: 0; white-space: nowrap; }
+tr:hover { background: #fafafa; }
+input, textarea, select { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; margin: 3px 0; }
+textarea { min-height: 50px; resize: vertical; }
+.btn { padding: 7px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
+.btn-p { background: #006A67; color: #fff; }
+.btn-d { background: #c62828; color: #fff; }
+.btn-s { background: #e0e0e0; color: #333; }
+.btn-sm { padding: 3px 8px; font-size: 11px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.col { flex: 1; min-width: 180px; }
+.lbl { font-size: 11px; color: #888; display: block; margin-top: 6px; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 40px; }
+.modal.on { display: flex; }
+.modal-box { background: #fff; border-radius: 12px; padding: 24px; max-width: 750px; width: 95%; max-height: 88vh; overflow-y: auto; }
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 20px; border-radius: 8px; color: #fff; z-index: 300; font-size: 13px; animation: toastOut 3s forwards; }
+.toast.ok { background: #2e7d32; }
+.toast.err { background: #c62828; }
+@keyframes toastOut { 0%,80% { opacity: 1; } 100% { opacity: 0; } }
+#login-box { max-width: 360px; margin: 100px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.json-in { font-family: monospace; font-size: 12px; min-height: 200px; }
+.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h2 style="margin-bottom:20px;text-align:center">LUPITA Admin</h2>
+  <input id="lemail" type="email" placeholder="Email" style="margin-bottom:10px">
+  <input id="lpass" type="password" placeholder="Contraseña" style="margin-bottom:12px">
+  <button class="btn btn-p" onclick="doLogin()" style="width:100%">Iniciar Sesión</button>
+  <p id="lerr" style="color:#c62828;font-size:12px;margin-top:10px;text-align:center"></p>
+</div>
+
+<div id="app" style="display:none">
+  <div class="header">
+    <h1>LUPITA Admin</h1>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span id="user" style="font-size:12px;opacity:.9"></span>
+      <button onclick="auth.signOut()">Salir</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-t="places">Lugares</div>
+    <div class="tab" data-t="import">Importar JSON</div>
+    <div class="tab" data-t="enrich">Enriquecer IA</div>
+  </div>
+  <div class="content">
+    <div id="tab-places">
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input id="search" placeholder="Buscar..." style="flex:1;min-width:200px">
+          <button class="btn btn-p" onclick="loadPlaces()">Buscar</button>
+          <button class="btn btn-s" onclick="newPlace()">+ Nuevo</button>
+        </div>
+      </div>
+      <div class="card" style="overflow-x:auto;max-height:65vh;overflow-y:auto">
+        <table>
+          <thead><tr><th>Nombre</th><th>Cat</th><th>★</th><th>Descripción</th><th style="width:100px"></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <p id="pcount" style="margin-top:8px;color:#888;font-size:12px"></p>
+      </div>
+    </div>
+    <div id="tab-import" style="display:none">
+      <div class="card">
+        <h3 style="margin-bottom:10px">Importar lugares desde JSON</h3>
+        <p style="color:#888;font-size:12px;margin-bottom:10px">Array JSON. Campos: nombre, categoria, lat, lng, descripcion, direccion, telefono, sitioWeb, imagenUrl, horarios</p>
+        <textarea id="ijson" class="json-in" placeholder='[{"nombre": "Plaza de Armas", "categoria": "Plaza", "lat": 27.0275, "lng": -108.94}]'></textarea>
+        <button class="btn btn-p" onclick="importJSON()" style="margin-top:10px">Importar</button>
+        <p id="istatus" style="margin-top:8px;font-size:12px"></p>
+      </div>
+    </div>
+    <div id="tab-enrich" style="display:none">
+      <div class="card">
+        <h3 style="margin-bottom:10px">Enriquecer con Gemini AI</h3>
+        <p style="color:#888;font-size:12px;margin-bottom:8px">Gemini genera descripción, tips, horarios, accesibilidad, precios y tags.</p>
+        <div style="display:flex;gap:8px">
+          <input id="gkey" type="password" placeholder="Gemini API Key" style="flex:1">
+          <button class="btn btn-s btn-sm" onclick="saveGKey()">Guardar</button>
+        </div>
+        <button class="btn btn-p" onclick="loadForEnrich()" style="margin-top:12px">Cargar lugares</button>
+        <div id="elist" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mdl">
+  <div class="modal-box">
+    <h3 id="mtitle" style="margin-bottom:14px">Editar</h3>
+    <div class="row">
+      <div class="col"><span class="lbl">Nombre *</span><input id="fnombre"></div>
+      <div class="col"><span class="lbl">Categoría</span><select id="fcat"><option>Museo</option><option>Iglesia</option><option>Plaza</option><option>Parque</option><option>Restaurante</option><option>Hotel</option><option>Tienda</option><option>Monumento</option><option>Mirador</option><option>Teatro</option><option>General</option></select></div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="lbl">Lat</span><input id="flat" type="number" step="any"></div>
+      <div class="col"><span class="lbl">Lng</span><input id="flng" type="number" step="any"></div>
+      <div class="col"><span class="lbl">Rating</span><input id="frating" type="number" step="0.1" min="0" max="5"></div>
+    </div>
+    <span class="lbl">Descripción corta</span><input id="fsc">
+    <span class="lbl">Descripción larga</span><textarea id="flg"></textarea>
+    <span class="lbl">Dirección</span><input id="fdir">
+    <div class="row">
+      <div class="col"><span class="lbl">Teléfono</span><input id="ftel"></div>
+      <div class="col"><span class="lbl">Web</span><input id="fweb"></div>
+    </div>
+    <span class="lbl">Horarios</span><input id="fhrs" placeholder="Lun-Vie 9-18, Sab 10-14">
+    <span class="lbl">Imagen URL</span><input id="fimg">
+    <span class="lbl">Nivel precio</span><select id="fprecio"><option>Gratis</option><option>Económico</option><option>Moderado</option><option>Caro</option></select>
+    <input type="hidden" id="fid">
+    <div style="margin-top:18px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-d" id="bdel" style="display:none" onclick="delPlace()">Eliminar</button>
+      <button class="btn btn-s" onclick="closeM()">Cancelar</button>
+      <button class="btn btn-p" onclick="savePlace()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit, where, GeoPoint } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI",
+  authDomain: "touristnotify-db.firebaseapp.com",
+  projectId: "touristnotify-db",
+  storageBucket: "touristnotify-db.firebasestorage.app",
+  messagingSenderId: "1090772296348",
+  appId: "1:1090772296348:web:lupitaadmin2024"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+const COL = 'lugares';
+let _cache = {};
+
+window.auth = auth;
+window.db = db;
+window.GeoPoint = GeoPoint;
+
+onAuthStateChanged(auth, u => {
+  if (u) { document.getElementById('login-box').style.display='none'; document.getElementById('app').style.display='block'; document.getElementById('user').textContent=u.email; loadPlaces(); }
+  else { document.getElementById('login-box').style.display='block'; document.getElementById('app').style.display='none'; }
+});
+
+window.doLogin = () => signInWithEmailAndPassword(auth, document.getElementById('lemail').value, document.getElementById('lpass').value)
+  .catch(e => document.getElementById('lerr').textContent = e.message);
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => t.onclick = function(){
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  this.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(x => x.style.display='none');
+  document.getElementById('tab-'+this.dataset.t).style.display='block';
+  if (this.dataset.t==='enrich') loadForEnrich();
+});
+
+window.loadPlaces = async () => {
+  const s = document.getElementById('search').value.toLowerCase();
+  const snap = await getDocs(query(collection(db,COL), orderBy('nombre'), limit(100)));
+  let h='', n=0;
+  snap.forEach(d => {
+    const p = d.data(); if (s && !p.nombre?.toLowerCase().includes(s)) return; n++;
+    h += `<tr><td><strong>${esc(p.nombre)}</strong></td><td>${esc(p.categoria)}</td><td>${p.rating||0}</td><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.descripcionCorta||p.descripcion||'')}</td><td><button class="btn btn-s btn-sm" onclick="editPlace('${d.id}')">Editar</button> <button class="btn btn-p btn-sm" onclick="richOne('${d.id}')">IA</button></td></tr>`;
+  });
+  document.getElementById('tbody').innerHTML = h;
+  document.getElementById('pcount').textContent = n + ' lugares';
+};
+
+function esc(s) { if (!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+window.editPlace = async (id) => {
+  const snap = await getDocs(query(collection(db,COL), where('__name__','==',id)));
+  if (snap.empty) return;
+  const p = snap.docs[0].data(); _cache[id]=p;
+  document.getElementById('fid').value=id; document.getElementById('fnombre').value=p.nombre||''; document.getElementById('fcat').value=p.categoria||'General';
+  document.getElementById('flat').value=p.ubicacion?.latitude||''; document.getElementById('flng').value=p.ubicacion?.longitude||'';
+  document.getElementById('frating').value=p.rating||0; document.getElementById('fsc').value=p.descripcionCorta||'';
+  document.getElementById('flg').value=p.descripcionLarga||''; document.getElementById('fdir').value=p.direccion||'';
+  document.getElementById('ftel').value=p.telefono||''; document.getElementById('fweb').value=p.sitioWeb||'';
+  document.getElementById('fhrs').value=p.horarios||''; document.getElementById('fimg').value=p.imagenUrl||'';
+  document.getElementById('fprecio').value=p.precioNivel||'';
+  document.getElementById('bdel').style.display='inline-block'; document.getElementById('mtitle').textContent='Editar: '+p.nombre;
+  document.getElementById('mdl').classList.add('on');
+};
+
+window.newPlace = () => {
+  ['fid','fnombre','flat','flng','frating','fsc','flg','fdir','ftel','fweb','fhrs','fimg'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('fcat').value='General'; document.getElementById('fprecio').value='';
+  document.getElementById('bdel').style.display='none'; document.getElementById('mtitle').textContent='Nuevo lugar';
+  document.getElementById('mdl').classList.add('on');
+};
+
+window.closeM = () => document.getElementById('mdl').classList.remove('on');
+
+window.savePlace = async () => {
+  const id = document.getElementById('fid').value || document.getElementById('fnombre').value.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const d = {
+    nombre: document.getElementById('fnombre').value,
+    categoria: document.getElementById('fcat').value,
+    ubicacion: new GeoPoint(parseFloat(document.getElementById('flat').value)||0, parseFloat(document.getElementById('flng').value)||0),
+    rating: parseFloat(document.getElementById('frating').value)||0,
+    descripcionCorta: document.getElementById('fsc').value,
+    descripcionLarga: document.getElementById('flg').value,
+    direccion: document.getElementById('fdir').value,
+    telefono: document.getElementById('ftel').value,
+    sitioWeb: document.getElementById('fweb').value,
+    horarios: document.getElementById('fhrs').value,
+    imagenUrl: document.getElementById('fimg').value,
+    precioNivel: document.getElementById('fprecio').value
+  };
+  try { await setDoc(doc(db,COL,id), d, {merge:true}); t('Guardado: '+d.nombre, 1); closeM(); loadPlaces(); }
+  catch(e) { t(e.message, 0); }
+};
+
+window.delPlace = async () => {
+  const id = document.getElementById('fid').value;
+  if (!confirm('¿Eliminar este lugar?')) return;
+  await deleteDoc(doc(db,COL,id)); t('Eliminado', 1); closeM(); loadPlaces();
+};
+
+window.importJSON = async () => {
+  const st = document.getElementById('istatus');
+  try {
+    const arr = JSON.parse(document.getElementById('ijson').value);
+    if (!Array.isArray(arr)) throw new Error('Debe ser un array');
+    st.textContent = 'Importando...';
+    let i = 0;
+    for (const p of arr) {
+      const id = p.id || p.nombre.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      await setDoc(doc(db,COL,id), { ...p, ubicacion: new GeoPoint(p.lat||0, p.lng||0) }, {merge:true});
+      i++; st.textContent = `${p.nombre} (${i}/${arr.length})`;
+    }
+    t('Importados: '+arr.length, 1); st.textContent = 'Completado: '+arr.length+' lugares';
+  } catch(e) { st.textContent=e.message; t(e.message,0); }
+};
+
+window.saveGKey = () => { localStorage.setItem('gk', document.getElementById('gkey').value); t('Key guardada',1); };
+document.getElementById('gkey').value = localStorage.getItem('gk')||'';
+
+window.loadForEnrich = async () => {
+  const snap = await getDocs(query(collection(db,COL), orderBy('nombre'), limit(100)));
+  let h = '';
+  snap.forEach(d => {
+    const p = d.data(); const ok = p.enrichment?.version > 0;
+    h += `<div style="padding:8px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center"><span>${esc(p.nombre)} ${ok?'✅':''}</span><button class="btn btn-p btn-sm" onclick="richOne('${d.id}')">Enriquecer</button></div>`;
+  });
+  document.getElementById('elist').innerHTML = h;
+};
+
+window.richOne = async (placeId) => {
+  const key = localStorage.getItem('gk');
+  if (!key) { t('Configura Gemini API Key',0); return; }
+  const snap = await getDocs(query(collection(db,COL), where('__name__','==',placeId)));
+  if (snap.empty) return;
+  const p = snap.docs[0].data();
+  t('IA: '+p.nombre+'...', 1);
+
+  const prompt = `Eres un guía turístico experto de Álamos, Sonora, Pueblo Mágico de México. Analiza este lugar: "${p.nombre||''}" (${p.categoria||''}). Genera JSON:
+{
+  "descripcionCorta": "1-2 frases atractivas",
+  "descripcionLarga": "3-5 frases con datos históricos y culturales reales de Álamos",
+  "tipsVisita": ["tip1","tip2","tip3"],
+  "historiaResumen": "breve resumen histórico verídico",
+  "tipoActividad": "INTERIOR|EXTERIOR|MIXTO",
+  "duracionMinSugeridaMin": 15,
+  "duracionMaxSugeridaMin": 90,
+  "mejorMomentoDelDia": "MAÑANA|TARDE|NOCHE",
+  "mejorTemporada": "ej: octubre-marzo",
+  "audienciaIdeal": ["Familias","Parejas","Viajeros solo"],
+  "aptoNiños": true,
+  "precioNivel": "Gratis|Económico|Moderado|Caro",
+  "precioPromedioMxn": 0,
+  "tags": ["tag1","tag2","tag3"],
+  "accesibilidad": {"sillaRuedas":false,"banoAccesible":false},
+  "servicios": {"wifi":false,"tourGuiado":false},
+  "restaurante": {"tipoCocina":"","tieneTerraza":false}
+}
+Responde SOLO JSON.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{responseMimeType:'application/json',temperature:0.3,maxOutputTokens:2048}})
+    });
+    const j = await res.json();
+    const e = JSON.parse(j.candidates[0].content.parts[0].text);
+    await setDoc(doc(db,COL,placeId), {
+      descripcionCorta: e.descripcionCorta||'',
+      descripcionLarga: e.descripcionLarga||'',
+      tipsVisita: e.tipsVisita||[],
+      historiaResumen: e.historiaResumen||'',
+      tipoActividad: e.tipoActividad||'',
+      duracionMinSugeridaMin: e.duracionMinSugeridaMin||0,
+      duracionMaxSugeridaMin: e.duracionMaxSugeridaMin||0,
+      mejorMomentoDelDia: e.mejorMomentoDelDia||'',
+      mejorTemporada: e.mejorTemporada||'',
+      audienciaIdeal: e.audienciaIdeal||[],
+      aptoNiños: e.aptoNiños||false,
+      precioNivel: e.precioNivel||'',
+      precioPromedioMxn: e.precioPromedioMxn||0,
+      tags: e.tags||[],
+      accesibilidad: e.accesibilidad||{},
+      servicios: e.servicios||{},
+      restaurante: e.restaurante||{},
+      enrichment: {version:1,source:'gemini-web-admin',confidenceScore:0.75}
+    }, {merge:true});
+    t('Enriquecido: '+p.nombre, 1); loadPlaces();
+  } catch(e) { t('Error: '+e.message, 0); }
+};
+
+function t(m, ok) {
+  const el = document.createElement('div'); el.className='toast '+(ok?'ok':'err'); el.textContent=m;
+  document.body.appendChild(el); setTimeout(()=>el.remove(),3000);
+}
+</script>
+</body>
+</html>

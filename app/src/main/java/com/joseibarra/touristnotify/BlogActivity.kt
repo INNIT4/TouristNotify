@@ -88,14 +88,6 @@ class BlogActivity : AppCompatActivity() {
         binding.filterCultureChip.setOnClickListener {
             selectCategory("Cultura")
         }
-
-        // Admin button (visible solo para admins)
-        checkAdminAccess()
-
-        binding.fabAddPost.setOnClickListener {
-            val intent = Intent(this, AdminBlogActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun selectCategory(category: String) {
@@ -310,15 +302,4 @@ class BlogActivity : AppCompatActivity() {
                 NotificationHelper.error(binding.root, getString(R.string.blog_like_error))
             }
     }
-
-    private fun checkAdminAccess() {
-        // Mostrar FAB solo para personal autorizado de la Oficina de Turismo
-        val userEmail = auth.currentUser?.email
-        binding.fabAddPost.visibility = if (AdminConfig.canCreateBlogPosts(userEmail)) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
 }

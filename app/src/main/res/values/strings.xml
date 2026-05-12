@@ -307,7 +307,6 @@
     <string name="menu_card_events">Eventos\nen Álamos</string>
     <string name="menu_card_blog">Blog de\nViaje</string>
     <string name="menu_card_proximity">Notif.\nProximidad</string>
-    <string name="menu_card_admin_panel">Panel Admin</string>
 
     <string name="a11y_card_generate_route">Generar Ruta con Inteligencia Artificial</string>
     <string name="a11y_card_themed_routes">Rutas Predeterminadas</string>

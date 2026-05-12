@@ -145,19 +145,6 @@ class MenuActivity : AppCompatActivity() {
             )
         ).toMutableList()
 
-        val currentEmail = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email
-        if (AdminConfig.isTourismOfficeUser(currentEmail)) {
-            menuItems.add(MenuItemData(
-                id = MenuItemId.ADMIN_PANEL,
-                titleRes = R.string.menu_card_admin_panel,
-                iconEmoji = "⚙️",
-                colorScheme = MenuColorScheme.TERTIARY,
-                spanFull = true,
-                showArrow = true,
-                a11yDescRes = R.string.menu_card_admin_panel
-            ))
-        }
-
         val adapter = MenuAdapter(menuItems, AuthManager.isAuthenticated()) { id ->
             handleMenuClick(id)
         }
@@ -211,10 +198,6 @@ class MenuActivity : AppCompatActivity() {
             }
             MenuItemId.PROXIMITY -> AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
                 startActivity(Intent(this, ProximityNotificationsActivity::class.java))
-                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
-            }
-            MenuItemId.ADMIN_PANEL -> {
-                startActivity(Intent(this, AdminPlacesActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
             }
         }

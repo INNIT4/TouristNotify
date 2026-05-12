@@ -119,16 +119,8 @@
             android:label="Top 10 Lugares Más Visitados" />
 
         <activity
-            android:name=".AdminPlacesActivity"
-            android:label="Panel Administrativo - Importar Lugares" />
-
-        <activity
             android:name=".FavoritesActivity"
             android:label="Mis Favoritos" />
-
-        <activity
-            android:name=".StatsActivity"
-            android:label="Mis Estadísticas" />
 
         <activity
             android:name=".EventsActivity"
@@ -147,10 +139,6 @@
             android:label="Detalle del Post" />
 
         <activity
-            android:name=".AdminBlogActivity"
-            android:label="Crear Post - Admin" />
-
-        <activity
             android:name=".ProximityNotificationsActivity"
             android:label="Notificaciones de Proximidad" />
 
@@ -162,14 +150,6 @@
             android:name=".FullScreenPhotoActivity"
             android:label="Foto"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
-
-        <activity
-            android:name=".AdminPhotoUploadActivity"
-            android:label="Subir Foto" />
-
-        <activity
-            android:name=".OfflineSettingsActivity"
-            android:label="Modo Sin Conexión" />
 
         <!-- Receiver para geofencing -->
         <receiver

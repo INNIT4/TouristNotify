@@ -17,18 +17,12 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Verificar si el usuario tiene el custom claim de administrador.
-    // El claim debe asignarse vía Firebase Admin SDK desde un entorno servidor:
-    //   admin.auth().setCustomUserClaims(uid, { admin: true })
-    // Ver `.claude/docs/admin_setup.md` para el procedimiento completo.
-    //
-    // NOTA DE SEGURIDAD: anteriormente esta función validaba `request.auth.token.email`
-    // contra una lista hardcoded. Ese diseño permitía escalada de privilegios al
-    // registrar el email "admin" antes que el equipo legítimo. Custom claims son
-    // server-only y no pueden ser falsificados por el cliente.
+    // Verificar si el usuario es administrador por email autorizado.
     function isAdmin() {
       return isAuthenticated() &&
-             request.auth.token.admin == true;
+             request.auth.token.email in [
+               'jose@gmail.com'
+             ];
     }
 
     // Verificar que los datos de creación son válidos

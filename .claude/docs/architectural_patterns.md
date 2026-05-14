@@ -87,8 +87,8 @@ Two URI schemes resolve to the same handler:
 
 | Scheme | Example |
 |---|---|
-| Custom | `touristnotify://place/{placeId}` |
-| HTTPS | `https://touristnotify.app/place/{placeId}` |
+| Custom | `TrazaGo://place/{placeId}` |
+| HTTPS | `https://TrazaGo.app/place/{placeId}` |
 
 **Handler:** `PlaceDetailsActivity.kt` — `handleDeepLink()` extracts `placeId` from intent data, fetches from Firestore, and renders the place. Declared in `AndroidManifest.xml` via `<intent-filter>` with both schemes.
 

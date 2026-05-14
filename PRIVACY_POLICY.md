@@ -1,10 +1,10 @@
-# Política de Privacidad — LUPITA (Tourist Notify)
+# Política de Privacidad — TrazaGo (TrazaGo)
 
 **Última actualización:** 2026-04-25  
 **Responsable del tratamiento:** *[Nombre legal del responsable a completar]*  
 **Contacto:** *[email de contacto a completar]*
 
-LUPITA respeta tu privacidad. Esta política explica qué datos recolectamos,
+TrazaGo respeta tu privacidad. Esta política explica qué datos recolectamos,
 para qué los usamos, con quién los compartimos y cómo puedes ejercer tus
 derechos.
 
@@ -43,7 +43,7 @@ No recolectamos datos biométricos, financieros, de salud, ni de otras apps.
 
 ## 3. Con quién los compartimos
 
-LUPITA usa servicios de terceros que actúan como **encargados de tratamiento**:
+TrazaGo usa servicios de terceros que actúan como **encargados de tratamiento**:
 
 | Proveedor | Rol | País | Garantías |
 |---|---|---|---|
@@ -87,7 +87,7 @@ de datos competente (INAI en México, AEPD en España, etc.).
 
 ## 6. Menores de edad
 
-LUPITA no está dirigida a menores de 13 años. Si descubrimos que recolectamos
+TrazaGo no está dirigida a menores de 13 años. Si descubrimos que recolectamos
 datos de un menor sin consentimiento parental, los borramos inmediatamente.
 
 ---
@@ -122,5 +122,5 @@ Para cualquier duda relacionada con tus datos:
 
 ---
 
-> Esta política debe publicarse también en `https://touristnotify.app/privacidad`
+> Esta política debe publicarse también en `https://TrazaGo.app/privacidad`
 > y referenciarse desde el listing de Google Play (campo "Privacy Policy URL").

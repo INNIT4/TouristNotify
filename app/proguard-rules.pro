@@ -18,18 +18,18 @@
 
 # Modelos de datos serializados por Firestore — mantener nombre de clase Y todos los miembros
 # (Firestore usa reflection sobre nombres de campos; R8 no debe renombrarlos)
--keep class com.joseibarra.touristnotify.TouristSpot { *; }
--keep class com.joseibarra.touristnotify.User { *; }
--keep class com.joseibarra.touristnotify.Review { *; }
--keep class com.joseibarra.touristnotify.Route { *; }
--keep class com.joseibarra.touristnotify.Favorite { *; }
--keep class com.joseibarra.touristnotify.CheckIn { *; }
--keep class com.joseibarra.touristnotify.Event { *; }
--keep class com.joseibarra.touristnotify.BlogPost { *; }
--keep class com.joseibarra.touristnotify.WeatherInfo { *; }
--keep class com.joseibarra.touristnotify.ForecastDay { *; }
--keep class com.joseibarra.touristnotify.ThemedRoute { *; }
--keep class com.joseibarra.touristnotify.PlacePhoto { *; }
+-keep class com.joseibarra.trazago.TouristSpot { *; }
+-keep class com.joseibarra.trazago.User { *; }
+-keep class com.joseibarra.trazago.Review { *; }
+-keep class com.joseibarra.trazago.Route { *; }
+-keep class com.joseibarra.trazago.Favorite { *; }
+-keep class com.joseibarra.trazago.CheckIn { *; }
+-keep class com.joseibarra.trazago.Event { *; }
+-keep class com.joseibarra.trazago.BlogPost { *; }
+-keep class com.joseibarra.trazago.WeatherInfo { *; }
+-keep class com.joseibarra.trazago.ForecastDay { *; }
+-keep class com.joseibarra.trazago.ThemedRoute { *; }
+-keep class com.joseibarra.trazago.PlacePhoto { *; }
 
 # Firebase Firestore
 -keep class com.google.firebase.firestore.** { *; }

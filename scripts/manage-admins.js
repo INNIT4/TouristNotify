@@ -22,7 +22,7 @@ const serviceAccount = require('./service-account.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'touristnotify-db',
+  projectId: 'trazago-db',
 });
 
 async function listAdmins() {

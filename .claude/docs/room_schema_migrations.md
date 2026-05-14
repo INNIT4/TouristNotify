@@ -1,4 +1,4 @@
-# Room Schema & Migrations — LUPITA
+# Room Schema & Migrations — TrazaGo
 
 ## Overview
 

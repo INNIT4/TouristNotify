@@ -11,7 +11,10 @@ material = "1.12.0"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 playServicesMaps = "18.2.0"
 playServicesLocation = "21.2.0"
-constraintlayout = "2.1.4"
+constraintlayout = "2.2.1"
+lottie = "6.4.1"
+splashscreen = "1.0.1"
+transitionKtx = "1.5.1"
 googleGmsGoogleServices = "4.4.4"
 firebaseBom = "33.1.0"
 firebaseFirestore = "26.0.2"
@@ -40,9 +43,11 @@ robolectric = "4.13"
 turbine = "1.1.0"
 espressoIntents = "3.5.1"
 fragmentTesting = "1.8.5"
+testCore = "1.5.0"
 fragmentKtx = "1.8.5"
 lifecycleViewmodel = "2.8.5"
 archCoreTesting = "2.2.0"
+markwon = "4.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -83,9 +88,15 @@ arch-core-testing = { group = "androidx.arch.core", name = "core-testing", versi
 espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 espresso-accessibility = { group = "androidx.test.espresso", name = "espresso-accessibility", version.ref = "espressoCore" }
 fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
+test-core = { group = "androidx.test", name = "core", version.ref = "testCore" }
 fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodel" }
 lifecycle-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycleViewmodel" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+androidx-transition-ktx = { group = "androidx.transition", name = "transition-ktx", version.ref = "transitionKtx" }
+markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
+markwon-image-glide = { module = "io.noties.markwon:image-glide", version.ref = "markwon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,4 +1,4 @@
-# CI/CD Improvement Plan — LUPITA
+# CI/CD Improvement Plan — TrazaGo
 
 ## ~~Estado actual y gaps~~ ✅
 

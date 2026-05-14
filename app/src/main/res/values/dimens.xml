@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing scale (base 4dp) -->
+    <dimen name="space_2">2dp</dimen>
+    <dimen name="space_4">4dp</dimen>
+    <dimen name="space_8">8dp</dimen>
+    <dimen name="space_12">12dp</dimen>
+    <dimen name="space_16">16dp</dimen>
+    <dimen name="space_20">20dp</dimen>
+    <dimen name="space_24">24dp</dimen>
+    <dimen name="space_32">32dp</dimen>
+    <dimen name="space_40">40dp</dimen>
+    <dimen name="space_48">48dp</dimen>
+    <dimen name="space_56">56dp</dimen>
+    <dimen name="space_64">64dp</dimen>
+
+    <!-- Radius scale -->
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_md">12dp</dimen>
+    <dimen name="radius_lg">16dp</dimen>
+    <dimen name="radius_xl">20dp</dimen>
+    <dimen name="radius_2xl">24dp</dimen>
+    <dimen name="radius_3xl">28dp</dimen>
+
+    <!-- Elevation scale -->
+    <dimen name="elevation_0">0dp</dimen>
+    <dimen name="elevation_1">1dp</dimen>
+    <dimen name="elevation_2">2dp</dimen>
+    <dimen name="elevation_3">4dp</dimen>
+    <dimen name="elevation_4">8dp</dimen>
+    <dimen name="elevation_5">12dp</dimen>
+
+    <!-- Touch targets (WCAG 2.5.5 Level AAA = 44dp; Material guideline = 48dp) -->
+    <dimen name="touch_target_min">48dp</dimen>
+
+    <!-- Component sizes -->
+    <dimen name="icon_xs">16dp</dimen>
+    <dimen name="icon_sm">20dp</dimen>
+    <dimen name="icon_md">24dp</dimen>
+    <dimen name="icon_lg">32dp</dimen>
+    <dimen name="icon_xl">44dp</dimen>
+    <dimen name="avatar_sm">40dp</dimen>
+    <dimen name="avatar_md">56dp</dimen>
+    <dimen name="avatar_lg">80dp</dimen>
+
+    <!-- Header / system bar fallback (use BaseActivity insets when possible) -->
+    <dimen name="header_padding_top">54dp</dimen>
+
+    <!-- Card heights -->
+    <dimen name="card_hero_height">260dp</dimen>
+    <dimen name="card_thumbnail_height">120dp</dimen>
+    <dimen name="bottom_nav_height">64dp</dimen>
+
+    <!-- Empty state illustration -->
+    <dimen name="empty_state_illustration_size">180dp</dimen>
+
+    <!-- Stroke widths -->
+    <dimen name="stroke_thin">1dp</dimen>
+    <dimen name="stroke_medium">2dp</dimen>
+</resources>

@@ -23,6 +23,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Hero Image -->
+            <ImageView
+                android:id="@+id/post_hero_image"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:contentDescription="Imagen de portada del post" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -81,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp"
-                    tools:text="Por TouristNotify" />
+                    tools:text="Por TrazaGo" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -128,16 +142,37 @@
                     tools:text="👁️ 320" />
             </LinearLayout>
 
-            <!-- Content -->
+            <!-- Content (rendered by Markwon) -->
             <TextView
                 android:id="@+id/post_content_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="16dp"
                 android:lineSpacingExtra="4dp"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
-                tools:text="Descubre los rincones más hermosos de nuestro Pueblo Mágico. Desde la Plaza de Armas hasta el Mirador de La Colorada, cada lugar tiene una historia que contar..." />
+                tools:text="Descubre los rincones más hermosos de nuestro Pueblo Mágico..." />
+
+            <!-- Gallery -->
+            <TextView
+                android:id="@+id/gallery_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:text="Galería"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gallery_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <!-- Related Section -->
             <TextView
@@ -154,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                style="@style/Widget.TouristNotify.CardView"
+                style="@style/Widget.TrazaGo.CardView"
                 app:cardElevation="2dp">
 
                 <LinearLayout
@@ -183,6 +218,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+        </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

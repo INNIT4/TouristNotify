@@ -1,4 +1,4 @@
-# Testing Strategy — LUPITA
+# Testing Strategy — TrazaGo
 
 ## Test Pyramid
 

@@ -1,8 +1,8 @@
-# Documentation Audit — LUPITA
+# Documentation Audit — TrazaGo
 
 ## Resumen ejecutivo
 
-~~La documentación de LUPITA es mayormente correcta (~85% exactitud) pero contiene **3 inconsistencias críticas** con el código actual: nombres de colecciones Firestore desactualizados, referencias a funcionalidades ambiguas, y cobertura incompleta de temas transversales clave.~~
+~~La documentación de TrazaGo es mayormente correcta (~85% exactitud) pero contiene **3 inconsistencias críticas** con el código actual: nombres de colecciones Firestore desactualizados, referencias a funcionalidades ambiguas, y cobertura incompleta de temas transversales clave.~~
 
 **Resuelto**: Inconsistencias críticas corregidas. Documentación nueva creada.
 

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme - Material Design 3 -->
-    <style name="Theme.TouristNotify" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.TrazaGo" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand colors -->
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
@@ -39,7 +39,7 @@
         <item name="colorOutline">@color/md_theme_light_outline</item>
 
         <!-- Status bar -->
-        <item name="android:statusBarColor">@color/md_theme_light_primary</item>
+        <item name="android:statusBarColor">@color/navy_blue</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <!-- Navigation bar -->
@@ -47,39 +47,73 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
 
         <!-- Material shapes -->
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.TouristNotify.SmallComponent</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.TouristNotify.MediumComponent</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.TouristNotify.LargeComponent</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.TrazaGo.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.TrazaGo.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.TrazaGo.LargeComponent</item>
 
         <!-- Button styles -->
-        <item name="materialButtonStyle">@style/Widget.TouristNotify.Button</item>
-        <item name="borderlessButtonStyle">@style/Widget.TouristNotify.Button.TextButton</item>
+        <item name="materialButtonStyle">@style/Widget.TrazaGo.Button</item>
+        <item name="borderlessButtonStyle">@style/Widget.TrazaGo.Button.TextButton</item>
 
         <!-- Text field styles -->
-        <item name="textInputStyle">@style/Widget.TouristNotify.TextInputLayout</item>
+        <item name="textInputStyle">@style/Widget.TrazaGo.TextInputLayout</item>
 
         <!-- Card style -->
-        <item name="materialCardViewStyle">@style/Widget.TouristNotify.CardView</item>
+        <item name="materialCardViewStyle">@style/Widget.TrazaGo.CardView</item>
+
+        <!-- Tipografía: sistema (sans-serif-medium). Plus Jakarta Sans pendiente de TTFs locales. -->
+
+        <!-- Activity transitions habilitadas para shared elements -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- Bottom sheet style global -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.TrazaGo.BottomSheetDialog</item>
+    </style>
+
+    <!-- TrazaGo Logo shape (20% corner radius for 72dp = ~14dp) -->
+    <style name="ShapeAppearance.TrazaGo.Logo" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20%</item>
     </style>
 
     <!-- Shape Appearances -->
-    <style name="ShapeAppearance.TouristNotify.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+    <style name="ShapeAppearance.TrazaGo.XSmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.TrazaGo.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
 
-    <style name="ShapeAppearance.TouristNotify.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+    <style name="ShapeAppearance.TrazaGo.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
     </style>
 
-    <style name="ShapeAppearance.TouristNotify.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+    <style name="ShapeAppearance.TrazaGo.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">24dp</item>
     </style>
 
+    <style name="ShapeAppearance.TrazaGo.ExtraLargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <!-- Bottom sheet shape: solo esquinas superiores -->
+    <style name="ShapeAppearance.TrazaGo.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
     <!-- Button Styles -->
-    <style name="Widget.TouristNotify.Button" parent="Widget.Material3.Button">
+    <style name="Widget.TrazaGo.Button" parent="Widget.Material3.Button">
         <item name="cornerRadius">16dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:paddingTop">14dp</item>
@@ -89,20 +123,62 @@
         <item name="elevation">2dp</item>
     </style>
 
-    <style name="Widget.TouristNotify.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+    <style name="Widget.TrazaGo.Button.TextButton" parent="Widget.Material3.Button.TextButton">
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Widget.TouristNotify.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="Widget.TrazaGo.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">16dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">14dp</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <!-- Tonal button: acciones secundarias confirmadas (filtros, favoritos) -->
+    <style name="Widget.TrazaGo.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Destructive: cerrar sesión, eliminar ruta, eliminar cuenta -->
+    <style name="Widget.TrazaGo.Button.Destructive" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/color_destructive_text</item>
+        <item name="rippleColor">@color/color_ripple_error</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textFontWeight" tools:targetApi="p">600</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <!-- Bottom sheet dialog overlay -->
+    <style name="ThemeOverlay.TrazaGo.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.TrazaGo.BottomSheet</item>
+    </style>
+
+    <style name="Widget.TrazaGo.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.TrazaGo.BottomSheet</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+    </style>
+
+    <!-- Empty state: estilo para títulos de pantallas vacías -->
+    <style name="Widget.TrazaGo.EmptyState.Title" parent="TextAppearance.TrazaGo.TitleMedium">
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Widget.TrazaGo.EmptyState.Subtitle" parent="TextAppearance.TrazaGo.BodyMedium">
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- Text Input Layout -->
-    <style name="Widget.TouristNotify.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+    <style name="Widget.TrazaGo.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
@@ -112,33 +188,33 @@
     </style>
 
     <!-- Card Style -->
-    <style name="Widget.TouristNotify.CardView" parent="Widget.Material3.CardView.Elevated">
+    <style name="Widget.TrazaGo.CardView" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">20dp</item>
         <item name="cardElevation">4dp</item>
         <item name="cardBackgroundColor">@color/card_background</item>
     </style>
 
     <!-- Text Appearances -->
-    <style name="TextAppearance.TouristNotify.Headline" parent="TextAppearance.Material3.HeadlineLarge">
+    <style name="TextAppearance.TrazaGo.Headline" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textSize">32sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
-    <style name="TextAppearance.TouristNotify.Title" parent="TextAppearance.Material3.TitleLarge">
+    <style name="TextAppearance.TrazaGo.Title" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textSize">22sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="TextAppearance.TouristNotify.Body" parent="TextAppearance.Material3.BodyLarge">
+    <style name="TextAppearance.TrazaGo.Body" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- A11Y-014: High-contrast overlay — apply via uiMode or user setting override.
          Raises text/surface contrast to minimum 7:1 (WCAG AAA). -->
-    <style name="Theme.TouristNotify.HighContrast" parent="Theme.TouristNotify">
+    <style name="Theme.TrazaGo.HighContrast" parent="Theme.TrazaGo">
         <item name="colorPrimary">#003836</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorPrimaryContainer">#003836</item>

@@ -1,4 +1,4 @@
-# Kotlin Quality Review — LUPITA
+# Kotlin Quality Review — TrazaGo
 
 ## Resumen ejecutivo
 

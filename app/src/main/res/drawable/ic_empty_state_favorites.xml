@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="180dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="?attr/colorPrimaryContainer"
+        android:fillAlpha="0.45"
+        android:pathData="M90,90 m-72,0 a72,72 0 1,0 144,0 a72,72 0 1,0 -144,0" />
+    <!-- Corazón outline -->
+    <path
+        android:strokeColor="?attr/colorPrimary"
+        android:strokeWidth="6"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M90,128 C90,128 56,108 56,82 C56,72 64,64 74,64 C82,64 86,68 90,76 C94,68 98,64 106,64 C116,64 124,72 124,82 C124,108 90,128 90,128 Z" />
+    <!-- Líneas de "explosión" alrededor -->
+    <path
+        android:strokeColor="?attr/colorSecondary"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M40,60 l8,0 M132,60 l8,0 M50,40 l5,5 M125,40 l-5,5 M90,38 l0,8" />
+</vector>

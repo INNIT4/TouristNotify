@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿Con quién viajas?"
+            android:text="@string/step_who_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.chip.ChipGroup
@@ -31,7 +31,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Solo" />
+                android:text="@string/travel_type_solo" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipPareja"
@@ -39,21 +39,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Pareja" />
+                android:text="@string/travel_type_couple" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFamilia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Familia" />
+                android:text="@string/travel_type_family" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAmigos"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Amigos" />
+                android:text="@string/travel_type_friends" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Adultos"
+            android:text="@string/step_adults"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <LinearLayout
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Niños"
+            android:text="@string/step_children"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <LinearLayout
@@ -163,7 +163,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edad mínima de los niños"
+                android:text="@string/step_min_age_label"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -204,7 +204,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Fecha del recorrido"
+            android:text="@string/step_date_label"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.button.MaterialButton
@@ -220,7 +220,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Hora de inicio"
+            android:text="@string/step_time_label"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.button.MaterialButton
@@ -236,7 +236,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Duración total del recorrido"
+            android:text="@string/step_duration_label"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <TextView

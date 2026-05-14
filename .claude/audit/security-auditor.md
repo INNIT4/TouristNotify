@@ -1,8 +1,8 @@
- # Security Audit — LUPITA
+ # Security Audit — TrazaGo
 
 ## Resumen ejecutivo
 
-Auditoría de la app Android LUPITA (Kotlin, Firebase, min SDK 24). La postura de seguridad es **aceptable pero mejorable**: se identifican configuraciones sólidas (App Check con Play Integrity, `cleartextTrafficPermitted=false`, ProGuard/R8 en release, EncryptedSharedPreferences recientemente introducidas, reglas Firestore con "default-deny"), pero persisten **2 hallazgos P0 explotables** (reglas de admin basadas en email del token — escalable trivialmente, y una discrepancia crítica entre las reglas de Firestore y el código que deja colecciones reales sin reglas). Hay también **exposición de API keys** en el APK sin hardening real y deep links sin validación de formato.
+Auditoría de la app Android TrazaGo (Kotlin, Firebase, min SDK 24). La postura de seguridad es **aceptable pero mejorable**: se identifican configuraciones sólidas (App Check con Play Integrity, `cleartextTrafficPermitted=false`, ProGuard/R8 en release, EncryptedSharedPreferences recientemente introducidas, reglas Firestore con "default-deny"), pero persisten **2 hallazgos P0 explotables** (reglas de admin basadas en email del token — escalable trivialmente, y una discrepancia crítica entre las reglas de Firestore y el código que deja colecciones reales sin reglas). Hay también **exposición de API keys** en el APK sin hardening real y deep links sin validación de formato.
 
 ---
 
@@ -42,9 +42,9 @@ Auditoría de la app Android LUPITA (Kotlin, Firebase, min SDK 24). La postura d
   4. Aplicar restricciones SHA-1 + package en Google Cloud Console para `DIRECTIONS_API_KEY` y `MAPS_API_KEY` (ver `.claude/docs/api_keys_hardening.md` sección 1)
 - `MAPS_API_KEY` no es migrable a proxy (SDK Maps requiere key en cliente); proteger únicamente con SHA-1+package+cuotas.
 
-### ~~P1-4 `allowBackup="true"` incluye `TouristNotifyPrefs.xml`~~ ✅
+### ~~P1-4 `allowBackup="true"` incluye `TrazaGoPrefs.xml`~~ ✅
 - ~~**Archivo**: `AndroidManifest.xml:18`, `backup_rules.xml:8`~~
-- **Resuelto**: `backup_rules.xml` excluye `TouristNotifyPrefs.xml`, `TouristNotifyUsage.xml`, tokens Firebase Auth y toda la DB Room.
+- **Resuelto**: `backup_rules.xml` excluye `TrazaGoPrefs.xml`, `TrazaGoUsage.xml`, tokens Firebase Auth y toda la DB Room.
 
 ### ~~P1-5 Sin rate-limit de login + user enumeration~~ ✅
 - ~~**Archivo**: `LoginActivity.kt:67-102`~~

@@ -1,7 +1,7 @@
 # 📝 Guía de Administración del Blog - Oficina de Turismo de Álamos
 
 ## 🎯 Propósito
-Este documento describe cómo la **Oficina de Turismo de Álamos** puede gestionar el contenido del blog en la aplicación TouristNotify.
+Este documento describe cómo la **Oficina de Turismo de Álamos** puede gestionar el contenido del blog en la aplicación TrazaGo.
 
 ---
 
@@ -17,7 +17,7 @@ Solo el personal de la Oficina de Turismo con los siguientes emails puede crear 
 - `director.turismo@alamos.gob.mx`
 
 ### Cómo Registrarse
-1. Abrir la aplicación TouristNotify
+1. Abrir la aplicación TrazaGo
 2. Ir a **Registro**
 3. Crear cuenta con uno de los emails autorizados
 4. Verificar el email

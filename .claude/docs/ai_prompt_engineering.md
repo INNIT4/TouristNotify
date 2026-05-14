@@ -1,4 +1,4 @@
-# AI Prompt Engineering — LUPITA
+# AI Prompt Engineering — TrazaGo
 
 ## Overview
 

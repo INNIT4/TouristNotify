@@ -17,12 +17,9 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Verificar si el usuario es administrador por email autorizado.
+    // Admin detectado via Firebase custom claim (set with manage-admins.js script).
     function isAdmin() {
-      return isAuthenticated() &&
-             request.auth.token.email in [
-               'jose@gmail.com'
-             ];
+      return isAuthenticated() && request.auth.token.admin == true;
     }
 
     // Verificar que los datos de creación son válidos

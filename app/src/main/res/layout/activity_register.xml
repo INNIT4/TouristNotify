@@ -45,7 +45,7 @@
             android:layout_marginTop="12dp"
             android:accessibilityHeading="true"
             android:fontFamily="sans-serif-medium"
-            android:text="Crear Cuenta"
+            android:text="@string/register_title"
             android:textColor="@color/white"
             android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,8 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="28dp"
-            android:fontFamily="sans-serif-light"
-            android:text="Únete y descubre lugares increíbles"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/join_subtitle"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -90,14 +90,14 @@
                 <!-- Email Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/email_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="Correo electrónico"
+                    android:hint="@string/email_hint"
                     app:endIconMode="clear_text"
                     app:errorEnabled="true"
-                    app:helperText="Usaremos tu email para iniciar sesión"
+                    app:helperText="@string/email_helper"
                     app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:startIconDrawable="@android:drawable/sym_action_email"
@@ -114,15 +114,15 @@
                 <!-- Password Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/password_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="Contraseña"
+                    android:hint="@string/password_hint"
                     app:endIconMode="password_toggle"
                     app:endIconContentDescription="@string/a11y_password_toggle_show"
                     app:errorEnabled="true"
-                    app:helperText="Mínimo 6 caracteres, incluye letra y número"
+                    app:helperText="@string/password_helper"
                     app:helperTextEnabled="true"
                     app:helperTextTextColor="?attr/colorOnSurfaceVariant"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
@@ -139,11 +139,11 @@
                 <!-- Confirm Password Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/confirm_password_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    android:hint="Confirmar contraseña"
+                    android:hint="@string/confirm_password_hint"
                     app:endIconMode="password_toggle"
                     app:endIconContentDescription="@string/a11y_confirm_password_toggle_show"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
@@ -160,11 +160,11 @@
                 <!-- Botón de Registro -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/register_button"
-                    style="@style/Widget.TouristNotify.Button"
+                    style="@style/Widget.TrazaGo.Button"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginBottom="12dp"
-                    android:text="Crear Cuenta"
+                    android:text="@string/register_create_account"
                     android:textSize="16sp"
                     app:icon="@android:drawable/ic_input_add"
                     app:iconGravity="textEnd" />
@@ -178,7 +178,7 @@
                     android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="@string/register_privacy_notice"
+                    android:text=""
                     android:textSize="12sp" />
 
                 <!-- Divider -->
@@ -197,17 +197,17 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="¿Ya tienes una cuenta?"
+                    android:text="@string/already_have_account"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp" />
 
                 <!-- Botón de Login -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/login_text_view"
-                    style="@style/Widget.TouristNotify.Button.Outlined"
+                    style="@style/Widget.TrazaGo.Button.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Iniciar Sesión"
+                    android:text="@string/login_button"
                     android:textSize="16sp" />
 
             </LinearLayout>

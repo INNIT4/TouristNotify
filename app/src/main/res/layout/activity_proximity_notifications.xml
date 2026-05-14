@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Avisos cuando estés cerca de lugares"
+        android:text="@string/proximity_header_subtitle"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
         android:layout_marginTop="-40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        style="@style/Widget.TouristNotify.CardView"
+        style="@style/Widget.TrazaGo.CardView"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,7 +96,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Activar notificaciones"
+                                android:text="@string/proximity_enable_switch"
                                 android:textColor="?attr/colorOnPrimaryContainer"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -105,7 +105,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Recibe avisos al acercarte a lugares turísticos"
+                                android:text="@string/proximity_enable_desc"
                                 android:textColor="?attr/colorOnPrimaryContainer"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -142,7 +142,7 @@
                         android:id="@+id/request_permissions_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Conceder permisos"
+                        android:text="@string/proximity_grant_permissions"
                         style="@style/Widget.Material3.Button.TonalButton" />
                 </LinearLayout>
 
@@ -157,7 +157,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Radio de proximidad"
+                        android:text="@string/proximity_radius_label"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -175,7 +175,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Desliza para ajustar la distancia (50 m – 1000 m)"
+                    android:text="@string/proximity_radius_hint"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
 

@@ -1,4 +1,4 @@
-# Code Review — Cambios Pendientes LUPITA
+# Code Review — Cambios Pendientes TrazaGo
 
 ## Resumen de cambios (qué se modificó)
 
@@ -61,5 +61,5 @@
 | `3539d58` Marcadores duplicados IA | ✅ Fix intacto y mejorado. `markerGeneration.incrementAndGet()` + `AtomicInteger` refuerza thread-safety. |
 | `386bbe2` EncryptedSharedPreferences | ✅ Usa `MasterKey.Builder` moderno. |
 | `386bbe2` Coordenadas centralizadas | ✅ `AppConstants.ALAMOS_LAT=27.0275`, `ALAMOS_LNG=-108.94` correcto para Álamos, Sonora. |
-| `386bbe2` Deep links | ✅ `sharePlaceLink()` usa `touristnotify://place/$id`, consistente con manifest. |
+| `386bbe2` Deep links | ✅ `sharePlaceLink()` usa `TrazaGo://place/$id`, consistente con manifest. |
 | `910b688` 6 correcciones bugs/datos | ✅ Paths Firestore corregidos en `OfflineManager`. Sigue correcto. |

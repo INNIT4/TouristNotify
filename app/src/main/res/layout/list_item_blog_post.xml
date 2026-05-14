@@ -9,8 +9,22 @@
     android:layout_marginBottom="16dp"
     android:clickable="true"
     android:focusable="true"
-    style="@style/Widget.TouristNotify.CardView"
+    style="@style/Widget.TrazaGo.CardView"
     app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Cover Image -->
+        <ImageView
+            android:id="@+id/post_cover_image"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="Imagen de portada" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -91,7 +105,7 @@
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_content_preview_text_view"
-            tools:text="Por TouristNotify" />
+            tools:text="Por TrazaGo" />
 
         <TextView
             android:id="@+id/post_date_text_view"
@@ -180,5 +194,6 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

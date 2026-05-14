@@ -1,4 +1,4 @@
-# Database Optimization — LUPITA
+# Database Optimization — TrazaGo
 
 ## Resumen ejecutivo
 

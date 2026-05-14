@@ -1,4 +1,4 @@
-# Accessibility Audit — LUPITA (WCAG 2.1 AA)
+# Accessibility Audit — TrazaGo (WCAG 2.1 AA)
 
 ## Resumen ejecutivo
 
@@ -52,7 +52,7 @@ Se identificaron **9 hallazgos P0** (barreras completas de acceso), **10 hallazg
 - **Resuelto**: `ProfileActivity.loadUserData()` ahora establece `binding.avatarImage.contentDescription = getString(R.string.a11y_profile_photo, displayName)` usando el nickname del usuario (o email como fallback) tras cargar el perfil de Firestore.
 
 ### ~~[A11Y-014] Sin modo contraste alto — Global~~ ✅
-- **Resuelto**: `Theme.TouristNotify.HighContrast` añadido en `themes.xml`. Usa negro puro (#000) sobre blanco (#FFF) para texto y superficies, y `colorPrimary = #003836` que pasa 7:1 sobre blanco (WCAG AAA). Pendiente: conectar a la preferencia de accesibilidad del sistema o añadir toggle en `OfflineSettingsActivity`.
+- **Resuelto**: `Theme.TrazaGo.HighContrast` añadido en `themes.xml`. Usa negro puro (#000) sobre blanco (#FFF) para texto y superficies, y `colorPrimary = #003836` que pasa 7:1 sobre blanco (WCAG AAA). Pendiente: conectar a la preferencia de accesibilidad del sistema o añadir toggle en `OfflineSettingsActivity`.
 
 ### ~~[A11Y-015] Links sin subrayado — `activity_place_details.xml`~~ ✅
 - **Resuelto**: `PlaceDetailsActivity` aplica `paint.UNDERLINE_TEXT_FLAG` al `placeWebsiteTextView` cuando se carga el sitio web. `websiteContainer.contentDescription` actualizado a `"Sitio web: {url}"` para anuncio completo en TalkBack.
@@ -96,7 +96,7 @@ Se identificaron **9 hallazgos P0** (barreras completas de acceso), **10 hallazg
 | A11Y-009 | `MapsActivity.kt` | `contentDescription` dinámico en chips de filtro |
 | A11Y-010 | `MapsActivity.kt` | `isZoomControlsEnabled = true`, `isCompassEnabled = true` |
 | A11Y-012 | `NotificationHelper.kt` | `show()`, `success()`, `info()` → `LENGTH_LONG` por defecto |
-| A11Y-014 | `themes.xml` | `Theme.TouristNotify.HighContrast` overlay (7:1 contraste) |
+| A11Y-014 | `themes.xml` | `Theme.TrazaGo.HighContrast` overlay (7:1 contraste) |
 | A11Y-015 | `PlaceDetailsActivity.kt` | `UNDERLINE_TEXT_FLAG` + `contentDescription` en website link |
 | A11Y-016 | `RegisterActivity.kt`, `LoginActivity.kt`, `PreferencesActivity.kt` | Errores de validación → `TextInputLayout.error` + `requestFocus()` |
 | A11Y-018 | `activity_menu.xml`, `strings.xml` | `contentDescription` en 12 cards; 13 strings `a11y_card_*` |

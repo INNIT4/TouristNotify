@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Empty state reusable. Incluir con <include layout="@layout/include_empty_state" android:id="@+id/empty_state" />
+    y configurar con EmptyStateHelper.show(binding.emptyState, ...)
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/empty_state_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingHorizontal="@dimen/space_40"
+    android:paddingVertical="@dimen/space_32"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/empty_state_image"
+        android:layout_width="@dimen/empty_state_illustration_size"
+        android:layout_height="@dimen/empty_state_illustration_size"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_empty_state_generic" />
+
+    <TextView
+        android:id="@+id/empty_state_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_24"
+        android:textAppearance="@style/Widget.TrazaGo.EmptyState.Title"
+        tools:text="Aún no hay nada aquí" />
+
+    <TextView
+        android:id="@+id/empty_state_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_8"
+        android:textAppearance="@style/Widget.TrazaGo.EmptyState.Subtitle"
+        tools:text="Explora la app para empezar a llenar este espacio." />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/empty_state_action"
+        style="@style/Widget.TrazaGo.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_24"
+        android:visibility="gone"
+        tools:text="Explorar"
+        tools:visibility="visible" />
+</LinearLayout>

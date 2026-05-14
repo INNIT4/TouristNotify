@@ -1,8 +1,8 @@
 # Asignar el rol de administrador (Custom Claims)
 
-LUPITA usa **Firebase Auth Custom Claims** para identificar admins. Anteriormente
+TrazaGo usa **Firebase Auth Custom Claims** para identificar admins. Anteriormente
 las reglas Firestore validaban contra una lista de emails — un diseño explotable:
-cualquier persona que registrara `admin@touristnotify.app` antes que el equipo
+cualquier persona que registrara `admin@TrazaGo.app` antes que el equipo
 legítimo obtenía control total sobre el contenido del blog, eventos y geofences.
 
 Con Custom Claims, el rol vive en el ID token firmado por Firebase y no puede

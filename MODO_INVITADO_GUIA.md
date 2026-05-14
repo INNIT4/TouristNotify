@@ -73,13 +73,13 @@ object AuthManager {
 
     // Verificar si está en modo invitado
     fun isGuestMode(context: Context): Boolean {
-        return context.getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        return context.getSharedPreferences("TrazaGoPrefs", Context.MODE_PRIVATE)
             .getBoolean("guest_mode_enabled", false)
     }
 
     // Habilitar modo invitado
     fun enableGuestMode(context: Context) {
-        context.getSharedPreferences("TouristNotifyPrefs", Context.MODE_PRIVATE)
+        context.getSharedPreferences("TrazaGoPrefs", Context.MODE_PRIVATE)
             .edit()
             .putBoolean("guest_mode_enabled", true)
             .apply()
@@ -225,9 +225,9 @@ private fun generateRouteWithAuth() {
    ↓
 2. Abre cámara del teléfono
    ↓
-3. Escanea QR: touristnotify://place/plaza_armas
+3. Escanea QR: TrazaGo://place/plaza_armas
    ↓
-4. Teléfono pregunta: "¿Abrir con TouristNotify?"
+4. Teléfono pregunta: "¿Abrir con TrazaGo?"
    ↓
 5. No tiene la app → Dirige a Play Store
    ↓

@@ -71,7 +71,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/budget_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -103,7 +103,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/time_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -411,7 +411,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/custom_request_input_layout"
-                    style="@style/Widget.TouristNotify.TextInputLayout"
+                    style="@style/Widget.TrazaGo.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Ej: Lugares románticos para pedir matrimonio"
@@ -435,7 +435,7 @@
         <!-- Botón de generar ruta -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/generate_route_button"
-            style="@style/Widget.TouristNotify.Button"
+            style="@style/Widget.TrazaGo.Button"
             android:layout_width="0dp"
             android:layout_height="64dp"
             android:layout_marginTop="24dp"

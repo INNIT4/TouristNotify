@@ -1,197 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:background="?android:attr/colorBackground"
     tools:context=".MenuActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Contenido scrollable -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurface">
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never">
 
-        <!-- Header -->
-        <View
-            android:id="@+id/header_background"
-            android:layout_width="0dp"
-            android:layout_height="180dp"
-            android:background="@drawable/bg_gradient_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/app_icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="40dp"
-            android:contentDescription="@string/cd_app_logo"
-            android:padding="10dp"
-            android:src="@drawable/ic_travel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
-
-        <TextView
-            android:id="@+id/welcome_text"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:accessibilityHeading="true"
-            android:fontFamily="sans-serif-medium"
-            android:text="¿Qué deseas hacer hoy?"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/app_icon" />
+            android:orientation="vertical">
 
-        <!-- Weather Widget Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/weather_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="-60dp"
-            android:layout_marginEnd="16dp"
-            style="@style/Widget.TouristNotify.CardView"
-            app:cardElevation="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/header_background">
-
+            <!-- Header: logo + saludo + avatar.
+                 paddingTop lo aplica BaseActivity.applyWindowInsets() dinámicamente. -->
             <LinearLayout
+                android:id="@+id/header_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/space_20"
+                android:paddingEnd="@dimen/space_20"
+                android:paddingTop="@dimen/space_8"
+                android:paddingBottom="@dimen/space_12">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/app_icon"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/logo_trazago"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/cd_app_logo"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.TrazaGo.Logo" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/welcome_to"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_title"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnBackground" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/profile_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_profile_avatar"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_person_profile"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="@string/profile_icon_description" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Widget de Clima compacto -->
+            <LinearLayout
+                android:id="@+id/weather_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_gradient_weather"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Header con temp y emoji -->
+                <!-- Fila principal: icono + temperatura + descripción -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@string/weather_icon_description"
+                    android:importantForAccessibility="no"
+                    android:src="@android:drawable/ic_menu_compass"
+                    android:tint="#FFFFFF" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- emoji_text_view: usado por WeatherManager para icono emoji -->
 
                     <TextView
                         android:id="@+id/weather_emoji_text_view"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:gravity="center"
+                        android:textSize="24sp"
+                        android:text="☀️"
+                        android:visibility="gone"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/weather_temp_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="☀️"
-                        android:textSize="48sp" />
+                        android:layout_marginStart="12dp"
+                        android:text="@string/default_weather_temp"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="sans-serif-medium" />
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/weather_description_text_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/weather_temp_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-light"
-                            android:text="28°C"
-                            android:textSize="32sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/weather_description_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Despejado"
-                            android:textSize="14sp" />
-                    </LinearLayout>
+                        android:layout_marginStart="8dp"
+                        android:text="@string/default_weather_location"
+                        android:textSize="13sp"
+                        android:textColor="#D9FFFFFF"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
 
                     <ProgressBar
                         android:id="@+id/weather_progress_bar"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:indeterminateTint="#FFFFFF"
                         android:visibility="gone" />
                 </LinearLayout>
 
-                <!-- Detalles -->
-                <LinearLayout
-                    android:id="@+id/weather_details_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/weather_humidity_text_view"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="💧 45%"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/weather_wind_text_view"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="💨 12.5 km/h"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/weather_feels_like_text_view"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🌡️ 30°C"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <!-- Recomendaciones -->
+                <!-- Recomendaciones del clima (visible cuando WeatherManager las carga) -->
                 <TextView
                     android:id="@+id/weather_recommendations_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="?attr/colorSurfaceVariant"
-                    android:padding="12dp"
+                    android:layout_marginTop="8dp"
                     android:textSize="12sp"
-                    android:visibility="gone"
-                    android:text="Cargando recomendaciones..." />
+                    android:textColor="#D9FFFFFF"
+                    android:lineSpacingMultiplier="1.3"
+                    android:visibility="gone" />
+
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- AND-011: RecyclerView replacing two GridLayouts + standalone Top10 card -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/menu_recycler"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:clipToPadding="false"
-            android:nestedScrollingEnabled="false"
-            android:overScrollMode="never"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/weather_card" />
+            <!-- Detalles de clima ocultos (humidity/wind/feelsLike) — usados por WeatherManager -->
+            <LinearLayout
+                android:id="@+id/weather_details_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-        <!-- Footer text -->
-        <TextView
-            android:id="@+id/footer_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-light"
-            android:text="Explora Álamos con IA"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/menu_recycler" />
+                <TextView
+                    android:id="@+id/weather_humidity_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:textColor="#B3FFFFFF" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                <TextView
+                    android:id="@+id/weather_wind_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:textColor="#B3FFFFFF" />
+
+                <TextView
+                    android:id="@+id/weather_feels_like_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:textColor="#B3FFFFFF" />
+            </LinearLayout>
+
+            <!-- Barra de búsqueda (decorativa, abre Mapa al tocar) -->
+            <FrameLayout
+                android:id="@+id/search_bar_container"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_search_bar"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="14dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingStart="42dp"
+                    android:text="@string/search_hint"
+                    android:textSize="15sp"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </FrameLayout>
+
+            <!-- Título de sección (click abre búsqueda global) -->
+            <TextView
+                android:id="@+id/welcome_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp"
+                android:text="@string/welcome_question"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="?attr/colorOnBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:accessibilityHeading="true" />
+
+            <!-- Grid de menú (RecyclerView) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/menu_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginBottom="8dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation fija -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="8dp"
+        android:background="?attr/colorSurface"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/bottom_nav_icon_selector"
+        app:itemTextColor="@color/bottom_nav_icon_selector" />
+
+</FrameLayout>

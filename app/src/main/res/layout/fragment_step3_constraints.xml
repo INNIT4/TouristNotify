@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Presupuesto total"
+            android:text="@string/step_budget_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="¿Cómo te desplazas?"
+            android:text="@string/step_mobility_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.chip.ChipGroup
@@ -82,21 +82,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="A pie" />
+                android:text="@string/mobility_walking" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAuto"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Auto propio" />
+                android:text="@string/mobility_car" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMixto"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mixto" />
+                android:text="@string/mobility_mixed" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -105,7 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Accesibilidad requerida"
+            android:text="@string/step_accessibility_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
@@ -113,26 +113,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Acceso en silla de ruedas" />
+            android:text="@string/accessibility_wheelchair" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/checkBanoAccesible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Baño accesible" />
+            android:text="@string/accessibility_accessible_bathroom" />
 
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/checkEstacionamientoAccesible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Estacionamiento accesible" />
+            android:text="@string/accessibility_accessible_parking" />
 
         <!-- Restricciones dietéticas -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Restricciones dietéticas (opcional)"
+            android:text="@string/step_dietary_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.chip.ChipGroup
@@ -146,35 +146,35 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vegetariano" />
+                android:text="@string/diet_vegetarian" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipVegano"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vegano" />
+                android:text="@string/diet_vegan" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSinGluten"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sin gluten" />
+                android:text="@string/diet_gluten_free" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipHalal"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Halal" />
+                android:text="@string/diet_halal" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSinLactosa"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sin lactosa" />
+                android:text="@string/diet_lactose_free" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -204,13 +204,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Incluir comida"
+                        android:text="@string/step_include_food"
                         android:textAppearance="?attr/textAppearanceTitleSmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Agregar un restaurante a la hora de la comida"
+                        android:text="@string/step_include_food_desc"
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
 

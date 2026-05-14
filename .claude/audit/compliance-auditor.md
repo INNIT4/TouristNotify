@@ -1,10 +1,10 @@
-# Compliance Audit — LUPITA (Tourist Notify)
+# Compliance Audit — TrazaGo (TrazaGo)
 
 **Fecha**: 2026-04-24 | **Scope**: Read-only, análisis estático
 
 ## Resumen ejecutivo
 
-LUPITA recolecta datos personales sensibles (email, ubicación precisa + segundo plano, fotos de perfil, historial check-ins con timestamp y GPS, reseñas, prompts enviados a Gemini), opera con Firebase/Google LLC (transferencia internacional México→EEUU→UE), y distribuye a turistas globales. **Incumplimientos P0 significativos**: no existe Política de Privacidad ni Términos de Servicio en el código ni referenciados por URL. Crashlytics y Analytics se auto-inicializan sin consentimiento granular (violación GDPR Art. 6). Sin disclosure prominente para `ACCESS_BACKGROUND_LOCATION` (requisito Play Policy). **Estado**: No apto para publicación en Play Store mercados UE/EEUU sin remediación P0.
+TrazaGo recolecta datos personales sensibles (email, ubicación precisa + segundo plano, fotos de perfil, historial check-ins con timestamp y GPS, reseñas, prompts enviados a Gemini), opera con Firebase/Google LLC (transferencia internacional México→EEUU→UE), y distribuye a turistas globales. **Incumplimientos P0 significativos**: no existe Política de Privacidad ni Términos de Servicio en el código ni referenciados por URL. Crashlytics y Analytics se auto-inicializan sin consentimiento granular (violación GDPR Art. 6). Sin disclosure prominente para `ACCESS_BACKGROUND_LOCATION` (requisito Play Policy). **Estado**: No apto para publicación en Play Store mercados UE/EEUU sin remediación P0.
 
 ---
 
@@ -29,12 +29,12 @@ LUPITA recolecta datos personales sensibles (email, ubicación precisa + segundo
 - **Resuelto en app**: `PrivacyPolicyActivity` creada con aviso de privacidad placeholder (GDPR/LFPDPPP). Enlace "Al crear una cuenta aceptas nuestra Política de Privacidad" añadido en `RegisterActivity` y `OnboardingActivity`. Texto cargado con `HtmlCompat.fromHtml()` para subrayado accesible. Strings `privacy_policy_content`, `register_privacy_notice`, `onboarding_privacy_notice` en `strings.xml`.
 - **Pendiente (requiere acción humana)**:
   1. Reemplazar `privacy_policy_content` placeholder con texto legal definitivo revisado por abogado.
-  2. Publicar en `https://touristnotify.app/privacy` y enlazar desde Play Console listing.
+  2. Publicar en `https://TrazaGo.app/privacy` y enlazar desde Play Console listing.
   3. ~~Añadir enlace también en `ProfileActivity` (ajustes de cuenta).~~ ✅ `privacy_policy_button` añadido a layout + `setupListeners()`.
   4. Crear Términos de Servicio separados.
 
 ### ~~P0-2 Crashlytics y Analytics sin consentimiento (GDPR/ePrivacy)~~ ✅
-- ~~**Evidencia**: `TouristNotifyApplication.kt:36-40` inicializa Firebase. Auto-init por manifest merger.~~
+- ~~**Evidencia**: `TrazaGoApplication.kt:36-40` inicializa Firebase. Auto-init por manifest merger.~~
 - **Resuelto**: `AndroidManifest.xml` desactiva por defecto `firebase_crashlytics_collection_enabled=false` y `firebase_analytics_collection_enabled=false`. `ConsentManager` activa ambos flags en runtime tras opt-in del usuario.
 
 ### ~~P0-3 Sin disclosure prominente para `ACCESS_BACKGROUND_LOCATION`~~ ✅
@@ -122,7 +122,7 @@ LUPITA recolecta datos personales sensibles (email, ubicación precisa + segundo
 
 ## Documentos a crear (prioritarios — requieren acción humana)
 
-1. **Política de Privacidad** (ES/EN) en `https://touristnotify.app/privacy` + enlace desde Play Store listing, `OnboardingActivity`, `ProfileActivity`, `LoginActivity`.
+1. **Política de Privacidad** (ES/EN) en `https://TrazaGo.app/privacy` + enlace desde Play Store listing, `OnboardingActivity`, `ProfileActivity`, `LoginActivity`.
 2. **Términos de Servicio** con UGC, edad mínima, ley aplicable (México), limitación de responsabilidad.
 3. **Aviso de Privacidad Simplificado** in-app (LFPDPPP Art. 17) integrado en `OnboardingActivity`.
 4. **Consent banner** para analytics/crashlytics (opt-in separado de funcional).

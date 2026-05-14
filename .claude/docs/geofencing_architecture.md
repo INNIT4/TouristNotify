@@ -1,4 +1,4 @@
-# Geofencing Architecture — LUPITA
+# Geofencing Architecture — TrazaGo
 
 ## Overview
 

@@ -153,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
-                    android:text="Ver detalles" />
+                    android:text="@string/item_view_details_short" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnComoLlegar"
@@ -161,7 +161,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Cómo llegar" />
+                    android:text="@string/item_how_to_arrive" />
 
             </LinearLayout>
 

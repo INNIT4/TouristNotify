@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TouristNotify"
+rootProject.name = "TrazaGo"
 include(":app")

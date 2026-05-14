@@ -3,15 +3,15 @@
    Data extraction rules for Android 12+ (API 31+).
    See https://developer.android.com/about/versions/12/backup-restore#xml-changes
 
-   IMPORTANTE: TouristNotifyPrefs y TouristNotifyUsage son EncryptedSharedPreferences.
+   IMPORTANTE: TrazaGoPrefs y TrazaGoUsage son EncryptedSharedPreferences.
    La clave maestra (Android Keystore) NO se respalda en cloud-backup, por lo que
    restaurar en otro dispositivo deja el archivo cifrado inservible.
 -->
 <data-extraction-rules>
     <cloud-backup>
         <!-- Excluir EncryptedSharedPreferences -->
-        <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
-        <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+        <exclude domain="sharedpref" path="TrazaGoPrefs.xml" />
+        <exclude domain="sharedpref" path="TrazaGoUsage.xml" />
 
         <!-- Excluir tokens y caches -->
         <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />
@@ -29,8 +29,8 @@
             las prefs cifradas. Pero por consistencia y para reducir superficie
             las excluimos también.
         -->
-        <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
-        <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+        <exclude domain="sharedpref" path="TrazaGoPrefs.xml" />
+        <exclude domain="sharedpref" path="TrazaGoUsage.xml" />
         <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />
         <exclude domain="database" path="tourist_notify_db" />
         <exclude domain="database" path="tourist_notify_database" />

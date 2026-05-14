@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Tips y guías para tu visita"
+        android:text="@string/blog_header_subtitle"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
         android:layout_marginTop="-40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        style="@style/Widget.TouristNotify.CardView"
+        style="@style/Widget.TrazaGo.CardView"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Categorías"
+                    android:text="@string/blog_categories_label"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -97,7 +97,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="Todos" />
+                            android:text="@string/blog_category_all" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/filter_tips_chip"
@@ -180,7 +180,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
-                            android:text="No hay posts disponibles"
+                            android:text="@string/blog_empty_title"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -189,7 +189,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Los artículos aparecerán aquí"
+                            android:text="@string/blog_empty_subtitle"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="14sp" />
                     </LinearLayout>

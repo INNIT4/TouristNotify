@@ -1,4 +1,4 @@
-# Prompt Engineering Review — LUPITA (Gemini AI)
+# Prompt Engineering Review — TrazaGo (Gemini AI)
 
 ## Estado general
 

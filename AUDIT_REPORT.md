@@ -1,4 +1,4 @@
-# AUDIT_REPORT — LUPITA (Tourist Notify)
+# AUDIT_REPORT — TrazaGo (TrazaGo)
 
 > Fecha de auditoría: 2026-04-24  
 > Agentes ejecutados: 17 de 17 planificados (ad-security-reviewer omitido — app sin Active Directory)  
@@ -9,7 +9,7 @@
 
 ## Resumen ejecutivo
 
-LUPITA es una app Android funcional con arquitectura coherente y varias buenas prácticas (App Check, EncryptedSharedPreferences, HTTPS-only, ProGuard/R8, default-deny en Firestore). Sin embargo, la auditoría detectó **37 hallazgos P0** que hacen inviable un release en el estado actual: el sistema de administración es escalable por cualquier atacante, hay funcionalidades silenciosamente rotas por inconsistencias en nombres de colecciones Firestore, y los cambios pendientes de commit contienen una regresión de seguridad que deshace un fix anterior. La cobertura de tests es efectivamente 0%.
+TrazaGo es una app Android funcional con arquitectura coherente y varias buenas prácticas (App Check, EncryptedSharedPreferences, HTTPS-only, ProGuard/R8, default-deny en Firestore). Sin embargo, la auditoría detectó **37 hallazgos P0** que hacen inviable un release en el estado actual: el sistema de administración es escalable por cualquier atacante, hay funcionalidades silenciosamente rotas por inconsistencias en nombres de colecciones Firestore, y los cambios pendientes de commit contienen una regresión de seguridad que deshace un fix anterior. La cobertura de tests es efectivamente 0%.
 
 | Categoría | P0 | P1 | P2 |
 |---|---|---|---|
@@ -32,7 +32,7 @@ LUPITA es una app Android funcional con arquitectura coherente y varias buenas p
 
 ### SEC-001 — Escalada de privilegios admin via claim `email`
 **Archivo**: `firestore.rules:22-27`, `AdminConfig.kt:12-18`  
-El método `isAdmin()` compara `request.auth.token.email` contra una lista hardcodeada. Cualquier atacante que registre `admin@touristnotify.app` (o cualquiera de los 5 emails listados) obtiene acceso de escritura a `blog_posts`, `eventos`, `lugares`, `themed_routes` y puede borrar reseñas ajenas. Los emails en `AdminConfig.kt` y en `firestore.rules` son además inconsistentes entre sí.  
+El método `isAdmin()` compara `request.auth.token.email` contra una lista hardcodeada. Cualquier atacante que registre `admin@TrazaGo.app` (o cualquiera de los 5 emails listados) obtiene acceso de escritura a `blog_posts`, `eventos`, `lugares`, `themed_routes` y puede borrar reseñas ajenas. Los emails en `AdminConfig.kt` y en `firestore.rules` son además inconsistentes entre sí.  
 **Fix**: Migrar a Custom Claims via Firebase Admin SDK: `admin.auth().setCustomUserClaims(uid, {admin: true})`. Regla: `request.auth.token.admin == true`.  
 **Esfuerzo**: M
 
@@ -50,11 +50,11 @@ El code-reviewer detectó que los cambios pendientes de commit revirtieron `Auth
 
 ### COMP-001 — Sin Política de Privacidad
 No existe URL de política de privacidad en ningún punto de la app, en el Play Store listing, ni en los documentos del proyecto. Requerida por GDPR, LFPDPPP (México) y Google Play.  
-**Fix**: Crear página de privacidad en `touristnotify.app/privacidad` y enlazarla desde `RegisterActivity`, `OnboardingActivity` y el listing de Play Store.  
+**Fix**: Crear página de privacidad en `TrazaGo.app/privacidad` y enlazarla desde `RegisterActivity`, `OnboardingActivity` y el listing de Play Store.  
 **Esfuerzo**: M
 
 ### COMP-002 — Crashlytics y Analytics auto-inicializan sin consentimiento
-**Archivo**: `TouristNotifyApplication.kt:36-40`  
+**Archivo**: `TrazaGoApplication.kt:36-40`  
 Crashlytics y Analytics se activan al iniciar la app, antes de que el usuario haya visto cualquier aviso de privacidad. Violación directa de GDPR Art. 7.  
 **Fix**: `FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)` por defecto; habilitar solo tras consentimiento explícito.  
 **Esfuerzo**: M
@@ -241,7 +241,7 @@ Documenta `usuarios/{uid}/` y `lugares_turisticos/` cuando el código usa `users
 | PEN-003 | Seguridad | Sin Digital Asset Links (`assetlinks.json`) — deep links HTTPS hijackables | `AndroidManifest.xml` | S |
 | SEC-P1-2 | Seguridad | Deep link `{id}` sin validación de formato | `PlaceDetailsActivity.kt:76-112` | S |
 | SEC-P1-3 | Seguridad | API keys en BuildConfig (Gemini, Directions, Weather) — extraíbles con apktool | `build.gradle.kts:33-38` | L |
-| SEC-P1-4 | Seguridad | `allowBackup="true"` incluye `TouristNotifyPrefs.xml` | `AndroidManifest.xml:18` | S |
+| SEC-P1-4 | Seguridad | `allowBackup="true"` incluye `TrazaGoPrefs.xml` | `AndroidManifest.xml:18` | S |
 | SEC-P1-5 | Seguridad | User enumeration via mensajes distintos en login | `LoginActivity.kt:67-102` | S |
 | COMP-P1-1 | Compliance | Sin declaración Play Store Data Safety | Play Console | M |
 | COMP-P1-2 | Compliance | Sin opt-out de Analytics (GDPR Art. 21) | Preferencias de usuario | M |
@@ -251,7 +251,7 @@ Documenta `usuarios/{uid}/` y `lugares_turisticos/` cuando el código usa `users
 | AND-P1-2 | Android | `onSaveInstanceState` no implementado en MapsActivity (filtros se pierden) | `MapsActivity.kt` | M |
 | PERF-P1-1 | Rendimiento | `marker.remove()` individual vs `map.clear()` (800ms extra al recargar) | `MapsActivity.kt:816-824` | S |
 | PERF-P1-2 | Rendimiento | Sin `GenerationConfig` ni `SafetySettings` en Gemini (latencia/costo no acotados) | `PreferencesActivity.kt:185-188` | S |
-| PERF-P1-3 | Rendimiento | Sin caché de Glide configurado explícitamente | `TouristNotifyApplication.kt` | S |
+| PERF-P1-3 | Rendimiento | Sin caché de Glide configurado explícitamente | `TrazaGoApplication.kt` | S |
 | DB-P1-1 | BD | Sin `@Index` en ninguna entidad Room (`TouristSpotEntity`, `EventEntity`, etc.) | `RoomEntities.kt:58-244` | S |
 | DB-P1-2 | BD | Sin migraciones Room documentadas (riesgo en futuras versiones) | `AppDatabase.kt` | M |
 | DB-P1-3 | BD | FavoritesManager escribe en `users/{uid}/favorites/` pero regla Firestore no cubre `routes/` | `FavoritesManager.kt:27` | S |
@@ -298,7 +298,7 @@ Documenta `usuarios/{uid}/` y `lugares_turisticos/` cuando el código usa `users
 | REFAC-P2-1 | Refactor | `MapsActivity` 1048 líneas — candidato para extracción en 4 pasos | L |
 | REFAC-P2-2 | Refactor | `PlaceDetailsActivity` exportada sin validación de ID recibido | S |
 | QA-P2-1 | Testing | Sin tests Espresso para flujos críticos (login → mapa → favorito) | L |
-| PERF-P2-1 | Rendimiento | Startup time: múltiples inicializaciones en `TouristNotifyApplication` no diferidas | M |
+| PERF-P2-1 | Rendimiento | Startup time: múltiples inicializaciones en `TrazaGoApplication` no diferidas | M |
 | DB-P2-1 | BD | `reviewCount` puede desincronizarse si la transacción falla parcialmente | M |
 | COMP-P2-1 | Compliance | Sin docs de retención de datos ni política de borrado automatizado | M |
 | KT-P2-1 | Kotlin | 22 Activities sin `stateRestoration`/saved state — UX regresión post-process-death | L |
@@ -358,7 +358,7 @@ Documenta `usuarios/{uid}/` y `lugares_turisticos/` cuando el código usa `users
 | 12 | `flag_secure` en `LoginActivity` y `RegisterActivity` |
 | 13 | Actualizar `coreKtx`, `material`, `play-services-maps` |
 | 14 | Actualizar `architectural_patterns.md` (sync unidireccional) y crear `FirestoreCollections.md` |
-| 15 | Crear `touristnotify.app/privacidad` + enlazar desde app y Play Console |
+| 15 | Crear `TrazaGo.app/privacidad` + enlazar desde app y Play Console |
 
 **Métricas de éxito Sprint 2**: Cobertura ≥ 20%. CI ejecuta tests. Digital Asset Links verificados. Privacy Policy en vivo.
 
@@ -464,7 +464,7 @@ Los siguientes aspectos están bien implementados y deben mantenerse:
 
 ## Referencias
 
-Informes individuales por agente en `e:\josei\Desktop\Codigos\LUPITA\.claude\audit\`:
+Informes individuales por agente en `e:\josei\Desktop\Codigos\TrazaGo\.claude\audit\`:
 
 | Agente | Archivo | Foco |
 |---|---|---|

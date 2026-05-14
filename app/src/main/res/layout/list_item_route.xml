@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    style="@style/Widget.TouristNotify.CardView"
+    style="@style/Widget.TrazaGo.CardView"
     android:clickable="true"
     android:focusable="true">
 
@@ -109,7 +109,7 @@
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Compartir"
+                android:text="@string/btn_share"
                 android:textSize="12sp"
                 app:icon="@android:drawable/ic_menu_share"
                 app:iconSize="16dp" />
@@ -119,7 +119,7 @@
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Eliminar"
+                android:text="@string/btn_delete"
                 android:textSize="12sp"
                 android:textColor="?attr/colorError"
                 app:icon="@android:drawable/ic_menu_delete"

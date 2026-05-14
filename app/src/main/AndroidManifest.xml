@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
-        android:name=".TouristNotifyApplication"
+        android:name=".TrazaGoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,11 +22,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TouristNotify">
+        android:theme="@style/Theme.TrazaGo">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+
 
         <activity
             android:name=".LoginActivity"
@@ -47,7 +48,7 @@
 
         <activity
             android:name=".OnboardingActivity"
-            android:label="Bienvenido a TouristNotify" />
+            android:label="Bienvenido a TrazaGo" />
 
         <activity
             android:name=".MenuActivity"
@@ -56,6 +57,26 @@
         <activity
             android:name=".ProfileActivity"
             android:label="Mi Perfil" />
+
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:label="Política de Privacidad"
+            android:parentActivityName=".ProfileActivity" />
+
+        <activity
+            android:name=".StatsActivity"
+            android:label="Estadísticas"
+            android:parentActivityName=".ProfileActivity" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Configuración"
+            android:parentActivityName=".ProfileActivity" />
+
+        <activity
+            android:name=".AdminBlogActivity"
+            android:label="Editor de Blog"
+            android:parentActivityName=".BlogActivity" />
 
         <activity
             android:name=".GlobalSearchActivity"
@@ -74,8 +95,20 @@
             android:label="Contactos de Emergencia" />
 
         <activity
+            android:name=".ServicesActivity"
+            android:label="@string/services_title" />
+
+        <activity
             android:name=".PreferencesActivity"
             android:label="Preferencias de Ruta" />
+
+        <activity
+            android:name=".wizard.RouteWizardActivity"
+            android:label="Planifica tu Ruta" />
+
+        <activity
+            android:name=".result.RouteResultActivity"
+            android:label="Tu Ruta Generada" />
 
         <activity
             android:name=".PlaceDetailsActivity"
@@ -88,9 +121,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Formato: touristnotify://place/{placeId} -->
+                <!-- Formato: trazago://place/{placeId} -->
                 <data
-                    android:scheme="touristnotify"
+                    android:scheme="trazago"
                     android:host="place"
                     android:pathPattern="/.*" />
             </intent-filter>
@@ -101,11 +134,39 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Formato: https://touristnotify.app/place/{placeId} -->
+                <!-- Formato: https://trazago.app/place/{placeId} -->
                 <data
                     android:scheme="https"
-                    android:host="touristnotify.app"
+                    android:host="trazago.app"
                     android:pathPrefix="/place/" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".EventDetailsActivity"
+            android:label="Detalles del Evento"
+            android:exported="true">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="trazago"
+                    android:host="event"
+                    android:pathPattern="/.*" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="trazago.app"
+                    android:pathPrefix="/event/" />
             </intent-filter>
         </activity>
 
@@ -113,10 +174,6 @@
             android:name=".MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
-
-        <activity
-            android:name=".TopPlacesActivity"
-            android:label="Top 10 Lugares Más Visitados" />
 
         <activity
             android:name=".FavoritesActivity"

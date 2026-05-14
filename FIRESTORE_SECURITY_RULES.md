@@ -1,8 +1,8 @@
-# 🔐 Firestore Security Rules - TouristNotify
+# 🔐 Firestore Security Rules - TrazaGo
 
 ## 📋 **Resumen**
 
-Este documento explica las reglas de seguridad de Firestore para TouristNotify, incluyendo:
+Este documento explica las reglas de seguridad de Firestore para TrazaGo, incluyendo:
 - ✅ Qué protegen las reglas
 - ✅ Cómo desplegarlas
 - ✅ Cómo probarlas
@@ -60,7 +60,7 @@ Este documento explica las reglas de seguridad de Firestore para TouristNotify, 
    https://console.firebase.google.com/
    ```
 
-2. **Seleccionar proyecto TouristNotify**
+2. **Seleccionar proyecto TrazaGo**
 
 3. **Navegar a Firestore Database → Rules**
 
@@ -219,7 +219,7 @@ afterAll(async () => {
   await testEnv.cleanup();
 });
 
-describe('TouristNotify Security Rules', () => {
+describe('TrazaGo Security Rules', () => {
 
   test('invitado puede leer lugares', async () => {
     const unauthedDb = testEnv.unauthenticatedContext().firestore();
@@ -407,7 +407,7 @@ function isAdmin() {
   return isAuthenticated() &&
          request.auth.token.email in [
            'turismo@alamos.gob.mx',        // ← Email oficial
-           'admin@touristnotify.app',      // ← Email del sistema
+           'admin@TrazaGo.app',      // ← Email del sistema
            'jose.ibarra@example.com'       // ← Agregar nuevos admins aquí
          ];
 }
@@ -474,7 +474,7 @@ val route = Route(
    ```javascript
    request.auth.token.email in [
      'turismo@alamos.gob.mx',
-     'admin@touristnotify.app',
+     'admin@TrazaGo.app',
      'tu_email@example.com'  // ← Agregar aquí
    ]
    ```

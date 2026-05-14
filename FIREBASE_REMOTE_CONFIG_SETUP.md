@@ -30,7 +30,7 @@
 ### Paso 1: Acceder a Firebase Console
 
 1. Ve a [Firebase Console](https://console.firebase.google.com/)
-2. Selecciona tu proyecto **TouristNotify**
+2. Selecciona tu proyecto **TrazaGo**
 3. En el menú lateral, busca **Remote Config** (bajo "Interactúa")
 4. Click en **Comenzar** si es la primera vez
 
@@ -146,7 +146,7 @@ Firebase Console > Remote Config > Parámetros
 2. Click en tu API Key → "Application restrictions"
 3. Selecciona "Android apps"
 4. Añade:
-   - Package name: `com.joseibarra.touristnotify`
+   - Package name: `com.joseibarra.TrazaGo`
    - SHA-1: (obtén con `keytool -list -v -keystore ~/.android/debug.keystore`)
 
 **Para Gemini API**:
@@ -316,4 +316,4 @@ adb logcat | grep -E "ConfigManager|RemoteConfig"
 
 **Última actualización**: 2026-01-27
 **Versión de la guía**: 1.0
-**Compatible con**: TouristNotify v1.0+
+**Compatible con**: TrazaGo v1.0+

@@ -1,83 +1,360 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
     tools:context=".PlaceDetailsActivity">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/place_name_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            tools:text="Nombre del Lugar" />
-
-        <TextView
-            android:id="@+id/place_category_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="18sp"
-            android:textStyle="italic"
-            tools:text="Categoría" />
-
-        <TextView
-            android:id="@+id/place_description_text_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            tools:text="Descripción del lugar..." />
+            android:orientation="vertical">
 
-        <!-- Card de información adicional -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/info_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            style="@style/Widget.TouristNotify.CardView">
+            <!-- ── HERO ── -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="260dp">
 
+                <!-- Imagen del lugar — transitionName para shared element con Maps/Favorites -->
+                <ImageView
+                    android:id="@+id/place_hero_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_hero_placeholder"
+                    android:transitionName="hero_place_image"
+                    android:contentDescription="Foto del lugar" />
+
+                <!-- Gradiente oscuro inferior para legibilidad -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/bg_hero_gradient_bottom" />
+
+                <!-- Botones flotantes: back y favorito -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_hero_button">
+
+                        <ImageButton
+                            android:id="@+id/back_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_arrow_back"
+                            app:tint="@color/white"
+                            android:contentDescription="Volver" />
+                    </FrameLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <FrameLayout
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_hero_button">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/favorite_button"
+                            style="@style/Widget.Material3.Button.IconButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            app:icon="@android:drawable/btn_star_big_off"
+                            app:iconTint="@color/white"
+                            android:text=""
+                            android:contentDescription="Añadir a favoritos" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Dots de galería -->
+                <LinearLayout
+                    android:id="@+id/photo_dots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View android:layout_width="16dp" android:layout_height="6dp"
+                        android:background="@drawable/bg_dot_active_white"
+                        android:layout_marginEnd="6dp" />
+                    <View android:layout_width="6dp" android:layout_height="6dp"
+                        android:background="@drawable/bg_dot_inactive_white"
+                        android:layout_marginEnd="6dp" />
+                    <View android:layout_width="6dp" android:layout_height="6dp"
+                        android:background="@drawable/bg_dot_inactive_white"
+                        android:layout_marginEnd="6dp" />
+                    <View android:layout_width="6dp" android:layout_height="6dp"
+                        android:background="@drawable/bg_dot_inactive_white" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- ── CONTENIDO ── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <!-- Horarios -->
+                <!-- Badge de categoría + distancia -->
                 <LinearLayout
-                    android:id="@+id/schedule_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:visibility="gone">
+                    android:layout_marginBottom="8dp">
 
                     <TextView
+                        android:id="@+id/place_category_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🕐 "
-                        android:textSize="18sp"
-                        android:importantForAccessibility="no" />
+                        android:background="@drawable/bg_category_badge"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#9C27B0"
+                        tools:text="Museo" />
 
                     <TextView
-                        android:id="@+id/place_schedule_text_view"
+                        android:id="@+id/place_distance_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:visibility="gone"
+                        tools:text="· 1.2 km" />
+                </LinearLayout>
+
+                <!-- Nombre del lugar -->
+                <TextView
+                    android:id="@+id/place_name_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnBackground"
+                    tools:text="Museo Costumbrista de Sonora" />
+
+                <!-- Rating -->
+                <LinearLayout
+                    android:id="@+id/rating_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <RatingBar
+                        android:id="@+id/average_rating_bar"
+                        style="?android:attr/ratingBarStyleIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="0.1"
+                        android:progressTint="#F59E0B" />
+
+                    <TextView
+                        android:id="@+id/total_reviews_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="4.7 (128)" />
+                </LinearLayout>
+
+                <!-- Quick info cards -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textSize="14sp"
-                        tools:text="Lun-Vie: 9:00-18:00" />
+                        android:layout_marginEnd="5dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
+
+                        <LinearLayout
+                            android:id="@+id/schedule_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="12dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@android:drawable/ic_menu_recent_history"
+                                android:tint="?attr/colorOnSurfaceVariant"
+                                android:importantForAccessibility="no" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Horario"
+                                    android:textSize="12sp"
+                                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                <TextView
+                                    android:id="@+id/place_schedule_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="14sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:textColor="?attr/colorOnBackground"
+                                    tools:text="9:00 - 18:00" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant">
+
+                        <LinearLayout
+                            android:id="@+id/address_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="12dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@android:drawable/ic_menu_mylocation"
+                                android:tint="?attr/colorOnSurfaceVariant"
+                                android:importantForAccessibility="no" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Zona"
+                                    android:textSize="12sp"
+                                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                                <TextView
+                                    android:id="@+id/place_address_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="14sp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:textColor="?attr/colorOnBackground"
+                                    tools:text="Centro" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
-                <!-- Teléfono -->
+                <!-- Botones de acción: check-in + navegación -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/check_in_button"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="📍 Hacer Check-in"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        app:cornerRadius="14dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/get_directions_button"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="10dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
+                        android:text=""
+                        app:icon="@android:drawable/ic_dialog_map"
+                        app:iconSize="20dp"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:cornerRadius="14dp"
+                        android:contentDescription="Cómo llegar" />
+                </LinearLayout>
+
+                <!-- Descripción -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Acerca de"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnBackground" />
+
+                <TextView
+                    android:id="@+id/place_description_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:lineSpacingMultiplier="1.7"
+                    tools:text="El Museo Costumbrista de Sonora es una joya cultural que preserva la rica historia..." />
+
+                <!-- Campos adicionales (ocultos, usados por PlaceDetailsActivity) -->
                 <LinearLayout
                     android:id="@+id/phone_container"
                     android:layout_width="match_parent"
@@ -103,11 +380,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="?attr/colorPrimary"
-                        tools:text="+52 123 456 7890" />
+                        android:textColor="?attr/colorPrimary" />
                 </LinearLayout>
 
-                <!-- Sitio Web -->
                 <LinearLayout
                     android:id="@+id/website_container"
                     android:layout_width="match_parent"
@@ -135,37 +410,9 @@
                         android:textSize="14sp"
                         android:textColor="?attr/colorPrimary"
                         android:maxLines="1"
-                        android:ellipsize="end"
-                        tools:text="www.ejemplo.com" />
+                        android:ellipsize="end" />
                 </LinearLayout>
 
-                <!-- Dirección -->
-                <LinearLayout
-                    android:id="@+id/address_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📍 "
-                        android:textSize="18sp"
-                        android:importantForAccessibility="no" />
-
-                    <TextView
-                        android:id="@+id/place_address_text_view"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="14sp"
-                        tools:text="Calle Ejemplo #123, Álamos, Sonora" />
-                </LinearLayout>
-
-                <!-- Precio Estimado -->
                 <LinearLayout
                     android:id="@+id/price_container"
                     android:layout_width="match_parent"
@@ -187,157 +434,127 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textSize="14sp"
-                        tools:text="$$" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="?attr/colorOutlineVariant" />
+
+                <!-- Calificación promedio -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Calificación de los usuarios"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnBackground" />
+
+                <!-- Dejar calificación -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Deja tu calificación"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnBackground" />
+
+                <RatingBar
+                    android:id="@+id/submit_rating_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    android:progressTint="?attr/colorPrimary" />
+
+                <EditText
+                    android:id="@+id/review_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Escribe tu reseña (opcional)"
+                    android:inputType="textMultiLine"
+                    android:minLines="3" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/submit_review_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="8dp"
+                    android:text="Enviar"
+                    app:cornerRadius="12dp" />
+
+                <!-- Sección reseñas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Reseñas"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorOnBackground" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ver todas"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reviews_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Botones secundarios -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/view_gallery_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="📸 Ver Galería de Fotos"
+                    android:textSize="14sp"
+                    app:cornerRadius="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/share_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:contentDescription="@string/share_place_via"
+                    android:text="@string/share_place"
+                    android:textSize="14sp"
+                    app:cornerRadius="12dp" />
+
             </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        </com.google.android.material.card.MaterialCardView>
-
-        <Button
-            android:id="@+id/get_directions_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Cómo llegar" />
-
-        <!-- Action buttons grid -->
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:columnCount="2"
-            android:rowCount="1">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/favorite_button"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:text="⭐ Favorito"
-                android:textSize="14sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/check_in_button"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="4dp"
-                android:text="📍 Check-in"
-                android:textSize="14sp" />
-        </GridLayout>
-
-        <!-- Gallery button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/view_gallery_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="📸 Ver Galería de Fotos"
-            android:textSize="14sp" />
-
-        <!-- Share button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/share_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:contentDescription="@string/share_place_via"
-            android:text="@string/share_place"
-            android:textSize="14sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <!-- Sección de Calificación Promedio -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Calificación de los usuarios"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <RatingBar
-            android:id="@+id/average_rating_bar"
-            style="?android:attr/ratingBarStyleIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:numStars="5"
-            android:stepSize="0.1" />
-
-        <TextView
-            android:id="@+id/total_reviews_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            tools:text="(Basado en 0 reseñas)" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="?attr/colorOutlineVariant" />
-            
-        <!-- Sección para dejar una reseña -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Deja tu calificación"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <RatingBar
-            android:id="@+id/submit_rating_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:numStars="5"
-            android:stepSize="1" />
-
-        <EditText
-            android:id="@+id/review_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Escribe tu reseña (opcional)"
-            android:inputType="textMultiLine" />
-
-        <Button
-            android:id="@+id/submit_review_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="8dp"
-            android:text="Enviar" />
-
-        <!-- Lista de reseñas -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Reseñas de la comunidad"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/reviews_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

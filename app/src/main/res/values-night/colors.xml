@@ -6,4 +6,34 @@
 
     <!-- Card background for dark mode -->
     <color name="card_background">#2A2216</color>
+
+    <!-- ============ Surface elevation tokens (dark) — calidos, no grises ============ -->
+    <color name="color_surface_container_low">#231913</color>
+    <color name="color_surface_container">#2A1F19</color>
+    <color name="color_surface_container_high">#312419</color>
+    <color name="color_surface_container_highest">#3D2E21</color>
+
+    <!-- ============ Semantic colors (dark) ============ -->
+    <color name="color_success">#81C784</color>
+    <color name="color_on_success">#1B5E20</color>
+    <color name="color_success_container">#1B5E20</color>
+    <color name="color_on_success_container">#C8E6C9</color>
+
+    <color name="color_warning">#FFAB40</color>
+    <color name="color_on_warning">#3D1A00</color>
+    <color name="color_warning_container">#BF360C</color>
+    <color name="color_on_warning_container">#FFF3E0</color>
+
+    <color name="color_info">#90CAF9</color>
+    <color name="color_on_info">#0D47A1</color>
+    <color name="color_info_container">#0D47A1</color>
+    <color name="color_on_info_container">#E3F2FD</color>
+
+    <color name="color_destructive_text">#EF9A9A</color>
+    <color name="color_destructive_container">#5C1A1A</color>
+
+    <!-- Ripples adaptados a modo oscuro -->
+    <color name="color_ripple_primary">#1F81C784</color>
+    <color name="color_ripple_on_surface">#1FEDE0DA</color>
+    <color name="color_ripple_error">#1FFFB4AB</color>
 </resources>

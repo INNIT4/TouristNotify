@@ -13,11 +13,11 @@ plugins {
 }
 
 android {
-    namespace = "com.joseibarra.touristnotify"
+    namespace = "com.joseibarra.trazago"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.joseibarra.touristnotify"
+        applicationId = "com.joseibarra.trazago"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -115,6 +115,15 @@ dependencies {
     // Glide
     implementation(libs.glide)
 
+    // UI: Lottie, Splash Screen, Transitions
+    implementation(libs.lottie)
+    implementation(libs.androidx.splashscreen)
+    implementation(libs.androidx.transition.ktx)
+
+    // Markdown rendering
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.image.glide)
+
     // ViewPager2 para galería de fotos
     implementation(libs.androidx.viewpager2)
     implementation(libs.fragment.ktx)
@@ -126,6 +135,9 @@ dependencies {
 
     // OkHttp para Routes API v2
     implementation(libs.okhttp)
+
+    // WorkManager for event reminders
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // EncryptedSharedPreferences para almacenamiento seguro
     implementation(libs.security.crypto)
@@ -144,6 +156,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.turbine)
     testImplementation(libs.arch.core.testing)
+    testImplementation(libs.test.core)
 
     // ===== INSTRUMENTED TESTS =====
     androidTestImplementation(libs.androidx.junit)

@@ -30,36 +30,35 @@
         android:id="@+id/progress_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/space_16"
         android:text="Generando tu ruta perfecta"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.TrazaGo.TitleMedium"
         android:textAlignment="center"
-        android:textColor="?attr/colorOnSurface" />
+        android:gravity="center" />
 
     <!-- Mensaje de estado -->
     <TextView
         android:id="@+id/progress_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Analizando tus preferencias..."
-        android:textSize="14sp"
+        android:layout_marginTop="@dimen/space_8"
+        android:text="Analizando tus preferencias…"
+        android:textAppearance="@style/TextAppearance.TrazaGo.BodyMedium"
         android:textAlignment="center"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:gravity="center" />
 
     <!-- Mensaje de tips -->
     <TextView
         android:id="@+id/progress_tip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="12dp"
+        android:layout_marginTop="@dimen/space_16"
+        android:padding="@dimen/space_12"
         android:text="💡 La IA está seleccionando los mejores lugares según tu presupuesto y tiempo"
-        android:textSize="12sp"
+        android:textAppearance="@style/TextAppearance.TrazaGo.BodySmall"
         android:textAlignment="center"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:gravity="center"
         android:background="@drawable/bg_rounded_light"
-        android:alpha="0.7" />
+        android:alpha="0.85" />
 
 </LinearLayout>

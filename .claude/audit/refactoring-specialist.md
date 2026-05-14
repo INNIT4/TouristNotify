@@ -1,4 +1,4 @@
-# Refactoring Plan — LUPITA Activities
+# Refactoring Plan — TrazaGo Activities
 
 > Analyzed: 2026-04-24
 > Scope: MapsActivity (1048 lines), PreferencesActivity (523 lines), PlaceDetailsActivity (481 lines), ProfileActivity (394 lines)
@@ -52,7 +52,7 @@ class MarkerRenderer(
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import android.content.Context
 import android.graphics.*
@@ -122,7 +122,7 @@ class RoutePolylineManager(
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -176,7 +176,7 @@ object PlaceDataRepository {
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
@@ -236,11 +236,11 @@ class RouteNavigationController(
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
-import com.joseibarra.touristnotify.databinding.ActivityMapsBinding
+import com.joseibarra.TrazaGo.databinding.ActivityMapsBinding
 
 class RouteNavigationController(
     private val map: GoogleMap,
@@ -392,7 +392,7 @@ class ProgressDialogController(private val context: Context) {
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import android.content.Context
 import android.os.Handler
@@ -493,7 +493,7 @@ class ReviewRepository(private val db: FirebaseFirestore) {
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -614,7 +614,7 @@ class UserProfileRepository(
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
@@ -685,7 +685,7 @@ class AccountManager(
 **Stub (~30 líneas):**
 
 ```kotlin
-package com.joseibarra.touristnotify
+package com.joseibarra.TrazaGo
 
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth

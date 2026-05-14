@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# LUPITA (Tourist Notify)
+# TrazaGo
 
 Tourism discovery and navigation app for Alamos, Sonora, Mexico. Lets tourists browse attractions, generate AI-powered itineraries (Gemini), check in at places, read blog/events, view weather, and get proximity notifications via geofencing. Supports guest mode with limited features.
 
@@ -23,16 +23,16 @@ Tourism discovery and navigation app for Alamos, Sonora, Mexico. Lets tourists b
 
 ## Project Structure
 
-All source under `app/src/main/java/com/joseibarra/touristnotify/`:
+All source under `app/src/main/java/com/joseibarra/TrazaGo/`:
 
 | Directory/Area | Purpose |
 |---|---|
-| `TouristNotifyApplication.kt` | App class: theme init, Firestore offline persistence |
+| `TrazaGoApplication.kt` | App class: theme init, Firestore offline persistence |
 | `AuthManager.kt` | Auth state + guest mode feature gating |
 | `ConfigManager.kt` | Firebase Remote Config with BuildConfig fallback |
 | `MenuActivity.kt` | Main hub activity (weather widget, feature cards) |
 | `MapsActivity.kt` | Google Maps with filtering, routing, markers (exploration mode only) |
-| `PlaceDetailsActivity.kt` | Place view, deep links (`touristnotify://place/{id}`), reviews, check-in |
+| `PlaceDetailsActivity.kt` | Place view, deep links (`TrazaGo://place/{id}`), reviews, check-in |
 | `FavoritesManager.kt` | Firestore favorites CRUD under `users/{userId}/favorites/` |
 | `CheckInManager.kt` | Check-in recording |
 | `WeatherManager.kt` | OpenWeatherMap API calls + mock data |
@@ -103,7 +103,7 @@ Debug builds have `ENABLE_SKIP_LOGIN=true`. Release builds enable ProGuard/R8 mi
 - **Intent-based navigation**: No Navigation Component; all screen transitions via `startActivity(Intent(...))`
 - **Spanish-first UI**: Field names in Firestore use Spanish (`nombre`, `descripcion`, `ubicacion`)
 - **Dual auth model**: `AuthManager.isGuest()` gates features; guests can browse but not write
-- **Deep links**: `touristnotify://place/{id}` and `https://touristnotify.app/place/{id}` -> PlaceDetailsActivity
+- **Deep links**: `TrazaGo://place/{id}` and `https://TrazaGo.app/place/{id}` -> PlaceDetailsActivity
 
 ## Additional Documentation
 

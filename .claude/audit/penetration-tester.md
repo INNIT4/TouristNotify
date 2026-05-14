@@ -1,4 +1,4 @@
-# Penetration Test Report — LUPITA (Static Analysis)
+# Penetration Test Report — TrazaGo (Static Analysis)
 
 ## Resumen ejecutivo
 
@@ -24,7 +24,7 @@ La postura es razonable: `network_security_config` fuerza HTTPS, reglas Firestor
 
 ### [PEN-003] Digital Asset Links ausente → App Links no verificados
 - **Archivo**: `AndroidManifest.xml:110-120`, `app/src/main/assets/.well-known/assetlinks.json`
-- **Impacto**: `autoVerify="true"` falla silenciosamente → disambiguation dialog. Otra app maliciosa puede interceptar `https://touristnotify.app/place/*`.
+- **Impacto**: `autoVerify="true"` falla silenciosamente → disambiguation dialog. Otra app maliciosa puede interceptar `https://TrazaGo.app/place/*`.
 - **Estado**: Plantilla JSON válida creada en `app/src/main/assets/.well-known/assetlinks.json`.
 - **Pendiente (acciones humanas)**:
   1. Obtener SHA-256 del release keystore:
@@ -33,8 +33,8 @@ La postura es razonable: `network_security_config` fuerza HTTPS, reglas Firestor
      ```
   2. Si usas Play App Signing: Play Console → App integrity → App signing key certificate → SHA-256 (añadir como segunda entrada en `sha256_cert_fingerprints`).
   3. Reemplazar `REPLACE_WITH_RELEASE_SHA256_FINGERPRINT` en el archivo JSON.
-  4. Publicar en `https://touristnotify.app/.well-known/assetlinks.json` con `Content-Type: application/json`.
-  5. Verificar: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://touristnotify.app&relation=delegate_permission/common.handle_all_urls`
+  4. Publicar en `https://TrazaGo.app/.well-known/assetlinks.json` con `Content-Type: application/json`.
+  5. Verificar: `https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://TrazaGo.app&relation=delegate_permission/common.handle_all_urls`
 - **Esfuerzo**: M (requiere keystore de release + despliegue web)
 
 ### ~~[PEN-004] Prompt injection en Gemini vía `customRequest`~~ ✅
@@ -82,7 +82,7 @@ La postura es razonable: `network_security_config` fuerza HTTPS, reglas Firestor
 
 1. ~~**[P0-Urgente]** Reemplazar `isAdmin()` email-based por custom claims + `email_verified == true`.~~ ✅
 2. ~~**[P0-Urgente]** Cambiar geofence PendingIntent a `FLAG_IMMUTABLE`.~~ ✅
-3. **[P1-Alta]** Completar `assetlinks.json` con SHA-256 del keystore de release y publicar en `https://touristnotify.app/.well-known/` (ver PEN-003 — pasos detallados en el hallazgo).
+3. **[P1-Alta]** Completar `assetlinks.json` con SHA-256 del keystore de release y publicar en `https://TrazaGo.app/.well-known/` (ver PEN-003 — pasos detallados en el hallazgo).
 4. ~~**[P1-Alta]** Whitelistear hosts en Glide (solo `firebasestorage.googleapis.com`).~~ ✅
 5. ~~**[P2-Media]** Mover cálculo de `rating`, `reviewCount`, `visitCount` a Cloud Functions.~~ ✅ (validación server-side en rules; plan de CF en docs)
 6. ~~**[P2-Media]** `maxLength=200` en `customRequestEditText` + sanitización de markers de prompt.~~ ✅

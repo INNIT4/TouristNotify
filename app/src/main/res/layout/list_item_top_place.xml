@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    style="@style/Widget.TouristNotify.CardView"
+    style="@style/Widget.TrazaGo.CardView"
     android:clickable="true"
     android:focusable="true">
 

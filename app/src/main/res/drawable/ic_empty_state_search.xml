@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="180dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+    <!-- Círculo de fondo -->
+    <path
+        android:fillColor="?attr/colorPrimaryContainer"
+        android:fillAlpha="0.45"
+        android:pathData="M90,90 m-72,0 a72,72 0 1,0 144,0 a72,72 0 1,0 -144,0" />
+    <!-- Lupa: anillo -->
+    <path
+        android:fillColor="?attr/colorPrimary"
+        android:pathData="M82,52 c-19.882,0 -36,16.118 -36,36 c0,19.882 16.118,36 36,36 c8.838,0 16.93,-3.187 23.215,-8.469 l3.785,3.785 v6 l24,24 l8,-8 l-24,-24 h-6 l-3.785,-3.785 c5.282,-6.285 8.469,-14.377 8.469,-23.215 c0,-19.882 -16.118,-36 -36,-36 z M82,64 c13.255,0 24,10.745 24,24 c0,13.255 -10.745,24 -24,24 c-13.255,0 -24,-10.745 -24,-24 c0,-13.255 10.745,-24 24,-24 z" />
+    <!-- X dentro de la lupa -->
+    <path
+        android:fillColor="?attr/colorPrimary"
+        android:pathData="M73,79 l9,9 l9,-9 l4,4 l-9,9 l9,9 l-4,4 l-9,-9 l-9,9 l-4,-4 l9,-9 l-9,-9 z" />
+</vector>

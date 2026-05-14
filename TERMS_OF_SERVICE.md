@@ -1,17 +1,17 @@
-# Términos de Servicio — LUPITA (Tourist Notify)
+# Términos de Servicio — TrazaGo (TrazaGo)
 
 **Última actualización:** 2026-04-25  
 **Aplicable desde:** la fecha en que aceptas estos términos al registrarte
 o al usar la app como invitado.
 
-Bienvenida/o a LUPITA. Al usar la app aceptas estos términos. Si no estás de
+Bienvenida/o a TrazaGo. Al usar la app aceptas estos términos. Si no estás de
 acuerdo, por favor no la uses.
 
 ---
 
 ## 1. Servicio
 
-LUPITA es una guía turística para Álamos, Sonora, México. Te permite:
+TrazaGo es una guía turística para Álamos, Sonora, México. Te permite:
 - Explorar lugares turísticos, eventos y servicios.
 - Generar rutas personalizadas con inteligencia artificial.
 - Marcar favoritos, hacer check-in, dejar reseñas, recibir notificaciones de
@@ -55,11 +55,11 @@ Podemos eliminar contenido que infrinja estas reglas y suspender la cuenta.
 
 ## 5. Limitación de responsabilidad
 
-LUPITA es una herramienta informativa. La información de horarios, precios,
+TrazaGo es una herramienta informativa. La información de horarios, precios,
 ubicaciones y eventos puede estar desactualizada. Verifica siempre con la
 fuente oficial antes de tomar decisiones (viajes, gastos, salud).
 
-LUPITA y sus operadores no se hacen responsables por:
+TrazaGo y sus operadores no se hacen responsables por:
 - Daños derivados de la información mostrada.
 - Indisponibilidad temporal del servicio.
 - Pérdida de datos por fallas de Firebase, OpenWeatherMap o Google Maps.
@@ -70,7 +70,7 @@ LUPITA y sus operadores no se hacen responsables por:
 ## 6. Propiedad intelectual
 
 El código, diseño, marca y contenido editorial son propiedad del responsable
-de LUPITA. No puedes copiar, modificar, distribuir o realizar ingeniería
+de TrazaGo. No puedes copiar, modificar, distribuir o realizar ingeniería
 inversa de la app salvo cuando la ley lo permita expresamente (p. ej.
 interoperabilidad bajo el Art. 6 de la Directiva 2009/24/CE).
 
@@ -116,5 +116,5 @@ Para cualquier consulta sobre estos términos:
 
 ---
 
-> Estos términos deben publicarse también en `https://touristnotify.app/terminos`
+> Estos términos deben publicarse también en `https://TrazaGo.app/terminos`
 > y referenciarse desde la pantalla de registro y desde Perfil.

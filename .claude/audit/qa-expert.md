@@ -1,4 +1,4 @@
-# QA Strategy — LUPITA (Tourist Notify)
+# QA Strategy — TrazaGo (TrazaGo)
 
 ## Estado actual de testing
 
@@ -63,7 +63,7 @@
 
 **~~Sprint 3 — UI crítica (objetivo: 65% cobertura)~~** ✅
 - ~~Espresso: onboarding → modo invitado → check-in locked~~ ✅ `OnboardingGuestFlowTest.kt`
-- ~~Test de deep link `touristnotify://place/{id}`~~ ✅ `DeepLinkTest.kt` (válido/inválido/vacío)
+- ~~Test de deep link `TrazaGo://place/{id}`~~ ✅ `DeepLinkTest.kt` (válido/inválido/vacío)
 - ~~Smoke test de `SyncWorker`~~ ✅ `SyncWorkerSmokeTest.kt` (TestListenableWorkerBuilder)
 - Login → mapa → favorito E2E: requiere cuenta Firebase real en emulador — pendiente CI setup
 

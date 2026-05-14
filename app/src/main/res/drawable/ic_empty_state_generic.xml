@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="180dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="?attr/colorPrimaryContainer"
+        android:fillAlpha="0.45"
+        android:pathData="M90,90 m-72,0 a72,72 0 1,0 144,0 a72,72 0 1,0 -144,0" />
+    <!-- Brújula -->
+    <path
+        android:strokeColor="?attr/colorPrimary"
+        android:strokeWidth="5"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M90,90 m-32,0 a32,32 0 1,0 64,0 a32,32 0 1,0 -64,0" />
+    <path
+        android:fillColor="?attr/colorPrimary"
+        android:pathData="M90,68 l8,22 l-8,22 l-8,-22 z" />
+    <path
+        android:fillColor="?attr/colorSecondary"
+        android:pathData="M90,90 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+</vector>

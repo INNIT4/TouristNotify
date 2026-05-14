@@ -15,14 +15,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Regenerar ruta"
+            android:text="@string/regen_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="¿Qué quieres cambiar?"
+            android:text="@string/regen_subtitle"
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -39,42 +39,42 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más relajada" />
+                android:text="@string/regen_preset_relaxed" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMasBarata"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más barata" />
+                android:text="@string/regen_preset_cheaper" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMasCultural"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más cultural" />
+                android:text="@string/regen_preset_cultural" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMenosCaminata"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Menos caminata" />
+                android:text="@string/regen_preset_less_walking" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMasGastronomia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más gastronomía" />
+                android:text="@string/regen_preset_food" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMasNaturaleza"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Más naturaleza" />
+                android:text="@string/regen_preset_nature" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Regenerando ruta..."
+                android:text="@string/regen_progress"
                 android:textAppearance="?attr/textAppearanceBodySmall" />
 
         </LinearLayout>
@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Regenerar con este feedback"
+            android:text="@string/regen_btn_regenerate"
             app:icon="@android:drawable/ic_menu_rotate" />
 
         <!-- Divider -->
@@ -144,8 +144,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Compartir ruta"
+            android:text="@string/regen_btn_save_share"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+        <!-- Botón guardar ruta -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuardarRuta"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/regen_btn_save"
+            app:icon="@android:drawable/ic_menu_save" />
 
         <!-- Botón Google Maps -->
         <com.google.android.material.button.MaterialButton
@@ -154,7 +164,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:text="Abrir en Google Maps"
+            android:text="@string/regen_btn_google_maps"
             app:icon="@android:drawable/ic_dialog_map" />
 
         <!-- Botón compartir texto -->
@@ -164,7 +174,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Compartir como texto"
+            android:text="@string/regen_btn_share_text"
             app:icon="@android:drawable/ic_menu_share" />
 
         <Space

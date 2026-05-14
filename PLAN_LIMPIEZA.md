@@ -2,7 +2,7 @@
 
 **Para la AI ejecutora**: Sigue este plan en orden. Cada checkbox es atómico. Al final hay verificación con `./gradlew assembleDebug`. NO inventes pasos extra. NO refactorices código fuera del scope.
 
-**Contexto de la decisión**: Firestore SDK ya tiene cache offline persistente (`PersistenceEnabled = true` en `TouristNotifyApplication.kt`). La capa Room + SyncWorker es redundante. `StatsActivity` muestra info que `ProfileActivity` ya cubre + un pie chart que no aporta. Se borran ambas features completas.
+**Contexto de la decisión**: Firestore SDK ya tiene cache offline persistente (`PersistenceEnabled = true` en `TrazaGoApplication.kt`). La capa Room + SyncWorker es redundante. `StatsActivity` muestra info que `ProfileActivity` ya cubre + un pie chart que no aporta. Se borran ambas features completas.
 
 ---
 
@@ -11,31 +11,31 @@
 ### 1.1 Borrar archivos completos
 
 ```
-app/src/main/java/com/joseibarra/touristnotify/OfflineManager.kt
-app/src/main/java/com/joseibarra/touristnotify/OfflineSettingsActivity.kt
-app/src/main/java/com/joseibarra/touristnotify/SyncWorker.kt
-app/src/main/java/com/joseibarra/touristnotify/SyncWorkerFactory.kt
-app/src/main/java/com/joseibarra/touristnotify/ConnectivityObserver.kt
-app/src/main/java/com/joseibarra/touristnotify/AppDatabase.kt
-app/src/main/java/com/joseibarra/touristnotify/RoomDAOs.kt
-app/src/main/java/com/joseibarra/touristnotify/RoomEntities.kt
-app/src/main/java/com/joseibarra/touristnotify/DatabasePassphraseManager.kt
+app/src/main/java/com/joseibarra/TrazaGo/OfflineManager.kt
+app/src/main/java/com/joseibarra/TrazaGo/OfflineSettingsActivity.kt
+app/src/main/java/com/joseibarra/TrazaGo/SyncWorker.kt
+app/src/main/java/com/joseibarra/TrazaGo/SyncWorkerFactory.kt
+app/src/main/java/com/joseibarra/TrazaGo/ConnectivityObserver.kt
+app/src/main/java/com/joseibarra/TrazaGo/AppDatabase.kt
+app/src/main/java/com/joseibarra/TrazaGo/RoomDAOs.kt
+app/src/main/java/com/joseibarra/TrazaGo/RoomEntities.kt
+app/src/main/java/com/joseibarra/TrazaGo/DatabasePassphraseManager.kt
 app/src/main/res/layout/activity_offline_settings.xml
-app/src/test/java/com/joseibarra/touristnotify/db/AppDatabaseTest.kt
-app/src/androidTest/java/com/joseibarra/touristnotify/worker/SyncWorkerSmokeTest.kt
+app/src/test/java/com/joseibarra/TrazaGo/db/AppDatabaseTest.kt
+app/src/androidTest/java/com/joseibarra/TrazaGo/worker/SyncWorkerSmokeTest.kt
 ```
 
 Y la carpeta entera de schemas Room: `app/schemas/` (si existe).
 
-### 1.2 Modificar `app/src/main/java/com/joseibarra/touristnotify/MenuActivity.kt`
+### 1.2 Modificar `app/src/main/java/com/joseibarra/TrazaGo/MenuActivity.kt`
 
 - Eliminar el `MenuItemData` con `id = MenuItemId.OFFLINE` (aprox líneas 154-162). Es el bloque completo `MenuItemData(...)` con `iconEmoji = "📴"`.
 - Eliminar el case `MenuItemId.OFFLINE -> { ... }` del `when` de navegación (líneas ~224-227).
 - Eliminar la entrada `OFFLINE` del enum `MenuItemId` (busca `enum class MenuItemId` y borra ese valor).
 
-### 1.3 Modificar `app/src/main/java/com/joseibarra/touristnotify/TouristNotifyApplication.kt`
+### 1.3 Modificar `app/src/main/java/com/joseibarra/TrazaGo/TrazaGoApplication.kt`
 
-- Quitar `Configuration.Provider` de la firma de la clase: `class TouristNotifyApplication : Application()` (sin la coma + interface).
+- Quitar `Configuration.Provider` de la firma de la clase: `class TrazaGoApplication : Application()` (sin la coma + interface).
 - Borrar la propiedad `workManagerConfiguration` (líneas ~25-29).
 - Borrar la llamada `schedulePeriodSync()` en `onCreate()` (línea ~74) y la función `private fun schedulePeriodSync() { ... }` completa (líneas ~77-91).
 - Borrar imports ya no usados:
@@ -51,13 +51,13 @@ Y la carpeta entera de schemas Room: `app/schemas/` (si existe).
 
 - Borrar el bloque `<activity android:name=".OfflineSettingsActivity" ... />` (líneas ~216-219).
 
-### 1.5 Modificar `app/src/main/java/com/joseibarra/touristnotify/AccountManager.kt`
+### 1.5 Modificar `app/src/main/java/com/joseibarra/TrazaGo/AccountManager.kt`
 
 - En la línea ~46, borrar la línea: `AppDatabase.getDatabase(context.applicationContext).clearAllTables()`.
 - Si esa línea queda sola en una corutina/withContext que se vuelve vacía, simplifica el bloque.
-- Borrar el import `com.joseibarra.touristnotify.AppDatabase` si quedó huérfano.
+- Borrar el import `com.joseibarra.TrazaGo.AppDatabase` si quedó huérfano.
 
-### 1.6 Modificar `app/src/main/java/com/joseibarra/touristnotify/FavoritesManager.kt`
+### 1.6 Modificar `app/src/main/java/com/joseibarra/TrazaGo/FavoritesManager.kt`
 
 Eliminar los dos bloques write-through a Room:
 
@@ -66,7 +66,7 @@ Eliminar los dos bloques write-through a Room:
 - Si el parámetro `context: Context?` queda sin uso en `addFavorite`/`removeFavorite`, **déjalo** — los callers lo siguen pasando. No cambies firmas.
 - Borrar imports huérfanos: `AppDatabase`, `FavoriteEntity`, `Context` (solo si ya no se usa en el archivo).
 
-### 1.7 Modificar `app/src/main/java/com/joseibarra/touristnotify/GlobalSearchActivity.kt`
+### 1.7 Modificar `app/src/main/java/com/joseibarra/TrazaGo/GlobalSearchActivity.kt`
 
 Reemplazar la búsqueda Room por Firestore. En la función `performSearch(query: String)`, líneas ~110-127:
 
@@ -152,11 +152,11 @@ Borrar de **ambos** archivos:
 ### 2.1 Borrar archivos completos
 
 ```
-app/src/main/java/com/joseibarra/touristnotify/StatsActivity.kt
+app/src/main/java/com/joseibarra/TrazaGo/StatsActivity.kt
 app/src/main/res/layout/activity_stats.xml
 ```
 
-### 2.2 Modificar `app/src/main/java/com/joseibarra/touristnotify/MenuActivity.kt`
+### 2.2 Modificar `app/src/main/java/com/joseibarra/TrazaGo/MenuActivity.kt`
 
 - Borrar el `MenuItemData` con `id = MenuItemId.STATS` (líneas ~121-129, el del icon `📊`).
 - Borrar el case `MenuItemId.STATS -> AuthManager.requireAuth(...)` del `when` (~líneas 208-211).
@@ -166,18 +166,18 @@ app/src/main/res/layout/activity_stats.xml
 
 - Borrar el bloque `<activity android:name=".StatsActivity" ... />` (~líneas 165-168).
 
-### 2.4 Modificar `app/src/main/java/com/joseibarra/touristnotify/Models.kt`
+### 2.4 Modificar `app/src/main/java/com/joseibarra/TrazaGo/Models.kt`
 
 - Borrar el `data class UserStats(...)` (líneas ~53 en adelante; busca `data class UserStats` y borra hasta el cierre `}` correspondiente).
 
-### 2.5 Modificar `app/src/main/java/com/joseibarra/touristnotify/CheckInManager.kt`
+### 2.5 Modificar `app/src/main/java/com/joseibarra/TrazaGo/CheckInManager.kt`
 
 - Borrar la llamada `updateUserStats(currentUser.uid, placeCategory)` en línea ~51.
 - Borrar la función completa `private suspend fun updateUserStats(userId: String, category: String) { ... }` (líneas ~107 en adelante hasta su `}`).
 - Borrar imports huérfanos relacionados a UserStats si los hay.
-- **Nota**: El test `app/src/test/java/com/joseibarra/touristnotify/managers/CheckInManagerTest.kt` puede tener referencias a `updateUserStats` o `UserStats`. Si las hay, borrar esos casos de test.
+- **Nota**: El test `app/src/test/java/com/joseibarra/TrazaGo/managers/CheckInManagerTest.kt` puede tener referencias a `updateUserStats` o `UserStats`. Si las hay, borrar esos casos de test.
 
-### 2.6 Modificar `app/src/main/java/com/joseibarra/touristnotify/AuthManager.kt`
+### 2.6 Modificar `app/src/main/java/com/joseibarra/TrazaGo/AuthManager.kt`
 
 - Borrar la línea `const val VIEW_STATS = "ver estadísticas personales"` (~línea 129).
 
@@ -229,7 +229,7 @@ Al final, actualizar la documentación:
 
 ## NO HACER
 
-- ❌ No tocar la persistencia de Firestore (`PersistenceEnabled = true` en `TouristNotifyApplication.kt`). Esa es la capa offline real que se conserva.
+- ❌ No tocar la persistencia de Firestore (`PersistenceEnabled = true` en `TrazaGoApplication.kt`). Esa es la capa offline real que se conserva.
 - ❌ No borrar `UserProfileRepository.UserStatsData` — es otra clase distinta usada por `ProfileActivity` y NO se va.
 - ❌ No tocar `FavoritesManager`/`CheckInManager` más allá de lo indicado. La lógica Firestore se queda.
 - ❌ No hacer commit. Solo dejar los cambios staged.

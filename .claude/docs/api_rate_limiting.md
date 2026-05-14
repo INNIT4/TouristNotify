@@ -1,4 +1,4 @@
-# API Rate Limiting & Quotas — LUPITA
+# API Rate Limiting & Quotas — TrazaGo
 
 ## APIs Used
 

@@ -1,4 +1,4 @@
-# Dependency Audit — LUPITA
+# Dependency Audit — TrazaGo
 
 ## Resumen ejecutivo
 

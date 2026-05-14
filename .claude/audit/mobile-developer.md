@@ -1,4 +1,4 @@
-# Android Best Practices Review — LUPITA
+# Android Best Practices Review — TrazaGo
 
 ## Resumen ejecutivo
 
@@ -48,7 +48,7 @@ La app tiene base sólida: ViewBinding consistente, coroutines en `lifecycleScop
 - **Resuelto**: Implementados `onSaveInstanceState` y `onRestoreInstanceState` que preservan `selectedCategories`, `currentPlaceIndex`, e `isNavigatingRoute` en rotación de pantalla.
 
 ### ~~[AND-006] `OkHttpClient` como `companion object` con callbacks que retienen Activity — `MapsActivity.kt:80`~~ ✅
-- **Resuelto**: `OkHttpClient` movido a `TouristNotifyApplication.http` (singleton a nivel de proceso). `RoutePolylineManager` ahora lo recibe como parámetro de constructor (`http: OkHttpClient`). `MapsActivity.onMapReady` pasa `(application as TouristNotifyApplication).http`. Beneficios: un solo connection pool compartido por toda la app, sin riesgo de retener Activity.
+- **Resuelto**: `OkHttpClient` movido a `TrazaGoApplication.http` (singleton a nivel de proceso). `RoutePolylineManager` ahora lo recibe como parámetro de constructor (`http: OkHttpClient`). `MapsActivity.onMapReady` pasa `(application as TrazaGoApplication).http`. Beneficios: un solo connection pool compartido por toda la app, sin riesgo de retener Activity.
 
 ### ~~[AND-007] `POST_NOTIFICATIONS` no verificado antes de `notificationManager.notify()` — `ProximityNotificationManager.kt`~~ ✅
 - **Resuelto**: Añadida `hasNotificationPermission()` que verifica `POST_NOTIFICATIONS` en API 33+. Ambos métodos `sendNotification` y `sendSimpleNotification` retornan early si no hay permiso.

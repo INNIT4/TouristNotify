@@ -6,29 +6,93 @@
     android:layout_height="match_parent"
     tools:context=".MapsActivity">
 
+    <!-- Mapa fullscreen -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <SearchView
-        android:id="@+id/search_view"
+    <!-- Overlay: barra de búsqueda + botón back -->
+    <LinearLayout
+        android:id="@+id/search_overlay_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:queryHint="Buscar lugares..."
-        android:iconifiedByDefault="false"
-        android:background="?attr/colorSurface" />
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <FrameLayout
+            android:id="@+id/back_button_container"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_card_white_radius14dp"
+            android:elevation="4dp">
+
+            <ImageButton
+                android:id="@+id/map_back_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:tint="?attr/colorOnBackground"
+                android:contentDescription="Volver" />
+        </FrameLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:tint="?attr/colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
+
+                <!-- ID legacy search_view para compatibilidad con MapsActivity.kt -->
+                <EditText
+                    android:id="@+id/search_view"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:hint="Buscar lugares…"
+                    android:textSize="14sp"
+                    android:background="@android:color/transparent"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textColorHint="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
     <!-- Filter Chips -->
     <HorizontalScrollView
         android:id="@+id/filter_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/search_view"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_below="@id/search_overlay_container"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginTop="8dp"
         android:scrollbars="none">
 
@@ -36,61 +100,85 @@
             android:id="@+id/filter_chip_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="false"
-            app:selectionRequired="false">
+            app:singleSelection="true"
+            app:selectionRequired="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_all"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Todos"
-                android:checked="true" />
+                android:text="@string/maps_filter_all"
+                android:checked="true"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_museo"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Museos" />
+                android:text="@string/maps_filter_museums"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_restaurante"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Restaurantes" />
+                android:text="@string/maps_filter_restaurants"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_hotel"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hoteles" />
+                android:text="@string/maps_filter_hotels"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_iglesia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Iglesias" />
+                android:text="@string/maps_filter_churches"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_parque"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Parques" />
+                android:text="@string/maps_filter_parks"
+                app:chipBackgroundColor="@color/chip_background_selector" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_tienda"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tiendas" />
+                android:text="@string/maps_filter_shops"
+                app:chipBackgroundColor="@color/chip_background_selector" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
+    <!-- Botón "Mi Ubicación" -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/places_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="100dp"
+        android:src="@android:drawable/ic_menu_compass"
+        android:contentDescription="@string/a11y_places_list_button"
+        app:backgroundTint="#FFFFFF"
+        app:tint="?attr/colorPrimary"
+        app:fabSize="normal"
+        app:elevation="4dp" />
+
+    <!-- FAB guardar ruta (oculto por defecto) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save_route_button"
         android:layout_width="wrap_content"
@@ -104,21 +192,169 @@
         tools:visibility="visible"
         android:contentDescription="Guardar Ruta" />
 
-    <!-- A11Y-001: accessible list button for screen reader users to browse all visible places -->
+    <!-- Toggle UI button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/places_list_button"
+        android:id="@+id/toggle_ui_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="88dp"
-        android:src="@drawable/ic_route"
-        android:contentDescription="@string/a11y_places_list_button"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_menu_compass"
+        android:contentDescription="Alternar controles del mapa"
         app:fabSize="mini"
         app:tint="@color/white" />
 
-    <!-- Panel de Navegación de Ruta -->
+    <!-- Panel de preview de lugar (nuevo bottom sheet) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/place_preview_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="12dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Drag handle -->
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_drag_handle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Foto placeholder -->
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/bg_image_placeholder">
+
+                    <ImageView
+                        android:id="@+id/preview_place_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Foto del lugar" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/preview_place_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="17sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnBackground"
+                        tools:text="Museo Costumbrista" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="4dp">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@android:drawable/btn_star_big_on"
+                            android:tint="#F59E0B"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:id="@+id/preview_place_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:textSize="13sp"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            tools:text="4.7 · 128 reseñas" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/preview_place_hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Abierto · Cierra a las 18:00" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Botones de acción -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/preview_details_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/item_view_details"
+                    android:textSize="14sp"
+                    android:paddingTop="13dp"
+                    android:paddingBottom="13dp"
+                    app:cornerRadius="14dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/preview_favorite_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="13dp"
+                    android:paddingBottom="13dp"
+                    app:cornerRadius="14dp"
+                    app:icon="@android:drawable/btn_star_big_off"
+                    app:iconGravity="textStart"
+                    android:contentDescription="Añadir a favoritos" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/preview_close_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="13dp"
+                    android:paddingBottom="13dp"
+                    android:text="✕"
+                    android:textSize="16sp"
+                    app:cornerRadius="14dp"
+                    android:contentDescription="Cerrar" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Panel de Navegación de Ruta (lógica existente, permanece oculto) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/route_navigation_panel"
         android:layout_width="match_parent"
@@ -130,7 +366,7 @@
         android:visibility="gone"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -138,7 +374,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Header: Progreso y Cerrar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,18 +394,15 @@
                         android:text="Lugar 1 de 5"
                         android:textStyle="bold"
                         android:textSize="16sp"
-                        android:textColor="?attr/colorPrimary"
-                        tools:text="Lugar 2 de 5" />
+                        android:textColor="?attr/colorPrimary" />
 
                     <TextView
                         android:id="@+id/route_time_estimate_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="⏱️ Tiempo estimado: 2h 30min"
                         android:textSize="12sp"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:layout_marginTop="2dp"
-                        tools:text="⏱️ Tiempo estimado: 2h 30min" />
+                        android:layout_marginTop="2dp" />
                 </LinearLayout>
 
                 <ImageButton
@@ -182,43 +414,33 @@
                     android:contentDescription="Cerrar navegación" />
             </LinearLayout>
 
-            <!-- Nombre del Lugar Actual -->
             <TextView
                 android:id="@+id/current_place_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Plaza de Armas"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimary"
-                android:layout_marginBottom="8dp"
-                tools:text="Museo Costumbrista" />
+                android:layout_marginBottom="8dp" />
 
-            <!-- Categoría -->
             <TextView
                 android:id="@+id/current_place_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🏛️ Museo"
                 android:textSize="14sp"
                 android:textColor="?android:attr/textColorSecondary"
-                android:layout_marginBottom="12dp"
-                tools:text="🏛️ Museo" />
+                android:layout_marginBottom="12dp" />
 
-            <!-- Descripción (preview) -->
             <TextView
                 android:id="@+id/current_place_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Descripción del lugar..."
                 android:textSize="14sp"
                 android:textColor="?android:attr/textColorSecondary"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:layout_marginBottom="16dp"
-                tools:text="Ubicado en el centro histórico, este museo muestra la cultura local..." />
+                android:layout_marginBottom="16dp" />
 
-            <!-- Botones de Navegación -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -226,7 +448,6 @@
                 android:gravity="center"
                 android:layout_marginBottom="12dp">
 
-                <!-- Botón Anterior -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/previous_place_button"
                     style="@style/Widget.Material3.Button.TonalButton"
@@ -234,11 +455,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:text="← Anterior"
-                    app:icon="@android:drawable/ic_media_previous"
-                    app:iconGravity="start" />
+                    android:text="← Anterior" />
 
-                <!-- Botón Siguiente -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/next_place_button"
                     style="@style/Widget.Material3.Button"
@@ -246,31 +464,24 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="Siguiente →"
-                    app:icon="@android:drawable/ic_media_next"
-                    app:iconGravity="end" />
+                    android:text="@string/maps_next_stop" />
             </LinearLayout>
 
-            <!-- Botón Guardar Ruta (visible solo en rutas generadas por IA) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/save_route_panel_button"
                 style="@style/Widget.Material3.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Guardar ruta"
-                android:visibility="gone"
-                app:icon="@android:drawable/ic_menu_save"
-                app:iconGravity="start" />
+                android:text="@string/maps_save_route"
+                android:visibility="gone" />
 
-            <!-- Botones de Acción -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center">
 
-                <!-- Ver Detalles -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/view_details_button"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -278,11 +489,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:text="Ver detalles"
-                    app:icon="@android:drawable/ic_menu_info_details"
-                    app:iconGravity="start" />
+                    android:text="@string/item_view_details_short" />
 
-                <!-- Navegar (GPS) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/navigate_button"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -290,25 +498,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="Navegar"
-                    app:icon="@android:drawable/ic_dialog_map"
-                    app:iconGravity="start" />
+                    android:text="@string/maps_navigate" />
             </LinearLayout>
-
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <!-- Botón para ocultar/mostrar controles (modo mapa expandido) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/toggle_ui_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_menu_compass"
-        android:contentDescription="Alternar controles del mapa"
-        app:fabSize="mini"
-        app:tint="@color/white" />
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-# Test Automation Implementation Plan — LUPITA
+# Test Automation Implementation Plan — TrazaGo
 
 Complementa la estrategia de `qa-expert.md`. Este documento es implementación concreta: diffs exactos, código compilable, configuración de CI lista para usar.
 
@@ -29,7 +29,7 @@ Complementa la estrategia de `qa-expert.md`. Este documento es implementación c
 
 ```
 app/src/
-├── test/java/com/joseibarra/touristnotify/
+├── test/java/com/joseibarra/TrazaGo/
 │   ├── managers/
 │   │   ├── FavoritesManagerTest.kt          ✅
 │   │   ├── CheckInManagerTest.kt            ✅
@@ -40,7 +40,7 @@ app/src/
 │   └── db/
 │       └── AppDatabaseTest.kt               ✅
 │
-└── androidTest/java/com/joseibarra/touristnotify/
+└── androidTest/java/com/joseibarra/TrazaGo/
     ├── base/
     │   └── FirestoreEmulatorTest.kt          ✅
     ├── firestore/

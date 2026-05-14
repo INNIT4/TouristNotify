@@ -3,15 +3,15 @@
    Backup rules for Android Auto Backup (API < 31).
    See https://developer.android.com/guide/topics/data/autobackup
 
-   IMPORTANTE: TouristNotifyPrefs y TouristNotifyUsage son EncryptedSharedPreferences.
+   IMPORTANTE: TrazaGoPrefs y TrazaGoUsage son EncryptedSharedPreferences.
    La clave maestra (Android Keystore) NO se respalda con Auto Backup, por lo que
    restaurar el archivo cifrado en otro dispositivo lo deja inservible. Excluirlos
    del backup además protege la app si en el futuro se almacenan tokens.
 -->
 <full-backup-content>
     <!-- Excluir EncryptedSharedPreferences (la master key no se respalda) -->
-    <exclude domain="sharedpref" path="TouristNotifyPrefs.xml" />
-    <exclude domain="sharedpref" path="TouristNotifyUsage.xml" />
+    <exclude domain="sharedpref" path="TrazaGoPrefs.xml" />
+    <exclude domain="sharedpref" path="TrazaGoUsage.xml" />
 
     <!-- Excluir tokens de Firebase Auth -->
     <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.xml" />

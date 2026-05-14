@@ -1,4 +1,4 @@
-# Performance Tuning — LUPITA
+# Performance Tuning — TrazaGo
 
 ## Overview
 
@@ -85,12 +85,12 @@ GlideBuilder().setDiskCache(InternalCacheDiskCacheFactory(context, MAX_DISK_CACH
 
 ### Startup Time
 
-`TouristNotifyApplication` initializes Firestore offline persistence and Firebase services synchronously on the main thread. If startup profiling shows > 200ms, move initialization to a coroutine launched from `onCreate`.
+`TrazaGoApplication` initializes Firestore offline persistence and Firebase services synchronously on the main thread. If startup profiling shows > 200ms, move initialization to a coroutine launched from `onCreate`.
 
 ---
 
 ## Profiling Tools
 
 - Android Studio Profiler → CPU/Memory → record during sync or search
-- `adb shell dumpsys gfxinfo com.joseibarra.touristnotify` for frame rendering stats
+- `adb shell dumpsys gfxinfo com.joseibarra.TrazaGo` for frame rendering stats
 - Firebase Performance Monitoring (not yet configured — add `firebase-perf` dependency to track network and custom traces)

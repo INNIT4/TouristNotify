@@ -1,6 +1,6 @@
 # API Keys — Hardening y migración a servidor
 
-LUPITA depende de cuatro API keys externas:
+TrazaGo depende de cuatro API keys externas:
 - `GEMINI_API_KEY` — generación de rutas con IA
 - `DIRECTIONS_API_KEY` — Google Routes API v2
 - `WEATHER_API_KEY` — OpenWeatherMap
@@ -25,7 +25,7 @@ Para cada key Google (`GEMINI_API_KEY`, `DIRECTIONS_API_KEY`, `MAPS_API_KEY`):
 1. Ir a **Google Cloud Console → APIs & Services → Credentials**.
 2. Seleccionar la API key.
 3. **Application restrictions** → "Android apps":
-   - Package name: `com.joseibarra.touristnotify`
+   - Package name: `com.joseibarra.TrazaGo`
    - SHA-1 certificate fingerprint: el del **release keystore**
      ```bash
      keytool -list -v -keystore release.keystore -alias <ALIAS> | grep "SHA1:"

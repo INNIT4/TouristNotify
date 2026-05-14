@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.joseibarra.touristnotify",
+      "package_name": "com.joseibarra.trazago",
       "sha256_cert_fingerprints": [
         "REPLACE_WITH_RELEASE_KEYSTORE_SHA256_FINGERPRINT",
         "REPLACE_WITH_DEBUG_KEYSTORE_SHA256_FINGERPRINT_OPTIONAL"

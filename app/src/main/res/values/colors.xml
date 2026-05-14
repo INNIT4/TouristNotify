@@ -2,17 +2,17 @@
 <resources>
     <!-- Material 3 Color Palette - Tourism Theme (Sonora Desert & Sky) -->
 
-    <!-- Primary Colors - Warm Desert Sunset -->
-    <color name="md_theme_light_primary">#D95F2A</color>
+    <!-- Primary Colors - TrazaGo Green (from logo) -->
+    <color name="md_theme_light_primary">#2E7D32</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">#FFDAC7</color>
-    <color name="md_theme_light_onPrimaryContainer">#3A0D00</color>
+    <color name="md_theme_light_primaryContainer">#C8E6C9</color>
+    <color name="md_theme_light_onPrimaryContainer">#1B5E20</color>
 
-    <!-- Secondary Colors - Desert Sky Blue -->
-    <color name="md_theme_light_secondary">#006A67</color>
+    <!-- Secondary Colors - TrazaGo Teal (from logo compass) -->
+    <color name="md_theme_light_secondary">#5CB8B2</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#6FF7F2</color>
-    <color name="md_theme_light_onSecondaryContainer">#00201F</color>
+    <color name="md_theme_light_secondaryContainer">#E0F2F1</color>
+    <color name="md_theme_light_onSecondaryContainer">#004D47</color>
 
     <!-- Tertiary Colors - Nature Green -->
     <color name="md_theme_light_tertiary">#6C5E2F</color>
@@ -39,15 +39,15 @@
     <color name="md_theme_light_scrim">#000000</color>
 
     <!-- Dark Theme Colors -->
-    <color name="md_theme_dark_primary">#FFB599</color>
-    <color name="md_theme_dark_onPrimary">#5C1900</color>
-    <color name="md_theme_dark_primaryContainer">#7F2C0E</color>
-    <color name="md_theme_dark_onPrimaryContainer">#FFDAC7</color>
+    <color name="md_theme_dark_primary">#81C784</color>
+    <color name="md_theme_dark_onPrimary">#1B5E20</color>
+    <color name="md_theme_dark_primaryContainer">#2E7D32</color>
+    <color name="md_theme_dark_onPrimaryContainer">#C8E6C9</color>
 
-    <color name="md_theme_dark_secondary">#51DBD6</color>
-    <color name="md_theme_dark_onSecondary">#003735</color>
-    <color name="md_theme_dark_secondaryContainer">#00504E</color>
-    <color name="md_theme_dark_onSecondaryContainer">#6FF7F2</color>
+    <color name="md_theme_dark_secondary">#80CBC4</color>
+    <color name="md_theme_dark_onSecondary">#004D47</color>
+    <color name="md_theme_dark_secondaryContainer">#00695C</color>
+    <color name="md_theme_dark_onSecondaryContainer">#E0F2F1</color>
 
     <color name="md_theme_dark_tertiary">#D8C68D</color>
     <color name="md_theme_dark_onTertiary">#3B2F05</color>
@@ -79,14 +79,72 @@
     <color name="marker_default">#F44336</color>
     <color name="marker_badge_blue">#1A73E8</color>
 
+    <!-- TrazaGo Brand Colors (from logo) -->
+    <color name="navy_blue">#1C2E4A</color>
+    <color name="color_alert_red">#D93B3B</color>
+    <color name="teal_gradient_start">#5CB8B2</color>
+    <color name="green_gradient_end">#2E7D32</color>
+
     <!-- Additional UI Colors -->
     <color name="transparent">#00000000</color>
     <color name="semi_transparent_black">#80000000</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="gradient_start">#FF8A56</color>
-    <color name="gradient_end">#FF6B35</color>
+    <color name="gradient_start">#5CB8B2</color>
+    <color name="gradient_end">#2E7D32</color>
 
     <!-- Legacy colors (for compatibility) -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ============ Extended Palette (shades 50-900) ============ -->
+    <color name="color_primary_50">#E8F5E9</color>
+    <color name="color_primary_100">#C8E6C9</color>
+    <color name="color_primary_200">#A5D6A7</color>
+    <color name="color_primary_300">#81C784</color>
+    <color name="color_primary_400">#66BB6A</color>
+    <color name="color_primary_500">#4CAF50</color>
+    <color name="color_primary_600">#43A047</color>
+    <color name="color_primary_700">#388E3C</color>
+    <color name="color_primary_800">#2E7D32</color>
+    <color name="color_primary_900">#1B5E20</color>
+
+    <color name="color_secondary_100">#B2DFDB</color>
+    <color name="color_secondary_300">#80CBC4</color>
+    <color name="color_secondary_500">#5CB8B2</color>
+    <color name="color_secondary_700">#00897B</color>
+    <color name="color_secondary_900">#004D40</color>
+
+    <color name="color_tertiary_200">#F5E2A7</color>
+    <color name="color_tertiary_500">#6C5E2F</color>
+    <color name="color_tertiary_800">#3B2F05</color>
+
+    <!-- ============ Semantic colors (light) ============ -->
+    <color name="color_success">#2E7D32</color>
+    <color name="color_on_success">#FFFFFF</color>
+    <color name="color_success_container">#C8E6C9</color>
+    <color name="color_on_success_container">#1B5E20</color>
+
+    <color name="color_warning">#E65100</color>
+    <color name="color_on_warning">#FFFFFF</color>
+    <color name="color_warning_container">#FFF3E0</color>
+    <color name="color_on_warning_container">#BF360C</color>
+
+    <color name="color_info">#1565C0</color>
+    <color name="color_on_info">#FFFFFF</color>
+    <color name="color_info_container">#E3F2FD</color>
+    <color name="color_on_info_container">#0D47A1</color>
+
+    <color name="color_destructive_text">#C62828</color>
+    <color name="color_destructive_container">#FFEBEE</color>
+
+    <!-- ============ Surface elevation tokens (light) ============ -->
+    <color name="color_surface_container_low">#FFF5F0</color>
+    <color name="color_surface_container">#FBEFE8</color>
+    <color name="color_surface_container_high">#F5E7DE</color>
+    <color name="color_surface_container_highest">#EFDFD4</color>
+
+    <!-- ============ Ripple alpha tokens (12% / 20%) ============ -->
+    <color name="color_ripple_primary">#1F2E7D32</color>
+    <color name="color_ripple_on_surface">#1F221A15</color>
+    <color name="color_ripple_error">#1FBA1A1A</color>
 </resources>

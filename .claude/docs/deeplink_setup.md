@@ -1,6 +1,6 @@
 # App Links — Configuración de Digital Asset Links
 
-`AndroidManifest.xml` declara `android:autoVerify="true"` para `https://touristnotify.app/place/*`. Sin un `assetlinks.json` válido publicado, la verificación falla y Android cae al diálogo de "Abrir con…", permitiendo que **otra app pueda registrarse para interceptar el deep link**.
+`AndroidManifest.xml` declara `android:autoVerify="true"` para `https://TrazaGo.app/place/*`. Sin un `assetlinks.json` válido publicado, la verificación falla y Android cae al diálogo de "Abrir con…", permitiendo que **otra app pueda registrarse para interceptar el deep link**.
 
 Este documento explica cómo publicar el archivo correctamente.
 
@@ -45,7 +45,7 @@ Ejemplo final:
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "com.joseibarra.touristnotify",
+    "package_name": "com.joseibarra.TrazaGo",
     "sha256_cert_fingerprints": ["2A:B3:C4:..."]
   }
 }]
@@ -58,7 +58,7 @@ Ejemplo final:
 Debe estar accesible en **HTTPS** en exactamente esta URL:
 
 ```
-https://touristnotify.app/.well-known/assetlinks.json
+https://TrazaGo.app/.well-known/assetlinks.json
 ```
 
 Requisitos:
@@ -73,17 +73,17 @@ Requisitos:
 
 Desde la línea de comando:
 ```bash
-curl -i https://touristnotify.app/.well-known/assetlinks.json
+curl -i https://TrazaGo.app/.well-known/assetlinks.json
 ```
 
 Con el [Statement List Generator](https://developers.google.com/digital-asset-links/tools/generator):
 ```
-https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https%3A%2F%2Ftouristnotify.app&relation=delegate_permission%2Fcommon.handle_all_urls
+https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https%3A%2F%2FTrazaGo.app&relation=delegate_permission%2Fcommon.handle_all_urls
 ```
 
 Desde Android (con la app instalada):
 ```bash
-adb shell pm get-app-links com.joseibarra.touristnotify
+adb shell pm get-app-links com.joseibarra.TrazaGo
 # Debe mostrar: Domain verification state: verified
 ```
 
@@ -100,6 +100,6 @@ adb shell pm get-app-links com.joseibarra.touristnotify
 
 ---
 
-## 6. Schema custom (`touristnotify://`)
+## 6. Schema custom (`TrazaGo://`)
 
-El schema `touristnotify://` **no se beneficia de App Links** — siempre puede ser interceptado por otra app. No hay solución a nivel sistema; mantenerlo solo como fallback (QR codes en sitios físicos) y validar el `placeId` con regex en `PlaceDetailsActivity.handleDeepLink()` (ya implementado vía `PLACE_ID_PATTERN`).
+El schema `TrazaGo://` **no se beneficia de App Links** — siempre puede ser interceptado por otra app. No hay solución a nivel sistema; mantenerlo solo como fallback (QR codes en sitios físicos) y validar el `placeId` con regex en `PlaceDetailsActivity.handleDeepLink()` (ya implementado vía `PLACE_ID_PATTERN`).

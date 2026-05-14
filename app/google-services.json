@@ -17,6 +17,31 @@
       "api_key": [
         {
           "current_key": "AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI"
+        },
+        {
+          "current_key": "AIzaSyDzx-4pBL_-ge9ukZzUpM75FhPSNZ2cadY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090772296348:android:a8f3fe5ed1be4b1c998359",
+        "android_client_info": {
+          "package_name": "com.joseibarra.trazago"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI"
+        },
+        {
+          "current_key": "AIzaSyDzx-4pBL_-ge9ukZzUpM75FhPSNZ2cadY"
         }
       ],
       "services": {

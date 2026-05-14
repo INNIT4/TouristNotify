@@ -1,4 +1,4 @@
-# Performance Audit — LUPITA
+# Performance Audit — TrazaGo
 
 ## Resumen ejecutivo
 
@@ -43,9 +43,9 @@ La app tiene buenos patrones en varias áreas (paginación en Blog, debounce en 
 - ~~`ValueAnimator` a 60fps durante 1200ms → ~72 callbacks, cada uno construye nueva `mutableListOf` parcial y asigna a `polyline.points`. GC pressure con objetos de corta vida.~~
 - **Resuelto**: `partial` se crea como `ArrayList<LatLng>(fullPath.size)` antes del `ValueAnimator` y se reutiliza vía `partial.clear()` en cada frame.
 
-### ~~[PERF-008] `applicationScope` con `Dispatchers.Main` para Remote Config — `TouristNotifyApplication.kt:23,53-55`~~ ✅
+### ~~[PERF-008] `applicationScope` con `Dispatchers.Main` para Remote Config — `TrazaGoApplication.kt:23,53-55`~~ ✅
 - ~~Scope de Application usa `Dispatchers.Main`. Si `fetchAndActivate` falla con backoff, el tiempo de espera ocurre en el startup path. Usar `Dispatchers.IO`.~~
-- **Resuelto**: `TouristNotifyApplication` ya usa `CoroutineScope(SupervisorJob() + Dispatchers.IO)`.
+- **Resuelto**: `TrazaGoApplication` ya usa `CoroutineScope(SupervisorJob() + Dispatchers.IO)`.
 
 ---
 

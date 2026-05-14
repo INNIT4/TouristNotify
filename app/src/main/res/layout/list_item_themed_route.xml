@@ -9,12 +9,23 @@
     android:layout_marginBottom="16dp"
     android:clickable="true"
     android:focusable="true"
-    style="@style/Widget.TouristNotify.CardView"
+    style="@style/Widget.TrazaGo.CardView"
     app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/route_cover_image"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="@string/a11y_event_detail_hero"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Color Strip on Left -->
         <View
@@ -95,6 +106,15 @@
                     android:visibility="gone"
                     tools:visibility="visible" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/route_author_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone" />
 
             <!-- Description -->
             <TextView

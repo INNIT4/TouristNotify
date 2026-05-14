@@ -1,8 +1,8 @@
-# Architecture Review — LUPITA
+# Architecture Review — TrazaGo
 
 ## Resumen ejecutivo
 
-LUPITA funciona, pero su stack minimalista (sin ViewModel, sin DI, sin Navigation Component) ha cruzado el umbral donde empieza a costar más de lo que ahorra. Hay **inconsistencias críticas en nombres de colecciones Firestore** entre módulos que están causando que la sincronización offline lea datos distintos a la fuente real. El patrón offline-first es unidireccional (no bidireccional como documenta CLAUDE.md) y sin resolución de conflictos. Recomendación: **no migrar big-bang**, pero sí introducir ViewModel + Repository incremental y corregir P0 de colecciones antes de cualquier otra cosa.
+TrazaGo funciona, pero su stack minimalista (sin ViewModel, sin DI, sin Navigation Component) ha cruzado el umbral donde empieza a costar más de lo que ahorra. Hay **inconsistencias críticas en nombres de colecciones Firestore** entre módulos que están causando que la sincronización offline lea datos distintos a la fuente real. El patrón offline-first es unidireccional (no bidireccional como documenta CLAUDE.md) y sin resolución de conflictos. Recomendación: **no migrar big-bang**, pero sí introducir ViewModel + Repository incremental y corregir P0 de colecciones antes de cualquier otra cosa.
 
 ---
 
@@ -42,7 +42,7 @@ LUPITA funciona, pero su stack minimalista (sin ViewModel, sin DI, sin Navigatio
 - **Resuelto**: `AppDatabase.kt` incluye `fallbackToDestructiveMigration()` y `fallbackToDestructiveMigrationOnDowngrade()`.
 
 ### ~~P2 — `applicationScope` usa `Dispatchers.Main` para trabajo de Remote Config~~ ✅
-- ~~`TouristNotifyApplication.kt:23` lanzaba `ConfigManager.initialize()` (I/O) en `Dispatchers.Main`.~~
+- ~~`TrazaGoApplication.kt:23` lanzaba `ConfigManager.initialize()` (I/O) en `Dispatchers.Main`.~~
 - **Resuelto**: Cambiado a `Dispatchers.IO`.
 
 ### P2 — Duplicación de 7 Intent extras de place en 4+ Activities

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LUPITA Admin</title>
+<title>TrazaGo Admin</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, sans-serif; background: #f0f2f5; color: #1a1a1a; }
@@ -45,7 +45,7 @@ textarea { min-height: 50px; resize: vertical; }
 <body>
 
 <div id="login-box">
-  <h2 style="margin-bottom:20px;text-align:center">LUPITA Admin</h2>
+  <h2 style="margin-bottom:20px;text-align:center">TrazaGo Admin</h2>
   <input id="lemail" type="email" placeholder="Email" style="margin-bottom:10px">
   <input id="lpass" type="password" placeholder="Contraseña" style="margin-bottom:12px">
   <button class="btn btn-p" onclick="doLogin()" style="width:100%">Iniciar Sesión</button>
@@ -54,7 +54,7 @@ textarea { min-height: 50px; resize: vertical; }
 
 <div id="app" style="display:none">
   <div class="header">
-    <h1>LUPITA Admin</h1>
+    <h1>TrazaGo Admin</h1>
     <div style="display:flex;align-items:center;gap:16px">
       <span id="user" style="font-size:12px;opacity:.9"></span>
       <button onclick="auth.signOut()">Salir</button>
@@ -64,6 +64,7 @@ textarea { min-height: 50px; resize: vertical; }
     <div class="tab active" data-t="places">Lugares</div>
     <div class="tab" data-t="import">Importar JSON</div>
     <div class="tab" data-t="enrich">Enriquecer IA</div>
+    <div class="tab" data-t="routes">Rutas Temáticas</div>
   </div>
   <div class="content">
     <div id="tab-places">
@@ -103,6 +104,17 @@ textarea { min-height: 50px; resize: vertical; }
         <div id="elist" style="margin-top:12px"></div>
       </div>
     </div>
+    <div id="tab-routes" style="display:none">
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input id="rsearch" placeholder="Buscar ruta..." style="flex:1;min-width:200px" oninput="renderRoutesList()">
+          <button class="btn btn-p" onclick="newRoute()">+ Nueva ruta</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="rlist"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -137,22 +149,78 @@ textarea { min-height: 50px; resize: vertical; }
   </div>
 </div>
 
+<div class="modal" id="rmdl">
+  <div class="modal-box">
+    <h3 id="rmtitle" style="margin-bottom:14px">Nueva Ruta Temática</h3>
+    <div class="row">
+      <div class="col"><span class="lbl">Nombre *</span><input id="rname"></div>
+      <div class="col"><span class="lbl">Tema</span><select id="rtheme"><option>Histórica</option><option>Cultural</option><option>Gastronómica</option><option>Naturaleza</option><option>Arquitectura</option><option>Nocturna</option><option>Fotográfica</option></select></div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="lbl">Curada por</span><input id="rauthor"></div>
+      <div class="col"><span class="lbl">Duración est.</span><input id="rduration" placeholder="ej. 2-3 horas"></div>
+    </div>
+    <span class="lbl">Descripción</span><textarea id="rdesc" style="min-height:80px"></textarea>
+    <div class="row">
+      <div class="col"><span class="lbl">Dificultad</span><select id="rdiff"><option>Fácil</option><option>Moderada</option><option>Difícil</option></select></div>
+      <div class="col"><span class="lbl">Color</span><input id="rcolor" type="color" value="#FF6B35" style="padding:2px;height:36px"></div>
+      <div class="col"><span class="lbl">Icono emoji</span><input id="ricon" value="🎨" maxlength="2" style="width:60px"></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:16px;align-items:center">
+      <label><input type="checkbox" id="rfeatured"> Destacada</label>
+    </div>
+    <span class="lbl">Foto portada</span>
+    <input type="file" id="rcover" accept="image/*" onchange="previewCover(this)">
+    <img id="rcoverpreview" style="max-width:200px;max-height:120px;margin-top:6px;display:none;border-radius:8px">
+    
+    <div style="margin-top:16px">
+      <span class="lbl" style="margin-bottom:6px">Lugares de la ruta (en orden):</span>
+      <div id="rplaces" style="border:1px solid #ddd;border-radius:8px;padding:8px;min-height:40px;max-height:200px;overflow-y:auto"></div>
+      <button class="btn btn-s btn-sm" onclick="openPlacePicker()" style="margin-top:6px">+ Añadir lugar</button>
+    </div>
+    
+    <input type="hidden" id="rid">
+    <div style="margin-top:18px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-d" id="rbdel" style="display:none" onclick="deleteRoute()">Eliminar</button>
+      <button class="btn btn-s" onclick="closeRM()">Cancelar</button>
+      <button class="btn btn-p" onclick="saveRoute()">Guardar ruta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="pmdl">
+  <div class="modal-box">
+    <h3 style="margin-bottom:14px">Seleccionar lugares</h3>
+    <input id="psearch" placeholder="Buscar lugar..." oninput="renderPlacePicker()" style="margin-bottom:10px">
+    <div id="plist" style="max-height:50vh;overflow-y:auto"></div>
+    <div style="margin-top:14px;display:flex;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closePM()">Listo</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit, where, GeoPoint } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js';
 
 const app = initializeApp({
   apiKey: "AIzaSyBCDAbw5xAbKwUclGuF6PPmZM5c-ilCtSI",
-  authDomain: "touristnotify-db.firebaseapp.com",
-  projectId: "touristnotify-db",
-  storageBucket: "touristnotify-db.firebasestorage.app",
+  authDomain: "trazago-db.firebaseapp.com",
+  projectId: "trazago-db",
+  storageBucket: "trazago-db.firebasestorage.app",
   messagingSenderId: "1090772296348",
-  appId: "1:1090772296348:web:lupitaadmin2024"
+  appId: "1:1090772296348:web:TrazaGoadmin2024"
 });
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const COL = 'lugares';
+const RCOL = 'themed_routes';
+let _rcache = {};
+let _routePlaces = [];
+let _allPlaces = [];
 let _cache = {};
 
 window.auth = auth;
@@ -334,6 +402,206 @@ function t(m, ok) {
   const el = document.createElement('div'); el.className='toast '+(ok?'ok':'err'); el.textContent=m;
   document.body.appendChild(el); setTimeout(()=>el.remove(),3000);
 }
+
+// === Rutas Temáticas CRUD ===
+
+window.loadRoutes = async () => {
+  const snap = await getDocs(query(collection(db,RCOL), orderBy('isFeatured','desc'), orderBy('createdAt','desc')));
+  _rcache = {};
+  snap.forEach(d => { _rcache[d.id] = {id:d.id, ...d.data()}; });
+  renderRoutesList();
+};
+
+window.renderRoutesList = () => {
+  const s = (document.getElementById('rsearch')?.value||'').toLowerCase();
+  let h = '';
+  Object.values(_rcache).forEach(r => {
+    if (s && !(r.name||'').toLowerCase().includes(s) && !(r.theme||'').toLowerCase().includes(s)) return;
+    h += `<div style="padding:12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>${r.isFeatured?'⭐ ':''}${esc(r.name)}</strong>
+        <span style="color:#888;font-size:12px;margin-left:8px">${esc(r.theme)} · ${esc(r.authorName)||'Sin autor'}</span>
+        <div style="font-size:11px;color:#aaa">${(r.placeIds||[]).length} lugares · ${esc(r.difficulty)||'—'} · ${esc(r.estimatedDuration)||'—'}</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-s btn-sm" onclick="editRoute('${r.id}')">✏️</button>
+        <button class="btn btn-d btn-sm" onclick="deleteRoute('${r.id}')">🗑</button>
+      </div></div>`;
+  });
+  document.getElementById('rlist').innerHTML = h || '<p style="color:#888;text-align:center;padding:20px">No hay rutas. Crea la primera.</p>';
+};
+
+window.newRoute = () => {
+  ['rid','rname','rauthor','rdesc','rduration'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  document.getElementById('rtheme').value='Histórica';
+  document.getElementById('rdiff').value='Fácil';
+  document.getElementById('rcolor').value='#FF6B35';
+  document.getElementById('ricon').value='🎨';
+  document.getElementById('rfeatured').checked=false;
+  document.getElementById('rcover').value='';
+  document.getElementById('rcoverpreview').style.display='none';
+  document.getElementById('rbdel').style.display='none';
+  document.getElementById('rmtitle').textContent='Nueva Ruta Temática';
+  _routePlaces = [];
+  renderRoutePlaces();
+  document.getElementById('rmdl').classList.add('on');
+};
+
+window.editRoute = (id) => {
+  const r = _rcache[id]; if (!r) return;
+  document.getElementById('rid').value = id;
+  document.getElementById('rname').value = r.name||'';
+  document.getElementById('rtheme').value = r.theme||'Histórica';
+  document.getElementById('rauthor').value = r.authorName||'';
+  document.getElementById('rdesc').value = r.description||'';
+  document.getElementById('rduration').value = r.estimatedDuration||'';
+  document.getElementById('rdiff').value = r.difficulty||'Fácil';
+  document.getElementById('rcolor').value = r.color||'#FF6B35';
+  document.getElementById('ricon').value = r.icon||'🎨';
+  document.getElementById('rfeatured').checked = r.isFeatured||false;
+  if (r.imageUrl) { document.getElementById('rcoverpreview').src=r.imageUrl; document.getElementById('rcoverpreview').style.display='block'; }
+  else { document.getElementById('rcoverpreview').style.display='none'; }
+  document.getElementById('rbdel').style.display='inline-block';
+  document.getElementById('rmtitle').textContent='Editar: '+r.name;
+  _routePlaces = [...(r.placeIds||[])];
+  renderRoutePlaces();
+  document.getElementById('rmdl').classList.add('on');
+};
+
+window.closeRM = () => document.getElementById('rmdl').classList.remove('on');
+
+window.renderRoutePlaces = () => {
+  const names = _routePlaces.map(pid => {
+    const p = _allPlaces.find(x => x.id === pid);
+    return p ? p.nombre : pid;
+  });
+  document.getElementById('rplaces').innerHTML = names.map((n,i) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f0f0f0">
+      <span>${i+1}. ${esc(n)}</span>
+      <span>
+        <button class="btn btn-s btn-sm" onclick="movePlace(${i},-1)" ${i===0?'disabled':''}>⬆</button>
+        <button class="btn btn-s btn-sm" onclick="movePlace(${i},1)" ${i===_routePlaces.length-1?'disabled':''}>⬇</button>
+        <button class="btn btn-d btn-sm" onclick="removePlace(${i})">✕</button>
+      </span>
+    </div>`
+  ).join('');
+};
+
+window.movePlace = (idx, dir) => {
+  const ni = idx + dir;
+  if (ni < 0 || ni >= _routePlaces.length) return;
+  [_routePlaces[idx], _routePlaces[ni]] = [_routePlaces[ni], _routePlaces[idx]];
+  renderRoutePlaces();
+};
+
+window.removePlace = (idx) => {
+  _routePlaces.splice(idx, 1);
+  renderRoutePlaces();
+};
+
+window.openPlacePicker = async () => {
+  if (_allPlaces.length === 0) {
+    const snap = await getDocs(query(collection(db,COL), orderBy('nombre'), limit(500)));
+    _allPlaces = [];
+    snap.forEach(d => { _allPlaces.push({id:d.id, nombre:d.data().nombre||d.id}); });
+  }
+  renderPlacePicker();
+  document.getElementById('pmdl').classList.add('on');
+};
+
+window.renderPlacePicker = () => {
+  const s = (document.getElementById('psearch')?.value||'').toLowerCase();
+  const h = _allPlaces.filter(p => !s || (p.nombre||'').toLowerCase().includes(s)).map(p => {
+    const selected = _routePlaces.includes(p.id);
+    return `<div style="padding:6px 0;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center">
+      <span>${esc(p.nombre)} ${selected?'✅':''}</span>
+      <button class="btn ${selected?'btn-d':'btn-p'} btn-sm" onclick="${selected?'removePlaceById':'addPlaceById'}('${p.id}')">${selected?'Quitar':'Añadir'}</button>
+    </div>`;
+  }).join('');
+  document.getElementById('plist').innerHTML = h || '<p style="color:#888">Sin resultados</p>';
+};
+
+window.addPlaceById = (pid) => {
+  if (!_routePlaces.includes(pid)) _routePlaces.push(pid);
+  renderRoutePlaces();
+  renderPlacePicker();
+};
+
+window.removePlaceById = (pid) => {
+  _routePlaces = _routePlaces.filter(x => x !== pid);
+  renderRoutePlaces();
+  renderPlacePicker();
+};
+
+window.closePM = () => document.getElementById('pmdl').classList.remove('on');
+
+window.previewCover = (input) => {
+  const img = document.getElementById('rcoverpreview');
+  if (input.files && input.files[0]) {
+    img.src = URL.createObjectURL(input.files[0]);
+    img.style.display = 'block';
+  }
+};
+
+window.saveRoute = async () => {
+  const id = document.getElementById('rid').value || document.getElementById('rname').value.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const file = document.getElementById('rcover').files[0];
+  const d = {
+    name: document.getElementById('rname').value,
+    theme: document.getElementById('rtheme').value,
+    authorName: document.getElementById('rauthor').value,
+    description: document.getElementById('rdesc').value,
+    estimatedDuration: document.getElementById('rduration').value,
+    difficulty: document.getElementById('rdiff').value,
+    color: document.getElementById('rcolor').value,
+    icon: document.getElementById('ricon').value,
+    isFeatured: document.getElementById('rfeatured').checked,
+    placeIds: _routePlaces,
+    updatedAt: new Date()
+  };
+  
+  try {
+    const docRef = doc(db, RCOL, id);
+    const existing = _rcache[id];
+    if (!existing) d.createdAt = new Date();
+    
+    await setDoc(docRef, d, {merge:true});
+    
+    if (file) {
+      const storageRef = ref(storage, `themed_routes/${id}/cover.jpg`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await setDoc(docRef, {imageUrl: url}, {merge:true});
+    }
+    
+    t('Ruta guardada: '+d.name, 1);
+    closeRM();
+    await loadRoutes();
+  } catch(e) { t('Error: '+e.message, 0); }
+};
+
+window.deleteRoute = async (id) => {
+  if (!confirm('¿Eliminar esta ruta temática?')) return;
+  try {
+    await deleteDoc(doc(db,RCOL,id));
+    t('Ruta eliminada', 1);
+    closeRM();
+    await loadRoutes();
+  } catch(e) { t('Error: '+e.message, 0); }
+};
+
+// Load routes when tab is clicked (hook into existing tab handler)
+const origTabClick = document.querySelector('.tab[data-t="routes"]')?.onclick;
+document.querySelectorAll('.tab').forEach(t => {
+  const orig = t.onclick;
+  t.onclick = function(ev) {
+    if (orig) orig.call(this, ev);
+    if (this.dataset.t === 'routes') {
+      if (Object.keys(_rcache).length === 0) loadRoutes();
+      else renderRoutesList();
+    }
+  };
+});
 </script>
 </body>
 </html>

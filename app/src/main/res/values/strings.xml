@@ -1,6 +1,20 @@
 <resources>
-    <string name="app_name">TouristNotify</string>
+    <string name="app_name">TrazaGo</string>
     <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- Empty states (Generic + por pantalla) -->
+    <string name="search_initial_title">¿Qué buscas hoy?</string>
+    <string name="search_initial_subtitle">Encuentra lugares, eventos, artículos del blog o rutas guardadas.</string>
+    <string name="search_no_results_title">Sin resultados</string>
+    <string name="search_no_results_subtitle">Prueba con otras palabras o revisa la ortografía.</string>
+    <string name="empty_favorites_title">Aún no tienes favoritos</string>
+    <string name="empty_favorites_subtitle">Cuando guardes lugares aparecerán aquí para volver a visitarlos rápido.</string>
+    <string name="empty_favorites_action">Explorar lugares</string>
+    <string name="empty_routes_title">Sin rutas guardadas</string>
+    <string name="empty_routes_subtitle">Genera tu primera ruta personalizada con IA.</string>
+    <string name="empty_routes_action">Crear ruta</string>
+    <string name="empty_events_title">No hay eventos próximos</string>
+    <string name="empty_events_subtitle">Te avisaremos cuando se programen nuevas actividades en Álamos.</string>
 
     <!-- Accessibility: password toggle (A11Y-011) -->
     <string name="a11y_password_toggle_show">Mostrar contraseña</string>
@@ -140,6 +154,9 @@
     <string name="profile_username_taken">Ese nombre de usuario ya está en uso</string>
     <string name="profile_updated">Perfil actualizado</string>
     <string name="profile_save_error">Error al guardar: %s</string>
+    <string name="uploading_photo">Subiendo foto…</string>
+    <string name="profile_photo_updated">Foto de perfil actualizada</string>
+    <string name="profile_photo_upload_error">Error al subir foto: %s</string>
     <string name="change_password_title">Cambiar Contraseña</string>
     <string name="enter_current_password">Ingresa tu contraseña actual</string>
     <string name="new_password_min_length">La nueva contraseña debe tener al menos 6 caracteres</string>
@@ -230,7 +247,7 @@
     <string name="auth_required">Requiere autenticación</string>
 
     <!-- Accessibility -->
-    <string name="cd_app_logo">Logo de TouristNotify</string>
+    <string name="cd_app_logo">Logo de TrazaGo</string>
     <string name="cd_weather_icon">Icono del clima actual</string>
     <string name="cd_close_navigation">Cerrar navegación</string>
     <string name="cd_lock_icon">Requiere autenticación</string>
@@ -263,13 +280,13 @@
 
     <!-- AI disclaimer (P0-4 compliance-auditor) -->
     <string name="ai_disclaimer_title">🤖 Generación con Inteligencia Artificial</string>
-    <string name="ai_disclaimer_message">Para generar tu ruta personalizada, LUPITA enviará tus preferencias (presupuesto, tiempo, intereses, petición específica) al servicio Google Gemini AI.\n\n• Estos datos pueden ser almacenados temporalmente por Google según sus políticas de uso.\n• Puedes revisar nuestra Política de Privacidad para más información.\n• Esta función es opcional — siempre puedes consultar lugares y eventos sin usar IA.\n\n¿Aceptas continuar?</string>
+    <string name="ai_disclaimer_message">Para generar tu ruta personalizada, TrazaGo enviará tus preferencias (presupuesto, tiempo, intereses, petición específica) al servicio Google Gemini AI.\n\n• Estos datos pueden ser almacenados temporalmente por Google según sus políticas de uso.\n• Puedes revisar nuestra Política de Privacidad para más información.\n• Esta función es opcional — siempre puedes consultar lugares y eventos sin usar IA.\n\n¿Aceptas continuar?</string>
     <string name="ai_disclaimer_accept">Aceptar y generar</string>
     <string name="ai_disclaimer_cancel">Cancelar</string>
 
     <!-- BG Location disclosure (P0-3 compliance-auditor / Google Play policy) -->
     <string name="bg_location_title">Ubicación en segundo plano</string>
-    <string name="bg_location_disclosure">LUPITA usa tu ubicación en segundo plano para enviarte notificaciones cuando te acerques a lugares turísticos, incluso cuando la app está cerrada o no la estás usando.\n\n• Esta función es opcional.\n• Puedes desactivarla en cualquier momento desde las Preferencias del dispositivo o desde Perfil → Notificaciones de proximidad.\n• Tu ubicación nunca se comparte con terceros.\n\n¿Quieres permitir que LUPITA acceda a tu ubicación en segundo plano?</string>
+    <string name="bg_location_disclosure">TrazaGo usa tu ubicación en segundo plano para enviarte notificaciones cuando te acerques a lugares turísticos, incluso cuando la app está cerrada o no la estás usando.\n\n• Esta función es opcional.\n• Puedes desactivarla en cualquier momento desde las Preferencias del dispositivo o desde Perfil → Notificaciones de proximidad.\n• Tu ubicación nunca se comparte con terceros.\n\n¿Quieres permitir que TrazaGo acceda a tu ubicación en segundo plano?</string>
     <string name="bg_location_continue">Permitir</string>
     <string name="bg_location_decline">Ahora no</string>
     <string name="bg_location_skipped">Notificaciones de proximidad desactivadas. Puedes activarlas más tarde.</string>
@@ -327,9 +344,9 @@
     <string name="register_privacy_notice">Al crear una cuenta aceptas nuestra <![CDATA[<u><font color="#006A67">Política de Privacidad</font></u>]]></string>
     <string name="onboarding_privacy_notice">Al continuar aceptas nuestra <![CDATA[<u><font color="#006A67">Política de Privacidad</font></u>]]></string>
     <string name="privacy_policy_content"><![CDATA[
-**AVISO DE PRIVACIDAD — TouristNotify (LUPITA)**
+**AVISO DE PRIVACIDAD — TrazaGo (TrazaGo)**
 
-Responsable: José Ibarra / TouristNotify
+Responsable: José Ibarra / TrazaGo
 Contacto: joseinnit04@outlook.com
 
 **Datos que recopilamos**
@@ -363,4 +380,328 @@ Notificaremos cambios significativos mediante un aviso en la app.
 
 NOTA: Este es un aviso provisional. El texto legal definitivo está pendiente de revisión por asesor legal.
     ]]></string>
+
+    <!-- Blog Admin -->
+    <string name="blog_admin_create_title">Crear post</string>
+    <string name="blog_admin_edit_title">Editar post</string>
+    <string name="blog_admin_cover_label">Imagen de portada</string>
+    <string name="blog_admin_cover_select">Seleccionar portada</string>
+    <string name="blog_admin_gallery_label">Galería (opcional)</string>
+    <string name="blog_admin_gallery_add">Agregar imágenes</string>
+    <string name="blog_admin_content_hint">Contenido (Markdown soportado)</string>
+    <string name="blog_admin_publish_success">Post publicado</string>
+    <string name="blog_admin_delete_confirm_title">¿Eliminar este post?</string>
+    <string name="blog_admin_delete_confirm_message">Esta acción es permanente.</string>
+    <string name="blog_admin_not_authorized">Solo administradores pueden editar el blog</string>
+
+    <string name="select_language">Seleccionar idioma</string>
+
+    <!-- Login / Register (extended) -->
+    <string name="welcome_to">Bienvenido a</string>
+    <string name="login_subtitle">Explora Álamos, Sonora</string>
+    <string name="email_hint">Correo electrónico</string>
+    <string name="forgot_password_link">¿Olvidaste tu contraseña?</string>
+    <string name="no_account_yet">¿Aún no tienes cuenta?</string>
+    <string name="already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="join_subtitle">Únete y descubre lugares increíbles</string>
+    <string name="email_helper">Usaremos tu email para iniciar sesión</string>
+    <string name="confirm_password_hint">Confirmar contraseña</string>
+    <string name="password_helper">Mínimo 6 caracteres, incluye letra y número</string>
+    <string name="weather_icon_description">Clima</string>
+    <string name="profile_icon_description">Perfil</string>
+    <string name="settings_title">Configuración</string>
+    <string name="appearance_section">APARIENCIA</string>
+    <string name="dark_mode_title">🌙 Modo Oscuro</string>
+    <string name="dark_mode_subtitle">Reduce el brillo y ahorra batería</string>
+    <string name="language_title">🌐 Idioma</string>
+    <string name="account_section">CUENTA</string>
+    <string name="export_data_subtitle">Descarga toda tu información (GDPR)</string>
+    <string name="danger_zone_section">ZONA DE PELIGRO</string>
+    <string name="onboarding_skip">Omitir</string>
+    <string name="login_title">TrazaGo</string>
+    <string name="register_title">Crear Cuenta</string>
+    <string name="register_create_account">Crear Cuenta</string>
+    <string name="guest_mode_button">Continuar como invitado</string>
+    <string name="default_weather_temp">28°C</string>
+    <string name="default_weather_location">Álamos, Sonora</string>
+
+    <!-- Route Wizard Steps -->
+    <string name="step_who_title">¿Con quién viajas?</string>
+    <string name="step_adults">Adultos</string>
+    <string name="step_children">Niños</string>
+    <string name="step_min_age_label">Edad mínima de los niños</string>
+    <string name="step_date_label">Fecha del recorrido</string>
+    <string name="step_time_label">Hora de inicio</string>
+    <string name="step_duration_label">Duración total del recorrido</string>
+    <string name="step_interests_title">¿Qué te interesa visitar?</string>
+    <string name="step_interests_subtitle">Selecciona uno o más</string>
+    <string name="step_pace_title">Ritmo de viaje</string>
+    <string name="step_special_request">¿Algo en especial? (opcional)</string>
+    <string name="step_special_hint">Ej: quiero ver el centro histórico al atardecer</string>
+    <string name="step_budget_title">Presupuesto total</string>
+    <string name="step_mobility_title">¿Cómo te desplazas?</string>
+    <string name="step_accessibility_title">Accesibilidad requerida</string>
+    <string name="step_dietary_title">Restricciones dietéticas (opcional)</string>
+    <string name="step_include_food">Incluir comida</string>
+    <string name="step_include_food_desc">Agregar un restaurante a la hora de la comida</string>
+    <string name="step_review_title">Confirma tu ruta</string>
+    <string name="step_review_subtitle">Revisa los detalles antes de generar</string>
+    <string name="step_review_tour">Tu recorrido</string>
+    <string name="step_review_travelers">Viajeros</string>
+    <string name="step_review_datetime">Fecha y hora</string>
+    <string name="step_review_duration">Duración</string>
+    <string name="step_review_budget">Presupuesto</string>
+    <string name="step_review_interests">Intereses</string>
+    <string name="step_review_pace">Ritmo</string>
+    <string name="step_review_weather">Clima del día</string>
+    <string name="step_review_loading">Cargando...</string>
+    <string name="step_review_generating">Generando tu ruta...</string>
+    <string name="step_review_generate_btn">Generar ruta con IA</string>
+
+    <!-- Regen & Editor -->
+    <string name="regen_title">Regenerar ruta</string>
+    <string name="regen_subtitle">¿Qué quieres cambiar?</string>
+    <string name="regen_progress">Regenerando ruta...</string>
+    <string name="editor_title">Editar paradas</string>
+    <string name="editor_subtitle">Arrastra para reordenar · Mínimo 2 paradas</string>
+    <string name="editor_auto_optimize">Auto-optim.</string>
+    <string name="editor_min_stops">La ruta debe tener al menos 2 paradas</string>
+    <string name="ai_preset_relaxed">más relajada</string>
+    <string name="ai_preset_cheaper">más barata</string>
+    <string name="ai_preset_cultural">más cultural</string>
+    <string name="ai_preset_less_walking">con menos caminata</string>
+    <string name="ai_preset_food">con más opciones gastronómicas</string>
+    <string name="ai_preset_nature">con más contacto con la naturaleza</string>
+    <string name="regen_select_preset">Selecciona un preset o escribe tu feedback</string>
+    <string name="regen_success">¡Ruta regenerada!</string>
+    <string name="regen_login_required">Inicia sesión para guardar rutas</string>
+    <string name="regen_saved">Ruta guardada en Mis Rutas</string>
+    <string name="regen_save_error">Error al guardar: %s</string>
+    <string name="regen_no_coordinates">No hay suficientes paradas con coordenadas</string>
+
+    <!-- Map -->
+    <string name="map_no_places">No hay lugares cargados</string>
+    <string name="map_places_title">Lista de lugares</string>
+    <string name="map_save_route_title">Guardar Ruta</string>
+    <string name="map_save_button">Guardar</string>
+    <string name="map_add_to_route_first">Agrega lugares a la ruta primero</string>
+    <string name="map_empty_route_name">El nombre de la ruta no puede estar vacío</string>
+
+    <!-- Route labels -->
+    <string name="route_created_label">Creada %s</string>
+    <string name="route_unknown_date">Fecha desconocida</string>
+    <string name="navigation_step_label">Lugar %1$d de %2$d</string>
+
+    <!-- Blog -->
+    <string name="blog_read_more">Leer más →</string>
+    <string name="blog_by_author">Por %s</string>
+    <string name="blog_more_from">Ver más de %s</string>
+
+    <!-- Item actions -->
+    <string name="item_tap_more">Toca para más información →</string>
+    <string name="item_tap_explore">Toca para explorar →</string>
+    <string name="item_view_details">Ver Detalles →</string>
+    <string name="item_view_details_short">Ver detalles</string>
+    <string name="item_how_to_arrive">Cómo llegar</string>
+
+    <!-- Place -->
+    <string name="place_name_label">Nombre del lugar</string>
+    <string name="place_category_label">Categoría</string>
+
+    <!-- Admin / Blog categories -->
+    <string name="admin_blog_category">Categoría</string>
+    <string name="blog_category_tips">💡 Consejos</string>
+    <string name="blog_category_history">📜 Historia</string>
+    <string name="blog_category_food">🍽️ Gastronomía</string>
+    <string name="blog_category_culture">🎭 Cultura</string>
+    <string name="featured_post">Post destacado</string>
+    <string name="featured_post_hint">Aparecerá al inicio de la lista</string>
+    <string name="publish_post">Publicar post</string>
+
+    <!-- Gallery & Related -->
+    <string name="gallery_label">Galería</string>
+    <string name="related_content">Contenido relacionado</string>
+    <string name="stop_closed_alternative">Si está cerrado: %s</string>
+    <string name="fullscreen_photo_by">Por: %s</string>
+
+    <!-- Stats & Share -->
+    <string name="stats_remaining_routes">Quedan %d</string>
+    <string name="stats_ai_routes_limit">/ %d rutas</string>
+    <string name="share_message">¡Descubre Álamos con TrazaGo!</string>
+
+    <!-- Forgot Password extended -->
+    <string name="forgot_sending">Enviando…</string>
+    <string name="forgot_send_link">Enviar enlace de restablecimiento</string>
+
+    <!-- Wizard nav -->
+    <string name="wizard_step_format">Paso %1$d de %2$d · %3$s</string>
+    <string name="wizard_cancel">Cancelar</string>
+    <string name="wizard_back">Atrás</string>
+    <string name="wizard_next">Siguiente</string>
+    <string name="wizard_plan_title">Planifica tu ruta</string>
+    <string name="forgot_subtitle">Ingresa tu correo electrónico y te enviaremos un enlace para restablecerla.</string>
+    <string name="back_to_login">Volver a Iniciar Sesión</string>
+    <string name="back_cd">Volver</string>
+    <string name="maps_filter_all">Todos</string>
+    <string name="maps_filter_museums">Museos</string>
+    <string name="maps_filter_restaurants">Restaurantes</string>
+    <string name="maps_filter_hotels">Hoteles</string>
+    <string name="maps_filter_churches">Iglesias</string>
+    <string name="maps_filter_parks">Parques</string>
+    <string name="maps_filter_shops">Tiendas</string>
+    <string name="route_stop_count">Parada %1$d de %2$d</string>
+    <string name="route_stops_label">paradas</string>
+    <string name="route_hours_label">horas</string>
+    <string name="route_budget_est">MXN est.</string>
+    <string name="route_your_route">Tu ruta</string>
+    <string name="regen_btn_regenerate">Regenerar con este feedback</string>
+    <string name="regen_btn_save_share">Guardar y compartir</string>
+    <string name="regen_btn_save">Guardar ruta</string>
+    <string name="regen_btn_google_maps">Abrir en Google Maps</string>
+    <string name="regen_btn_share_text">Compartir como texto</string>
+    <string name="regen_preset_relaxed">Más relajada</string>
+    <string name="regen_preset_cheaper">Más barata</string>
+    <string name="regen_preset_cultural">Más cultural</string>
+    <string name="regen_preset_less_walking">Menos caminata</string>
+    <string name="regen_preset_food">Más gastronomía</string>
+    <string name="regen_preset_nature">Más naturaleza</string>
+    <string name="interest_art">Arte</string>
+    <string name="interest_music">Música</string>
+    <string name="interest_religion">Religión</string>
+    <string name="interest_adventure">Aventura</string>
+    <string name="interest_viewpoints">Miradores</string>
+    <string name="interest_family">Familiar</string>
+    <string name="interest_luxury">Lujo</string>
+    <string name="interest_budget">Económico</string>
+    <string name="interest_nightlife">Vida nocturna</string>
+    <string name="accessibility_wheelchair">Acceso en silla de ruedas</string>
+    <string name="accessibility_accessible_bathroom">Baño accesible</string>
+    <string name="accessibility_accessible_parking">Estacionamiento accesible</string>
+    <string name="diet_vegetarian">Vegetariano</string>
+    <string name="diet_vegan">Vegano</string>
+    <string name="diet_gluten_free">Sin gluten</string>
+    <string name="diet_halal">Halal</string>
+    <string name="diet_lactose_free">Sin lactosa</string>
+    <string name="ai_disclaimer">La ruta es generada por inteligencia artificial y puede variar. Verifica horarios y precios antes de visitar cada lugar.</string>
+    <string name="btn_share">Compartir</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="maps_navigate">Navegar</string>
+    <string name="maps_next_stop">Siguiente ►</string>
+    <string name="maps_save_route">Guardar ruta</string>
+    <string name="place_hours">Horario</string>
+    <string name="place_zone">Zona</string>
+    <string name="place_about">Acerca de</string>
+    <string name="place_user_rating">Calificación de los usuarios</string>
+    <string name="place_leave_rating">Deja tu calificación</string>
+    <string name="place_send">Enviar</string>
+    <string name="place_reviews">Reseñas</string>
+    <string name="place_view_all">Ver todas</string>
+
+    <!-- Event detail & list -->
+    <string name="event_share_template">Mira este evento en TrazaGo: %1$s · %2$s · %3$s — %4$s</string>
+    <string name="event_reminder_title">Recordatorio de evento</string>
+    <string name="event_reminder_body">%1$s comienza en %2$s. ¡No te lo pierdas!</string>
+    <string name="a11y_event_detail_hero">Imagen del evento %1$s</string>
+    <string name="event_badge_today">HOY</string>
+    <string name="event_badge_this_week">ESTA SEMANA</string>
+    <string name="event_badge_upcoming">PRÓXIMO</string>
+    <string name="event_badge_featured">DESTACADO</string>
+    <string name="event_filter_search_hint">Buscar eventos…</string>
+    <string name="event_tab_today">Hoy</string>
+    <string name="event_tab_this_week">Esta semana</string>
+    <string name="event_tab_upcoming">Próximos</string>
+    <string name="event_tab_all">Todos</string>
+    <string name="event_add_to_calendar">Añadir al calendario</string>
+    <string name="event_remind_me">Recordarme</string>
+    <string name="event_remind_me_locked">Inicia sesión para recibir recordatorios</string>
+    <string name="event_no_search_results">No hay eventos que coincidan con tu búsqueda</string>
+    <string name="event_reminder_dialog_title">¿Cuándo quieres el recordatorio?</string>
+    <string name="event_reminder_30min">30 minutos antes</string>
+    <string name="event_reminder_1hour">1 hora antes</string>
+    <string name="event_reminder_1day">1 día antes</string>
+    <string name="event_reminder_scheduled">Recordatorio programado</string>
+    <string name="event_organizer_label">Organiza: %s</string>
+    <string name="event_price_free">Gratis</string>
+    <string name="event_view_place">Ver lugar</string>
+    <string name="event_location_map_cd">Mapa de ubicación del evento</string>
+    <string name="events_title">📅 Eventos en Álamos</string>
+    <string name="events_subtitle">Descubre lo que está pasando</string>
+    <string name="share">Compartir</string>
+    <string name="menu_card_services">Servicios\nen Álamos</string>
+    <string name="a11y_card_services">Directorio de Servicios en Álamos</string>
+    <string name="services_title">Servicios en Álamos</string>
+    <string name="services_empty">No hay servicios disponibles</string>
+    <string name="service_cat_tourism">Turismo y cultura</string>
+    <string name="service_cat_lodging">Hospedaje</string>
+    <string name="service_cat_food">Gastronomía</string>
+    <string name="service_cat_transport">Transporte</string>
+    <string name="service_cat_health">Salud</string>
+    <string name="service_cat_utilities">Bancos y servicios</string>
+    <string name="service_cat_other">Otros</string>
+    <string name="themed_routes_empty_title">Pronto, nuevas rutas</string>
+    <string name="themed_routes_empty_subtitle">Los expertos están preparando rutas curadas para descubrir Álamos. Vuelve pronto.</string>
+    <string name="themed_routes_offline_title">Sin conexión</string>
+    <string name="themed_routes_retry">Reintentar</string>
+    <string name="themed_route_curated_by">Curada por %1$s</string>
+    <string name="proximity_header_subtitle">Avisos cuando estás cerca de lugares</string>
+    <string name="proximity_enable_switch">Activar notificaciones</string>
+    <string name="proximity_enable_desc">Recibe avisos al acercarte a lugares turísticos</string>
+    <string name="proximity_grant_permissions">Conceder permisos</string>
+    <string name="proximity_radius_label">Radio de proximidad</string>
+    <string name="proximity_radius_hint">Desliza para ajustar la distancia (50 m - 1000 m)</string>
+    <string name="favorites_header_subtitle">Lugares que te encantan</string>
+    <string name="blog_header_subtitle">Tips y guías para tu visita</string>
+    <string name="blog_categories_label">Categorías</string>
+    <string name="blog_category_all">Todos</string>
+    <string name="blog_empty_title">No hay posts disponibles</string>
+    <string name="blog_empty_subtitle">Los artículos aparecerán aquí</string>
+    <string name="themed_routes_header_subtitle">Explora Álamos con rutas curadas</string>
+    <string name="my_routes_header_subtitle">Itinerarios guardados para tu próxima aventura</string>
+    <string name="profile_default_initial">U</string>
+    <string name="profile_stats_checkins">Check-ins</string>
+    <string name="profile_stats_favorites">Favoritos</string>
+    <string name="profile_stats_routes">Rutas</string>
+    <string name="profile_badges_title">Insignias</string>
+    <string name="profile_save_changes">Guardar Cambios</string>
+    <string name="profile_delete_account_btn">Eliminar Cuenta</string>
+    <string name="profile_stats_title">Estadísticas</string>
+    <string name="profile_config_title">Configuración</string>
+    <string name="profile_privacy_title">Política de Privacidad</string>
+    <string name="profile_logout_title">Cerrar Sesión</string>
+    <string name="stats_title">Estadísticas</string>
+    <string name="stats_saved_routes">Rutas guardadas</string>
+    <string name="stats_favorites">Favoritos</string>
+    <string name="stats_checkins">Check-ins</string>
+    <string name="stats_limit_reset">El límite se restablece cada día</string>
+    <string name="stats_badges_title">Insignias</string>
+    <string name="contacts_title">Contactos de Emergencia</string>
+    <string name="contacts_emergency">Emergencia</string>
+    <string name="privacy_last_updated">Última actualización: %1$s</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_itinerary">Itinerario</string>
+    <string name="nav_edit">Editar</string>
+    <string name="nav_share">Compartir</string>
+    <string name="wizard_step1_label">¿Quiénes y cuándo?</string>
+    <string name="wizard_step2_label">¿Qué te gusta?</string>
+    <string name="wizard_step3_label">Restricciones</string>
+    <string name="wizard_step4_label">Confirmar y generar</string>
+    <string name="share_route">Compartir ruta</string>
+    <string name="share_route_default_title">Mi ruta en Álamos</string>
+    <string name="share_google_maps_label">Google Maps</string>
+    <string name="share_app_link_label">Enlace TrazaGo</string>
+
+    <!-- AI progress -->
+    <string name="ai_progress_calling">Consultando inteligencia artificial...</string>
+    <string name="ai_progress_optimizing">Optimizando la ruta...</string>
+    <string name="ai_generation_error">Error al generar la ruta: %s</string>
+    <string name="try_again">Intenta de nuevo</string>
+    <string name="generating">Generando...</string>
+    <string name="step_review_budget_format">$%1$s MXN</string>
+    <string name="unspecified">Sin especificar</string>
+    <string name="step_duration_hours">%1$s horas</string>
+    <string name="step_duration_hour">1 hora</string>
+    <string name="weather_rain_warning">Se recomienda ropa impermeable</string>
 </resources>

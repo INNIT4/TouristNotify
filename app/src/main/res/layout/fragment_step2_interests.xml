@@ -15,14 +15,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿Qué te interesa visitar?"
+            android:text="@string/step_interests_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Selecciona uno o más"
+            android:text="@string/step_interests_subtitle"
             android:textAppearance="?attr/textAppearanceBodySmall"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
@@ -37,105 +37,105 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Historia" />
+                android:text="@string/interest_history" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipArquitectura"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Arquitectura" />
+                android:text="@string/interest_architecture" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipGastronomia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gastronomía" />
+                android:text="@string/interest_food" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipNaturaleza"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Naturaleza" />
+                android:text="@string/interest_outdoors" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipCompras"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Compras" />
+                android:text="@string/interest_shopping" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFotografia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fotografía" />
+                android:text="@string/interest_photography" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipArte"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Arte" />
+                android:text="@string/interest_art" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMusica"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Música" />
+                android:text="@string/interest_music" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipReligion"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Religión" />
+                android:text="@string/interest_religion" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAventura"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Aventura" />
+                android:text="@string/interest_adventure" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMirador"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Miradores" />
+                android:text="@string/interest_viewpoints" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFamilia"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Familiar" />
+                android:text="@string/interest_family" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipLujo"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lujo" />
+                android:text="@string/interest_luxury" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipEconomico"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Económico" />
+                android:text="@string/interest_budget" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipVidaNocturna"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vida nocturna" />
+                android:text="@string/interest_nightlife" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -144,7 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Ritmo de viaje"
+            android:text="@string/step_pace_title"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.chip.ChipGroup
@@ -160,7 +160,7 @@
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Relajado" />
+                android:text="@string/pace_relaxed" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRitmoModerado"
@@ -168,14 +168,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Moderado" />
+                android:text="@string/pace_moderate" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRitmoIntensivo"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Intensivo" />
+                android:text="@string/pace_intense" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -184,7 +184,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="¿Algo en especial? (opcional)"
+            android:text="@string/step_special_request"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -193,7 +193,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Ej: quiero ver el centro histórico al atardecer"
+            android:hint="@string/step_special_hint"
             app:counterEnabled="true"
             app:counterMaxLength="200">
 

@@ -17,9 +17,9 @@ Tu observación fue **100% correcta**: usar el lector QR integrado del teléfono
    ↓
 3. Apunta al código QR
    ↓
-4. El teléfono detecta: "touristnotify://place/museo_costumbrista"
+4. El teléfono detecta: "TrazaGo://place/museo_costumbrista"
    ↓
-5. Pregunta: "¿Abrir con TouristNotify?"
+5. Pregunta: "¿Abrir con TrazaGo?"
    ↓
 6. Usuario acepta
    ↓
@@ -50,9 +50,9 @@ Tu observación fue **100% correcta**: usar el lector QR integrado del teléfono
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
 
-        <!-- touristnotify://place/{placeId} -->
+        <!-- TrazaGo://place/{placeId} -->
         <data
-            android:scheme="touristnotify"
+            android:scheme="TrazaGo"
             android:host="place"
             android:pathPattern="/.*" />
     </intent-filter>
@@ -63,10 +63,10 @@ Tu observación fue **100% correcta**: usar el lector QR integrado del teléfono
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
 
-        <!-- https://touristnotify.app/place/{placeId} -->
+        <!-- https://TrazaGo.app/place/{placeId} -->
         <data
             android:scheme="https"
-            android:host="touristnotify.app"
+            android:host="TrazaGo.app"
             android:pathPrefix="/place/" />
     </intent-filter>
 </activity>
@@ -97,7 +97,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 private fun handleDeepLink(uri: Uri?): String? {
     return when (uri?.scheme) {
-        "touristnotify" -> uri.lastPathSegment
+        "TrazaGo" -> uri.lastPathSegment
         "https" -> uri.pathSegments.getOrNull(1)
         else -> null
     }
@@ -112,7 +112,7 @@ private fun handleDeepLink(uri: Uri?): String? {
 
 **Opción 1 (Recomendada): Deep Link**
 ```
-touristnotify://place/museo_costumbrista
+TrazaGo://place/museo_costumbrista
 ```
 - ✅ Abre la app directamente
 - ✅ Funciona offline (después de escanear)
@@ -120,7 +120,7 @@ touristnotify://place/museo_costumbrista
 
 **Opción 2: URL Web**
 ```
-https://touristnotify.app/place/museo_costumbrista
+https://TrazaGo.app/place/museo_costumbrista
 ```
 - ✅ Si no tiene la app → Play Store/App Store
 - ✅ Funciona como link compartible
@@ -140,12 +140,12 @@ https://touristnotify.app/place/museo_costumbrista
 **Opción A: Online (Rápido)**
 - Ir a: https://www.qr-code-generator.com/
 - Seleccionar "URL"
-- Ingresar: `touristnotify://place/museo_costumbrista`
+- Ingresar: `TrazaGo://place/museo_costumbrista`
 - Descargar PNG/SVG
 
 **Opción B: Google Sheets (Masivo)**
 ```
-=IMAGE("https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=touristnotify://place/museo_costumbrista")
+=IMAGE("https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=TrazaGo://place/museo_costumbrista")
 ```
 
 **3. Imprimir:**
@@ -233,7 +233,7 @@ Cuando intenta usar función premium:
 
 1. **Generar QR de prueba:**
    - Ir a: https://www.qr-code-generator.com/
-   - URL: `touristnotify://place/test123`
+   - URL: `TrazaGo://place/test123`
    - Generar y guardar imagen
 
 2. **Escanear con cámara nativa:**
@@ -243,7 +243,7 @@ Cuando intenta usar función premium:
 
 3. **Verificar:**
    - ✅ Detecta el link
-   - ✅ Pregunta "Abrir con TouristNotify?"
+   - ✅ Pregunta "Abrir con TrazaGo?"
    - ✅ App se abre en PlaceDetailsActivity
    - ✅ Si el ID no existe → Muestra error amigable
 
@@ -264,7 +264,7 @@ Quiere favorito → Se le pide login → Decide si crear cuenta
 
 ### **Caso 3: Turista sin app instalada**
 ```
-Escanea QR → "Abrir con TouristNotify?" → No la tiene
+Escanea QR → "Abrir con TrazaGo?" → No la tiene
 → Llevar a Play Store para instalar
 ```
 
@@ -335,12 +335,12 @@ R: El escaneo sí. Ver detalles requiere internet o modo offline.
 
 **P: ¿Puedo usar QR para eventos o rutas?**
 R: Sí, puedes crear deep links para cualquier cosa:
-- `touristnotify://event/{eventId}`
-- `touristnotify://route/{routeId}`
-- `touristnotify://blog/{postId}`
+- `TrazaGo://event/{eventId}`
+- `TrazaGo://route/{routeId}`
+- `TrazaGo://blog/{postId}`
 
 **P: ¿Necesito dominio web?**
-R: No para deep links (`touristnotify://`). Solo para App Links (`https://`).
+R: No para deep links (`TrazaGo://`). Solo para App Links (`https://`).
 
 ---
 
@@ -362,7 +362,7 @@ Si la oficina de turismo necesita:
 1. ✅ Deep links en AndroidManifest
 2. ✅ PlaceDetailsActivity recibe deep links
 3. ✅ Modo invitado permite escanear sin login
-4. ✅ QR generados con formato: `touristnotify://place/{id}`
+4. ✅ QR generados con formato: `TrazaGo://place/{id}`
 5. ✅ Usuario escanea con cámara nativa
 6. ✅ App se abre directamente en el lugar
 

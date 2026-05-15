@@ -100,7 +100,7 @@
     <string name="daily_limit_title">Límite diario alcanzado</string>
     <string name="daily_limit_message">%s\n\nEsto ayuda a controlar los costos del servicio de IA.</string>
     <string name="ai_usage_subtitle">La IA creará la ruta perfecta para ti\n%s</string>
-    <string name="ai_usage_format">%d/%d rutas IA usadas hoy</string>
+    <string name="ai_usage_format">%1$d/%2$d rutas IA usadas hoy</string>
     <string name="enter_budget_and_time">Por favor, ingresa presupuesto y tiempo disponible</string>
     <string name="budget_invalid">El presupuesto debe ser un número mayor a 0</string>
     <string name="time_invalid">El tiempo disponible debe ser entre 0.5 y 24 horas</string>

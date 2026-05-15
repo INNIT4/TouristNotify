@@ -423,6 +423,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private fun isLocationPermissionGranted() =
         ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (isLocationPermissionGranted()) {
             mMap.isMyLocationEnabled = true

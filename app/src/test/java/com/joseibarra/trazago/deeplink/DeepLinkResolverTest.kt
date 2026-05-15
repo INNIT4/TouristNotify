@@ -1,5 +1,6 @@
 package com.joseibarra.trazago.deeplink
 
+import android.app.Application
 import android.net.Uri
 import com.joseibarra.trazago.DeepLinkResolver
 import org.junit.Assert.assertEquals
@@ -10,7 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34])
+@Config(sdk = [34], application = Application::class)
 class DeepLinkResolverTest {
 
     @Test

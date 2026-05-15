@@ -2,6 +2,8 @@ package com.joseibarra.trazago
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
@@ -23,16 +25,22 @@ object AuthManager {
      * Crea o abre el EncryptedSharedPreferences de la app.
      * Las claves y valores quedan cifrados en el almacenamiento del dispositivo.
      */
-    private fun getEncryptedPrefs(context: Context) =
-        EncryptedSharedPreferences.create(
-            context,
-            AppConstants.PREFS_NAME,
-            MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build(),
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+    private fun getEncryptedPrefs(context: Context): SharedPreferences {
+        return try {
+            EncryptedSharedPreferences.create(
+                context,
+                AppConstants.PREFS_NAME,
+                MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build(),
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Log.w("AuthManager", "EncryptedSharedPreferences not available, falling back to plain prefs", e)
+            context.getSharedPreferences(AppConstants.PREFS_NAME, Context.MODE_PRIVATE)
+        }
+    }
 
     suspend fun isAdmin(): Boolean {
         val user = FirebaseAuth.getInstance().currentUser ?: return false

@@ -11,20 +11,13 @@ style:
       - 'java.util.*'
   ReturnCount:
     max: 5
-  FunctionNaming:
-    active: false
-  VariableNaming:
-    active: false
-  ClassNaming:
-    active: true
-
 complexity:
   LongMethod:
     threshold: 60
   LongParameterList:
     functionThreshold: 8
     constructorThreshold: 8
-  ComplexMethod:
+  CyclomaticComplexMethod:
     threshold: 15
   LargeClass:
     threshold: 600
@@ -54,6 +47,12 @@ exceptions:
 naming:
   MemberNameEqualsClassName:
     active: false
+  FunctionNaming:
+    active: false
+  VariableNaming:
+    active: false
+  ClassNaming:
+    active: true
 
 comments:
   active: false

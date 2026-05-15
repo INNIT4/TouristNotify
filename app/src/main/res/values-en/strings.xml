@@ -83,7 +83,7 @@
     <string name="daily_limit_title">Daily limit reached</string>
     <string name="daily_limit_message">%s\n\nThis helps control AI service costs.</string>
     <string name="ai_usage_subtitle">AI will create the perfect route for you\n%s</string>
-    <string name="ai_usage_format">%d/%d AI routes used today</string>
+    <string name="ai_usage_format">%1$d/%2$d AI routes used today</string>
     <string name="enter_budget_and_time">Please enter budget and available time</string>
     <string name="budget_invalid">Budget must be a number greater than 0</string>
     <string name="time_invalid">Available time must be between 0.5 and 24 hours</string>

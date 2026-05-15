@@ -68,7 +68,7 @@ object CommunityRepository {
         onUpdate: (List<CommunityPost>, DocumentSnapshot?) -> Unit,
         onError: (Exception) -> Unit
     ): ListenerRegistration = posts
-        .whereEqualTo("isHidden", false)
+        .whereEqualTo("hidden", false)
         .orderBy("createdAt", Query.Direction.DESCENDING)
         .limit(pageSize)
         .addSnapshotListener { snap, err ->
@@ -85,7 +85,7 @@ object CommunityRepository {
         pageSize: Long
     ): Result<Pair<List<CommunityPost>, DocumentSnapshot?>> = runCatching {
         val snap = posts
-            .whereEqualTo("isHidden", false)
+            .whereEqualTo("hidden", false)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .startAfter(cursor)
             .limit(pageSize)
@@ -245,7 +245,7 @@ object CommunityRepository {
     // ── Admin ─────────────────────────────────────────────────────────────────
 
     suspend fun hidePostAsAdmin(postId: String): Result<Unit> = runCatching {
-        posts.document(postId).update("isHidden", true).await()
+        posts.document(postId).update("hidden", true).await()
     }
 
     suspend fun getPendingReports(): Result<List<PostReport>> = runCatching {

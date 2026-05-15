@@ -6,18 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="6dp"
     android:gravity="top">
 
+    <!-- Avatar del comentarista -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/comment_avatar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
         android:scaleType="centerCrop"
         android:importantForAccessibility="no"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.Circle"
+        app:strokeWidth="1.5dp"
+        app:strokeColor="?attr/colorOutlineVariant"
         tools:src="@drawable/bg_profile_avatar" />
 
+    <!-- Burbuja de comentario -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -25,36 +31,60 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <!-- Burbuja con fondo tonal -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="@drawable/bg_comment_bubble"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:orientation="vertical"
+            android:minWidth="80dp">
 
             <TextView
                 android:id="@+id/comment_author"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
+                android:letterSpacing="-0.01"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="13sp"
                 tools:text="Carlos R." />
 
             <TextView
-                android:id="@+id/comment_timestamp"
+                android:id="@+id/comment_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginTop="3dp"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                tools:text="Que experiencia tan hermosa! Yo tambien visite ese lugar el ano pasado y quede maravillado." />
+        </LinearLayout>
+
+        <!-- Timestamp y boton eliminar debajo de la burbuja -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/comment_timestamp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="4dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="11sp"
                 tools:text="Hace 1 hora" />
 
             <ImageButton
                 android:id="@+id/delete_comment_button"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="4dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/community_delete_comment_a11y"
                 android:src="@android:drawable/ic_menu_delete"
@@ -63,13 +93,5 @@
                 tools:visibility="visible" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/comment_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            tools:text="¡Qué experiencia tan hermosa! Yo también visité ese lugar el año pasado." />
     </LinearLayout>
 </LinearLayout>

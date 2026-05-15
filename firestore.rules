@@ -397,7 +397,7 @@ service cloud.firestore {
     // ============================================================================
 
     match /publicaciones_comunidad/{postId} {
-      allow read: if resource.data.isHidden == false
+      allow read: if resource.data.hidden == false
                   || isAdmin()
                   || (isAuthenticated() && resource.data.authorId == request.auth.uid);
 
@@ -414,7 +414,7 @@ service cloud.firestore {
                     && request.resource.data.likeCount == 0
                     && request.resource.data.commentCount == 0
                     && request.resource.data.reportCount == 0
-                    && request.resource.data.isHidden == false;
+                    && request.resource.data.hidden == false;
 
       // Tres caminos de update mutuamente excluyentes:
       //   (a) el autor edita texto/fotos/lugar
@@ -425,7 +425,7 @@ service cloud.firestore {
       allow update: if isAuthenticated() && (
            (resource.data.authorId == request.auth.uid &&
             onlyAffects(['title', 'content', 'photoUrls', 'taggedPlaceId', 'taggedPlaceName']))
-        || (isAdmin() && onlyAffects(['isHidden', 'reportCount']))
+        || (isAdmin() && onlyAffects(['hidden', 'reportCount']))
         || (onlyAffects(['likeCount'])    && isCounterIncrement('likeCount'))
         || (onlyAffects(['commentCount']) && isCounterIncrement('commentCount'))
         || (onlyAffects(['reportCount'])  && isCounterIncrement('reportCount'))

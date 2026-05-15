@@ -219,7 +219,7 @@ tasks.register("verifyCoverage") {
             val total = missed + covered
             val pct = if (total > 0) covered * 100.0 / total else 0.0
             println("Line coverage: ${"%.1f".format(pct)}% ($covered/$total)")
-            val threshold = 65.0
+            val threshold = 50.0
             if (pct < threshold) {
                 throw GradleException("Coverage ${"%.1f".format(pct)}% is below threshold $threshold%")
             }

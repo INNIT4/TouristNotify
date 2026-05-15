@@ -7,22 +7,33 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
 
+    <!-- App bar transparente que se superpone sobre la foto si existe -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        app:elevation="0dp"
+        android:background="?attr/colorSurface">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="?attr/colorOnSurface"
             app:navigationContentDescription="@string/back_button_description"
             app:menu="@menu/menu_community_post_detail" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant"
+            android:importantForAccessibility="no" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Scroll principal con contenido y comentarios -->
+    <!-- Scroll principal -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/content_scroll"
         android:layout_width="match_parent"
@@ -37,19 +48,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Fotos carousel -->
+            <!-- Carousel de fotos (edge-to-edge) -->
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/photos_pager"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="260dp"
                 android:visibility="gone"
                 tools:visibility="visible" />
 
+            <!-- Indicador de paginas de fotos -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/photos_indicator"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
                 android:visibility="gone"
                 app:tabBackground="@drawable/bg_dot_inactive"
                 app:tabGravity="center"
@@ -59,11 +72,13 @@
                 app:tabPaddingStart="4dp"
                 app:tabPaddingEnd="4dp" />
 
+            <!-- Contenido del post -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="20dp"
+                android:paddingTop="18dp">
 
                 <!-- Header autor -->
                 <LinearLayout
@@ -74,16 +89,19 @@
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/author_avatar"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
                         android:scaleType="centerCrop"
                         android:importantForAccessibility="no"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.Circle" />
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.Circle"
+                        app:strokeWidth="2dp"
+                        app:strokeColor="@color/md_theme_light_primaryContainer"
+                        tools:src="@drawable/bg_profile_avatar" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -92,104 +110,113 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
+                            android:letterSpacing="-0.01"
                             android:textColor="?attr/colorOnSurface"
-                            android:textSize="14sp"
-                            tools:text="María García" />
+                            android:textSize="15sp"
+                            tools:text="Maria Garcia" />
 
                         <TextView
                             android:id="@+id/post_timestamp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
                             android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="12sp"
                             tools:text="17 de mayo, 2026" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Título -->
+                <!-- Titulo del post -->
                 <TextView
                     android:id="@+id/post_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="18dp"
                     android:fontFamily="sans-serif-medium"
+                    android:lineSpacingMultiplier="1.2"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    tools:text="Mi visita al Templo de la Purísima" />
+                    android:textSize="22sp"
+                    tools:text="Mi visita al Templo de la Purisima" />
 
-                <!-- Contenido -->
+                <!-- Contenido del post -->
                 <TextView
                     android:id="@+id/post_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:lineSpacingMultiplier="1.4"
+                    android:layout_marginTop="12dp"
+                    android:lineSpacingMultiplier="1.6"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="15sp"
-                    tools:text="Una experiencia increíble. El templo es majestuoso y la historia detrás de cada piedra es fascinante." />
+                    tools:text="Una experiencia increible. El templo es majestuoso y la historia detras de cada piedra es fascinante. Cada rincón cuenta una historia diferente de la epoca colonial de Alamos." />
 
-                <!-- Chip de lugar -->
+                <!-- Chip de lugar etiquetado -->
                 <com.google.android.material.chip.Chip
                     android:id="@+id/tagged_place_chip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:visibility="gone"
                     style="@style/Widget.Material3.Chip.Assist"
                     app:chipIcon="@drawable/ic_location"
-                    tools:text="Templo de la Purísima"
+                    app:chipBackgroundColor="@color/md_theme_light_secondaryContainer"
+                    app:chipIconTint="@color/md_theme_light_secondary"
+                    android:textColor="@color/md_theme_light_onSecondaryContainer"
+                    tools:text="Templo de la Purisima"
                     tools:visibility="visible" />
 
                 <!-- Separador -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="18dp"
                     android:background="?attr/colorOutlineVariant"
                     android:importantForAccessibility="no" />
 
-                <!-- Fila de like -->
+                <!-- Fila de like con estilo social -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="52dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/like_button"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/community_like_a11y"
-                        android:src="@drawable/ic_thumb_up_outline" />
+                        android:src="@drawable/ic_thumb_up_outline"
+                        android:tint="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:id="@+id/like_count"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_marginStart="6dp"
+                        android:fontFamily="sans-serif-medium"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"
                         tools:text="12 me gusta" />
                 </LinearLayout>
 
-                <!-- Separador + título comentarios -->
+                <!-- Separador -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
                     android:background="?attr/colorOutlineVariant"
                     android:importantForAccessibility="no" />
 
+                <!-- Encabezado de seccion comentarios -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="4dp"
                     android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.01"
                     android:text="@string/community_comments_title"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp" />
@@ -199,41 +226,54 @@
                     android:id="@+id/comments_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false" />
+                    android:layout_marginHorizontal="-20dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_post_comment" />
 
+                <!-- Estado vacio de comentarios -->
                 <TextView
                     android:id="@+id/no_comments_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:lineSpacingMultiplier="1.4"
                     android:text="@string/community_no_comments"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     android:visibility="gone" />
+
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Composer de comentario pegado al fondo -->
+    <!-- Compositor de comentario fijo al fondo -->
     <LinearLayout
         android:id="@+id/comment_composer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?attr/colorSurface"
-        android:elevation="8dp"
+        android:elevation="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/comment_input_layout"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/community_comment_hint">
+            android:hint="@string/community_comment_hint"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusBottomStart="24dp"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxStrokeWidth="1.5dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/comment_input"
@@ -241,17 +281,24 @@
                 android:layout_height="wrap_content"
                 android:inputType="textCapSentences"
                 android:maxLength="300"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
+        <!-- Boton enviar como icono circular tonal -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_send_comment"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/community_comment_send_a11y"
-            android:src="@android:drawable/ic_menu_send"
-            android:tint="?attr/colorPrimary" />
+            app:icon="@android:drawable/ic_menu_send"
+            app:iconSize="20dp"
+            app:iconTint="?attr/colorOnSecondaryContainer" />
+
     </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

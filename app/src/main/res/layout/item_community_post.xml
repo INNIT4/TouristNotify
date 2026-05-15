@@ -6,38 +6,46 @@
     android:id="@+id/post_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="10dp"
     android:clickable="true"
     android:focusable="true"
-    style="@style/Widget.TrazaGo.CardView"
-    app:cardElevation="2dp">
+    style="@style/Widget.Material3.CardView.Elevated"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <!-- Header: avatar + nombre + timestamp + overflow -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="4dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/author_avatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:scaleType="centerCrop"
                 android:importantForAccessibility="no"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.Circle"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/md_theme_light_primaryContainer"
                 tools:src="@drawable/bg_profile_avatar" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -46,14 +54,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="-0.01"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp"
-                    tools:text="María García" />
+                    tools:text="Maria Garcia" />
 
                 <TextView
                     android:id="@+id/post_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp"
                     tools:text="Hace 2 horas" />
@@ -69,44 +79,49 @@
                 android:tint="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Título -->
+        <!-- Titulo -->
         <TextView
             android:id="@+id/post_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="16dp"
             android:fontFamily="sans-serif-medium"
+            android:lineSpacingMultiplier="1.2"
             android:maxLines="2"
             android:ellipsize="end"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Mi visita al Templo de la Purísima" />
+            android:textSize="17sp"
+            tools:text="Mi visita al Templo de la Purisima" />
 
-        <!-- Contenido (colapsable) -->
+        <!-- Contenido -->
         <TextView
             android:id="@+id/post_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="5dp"
+            android:paddingHorizontal="16dp"
+            android:lineSpacingMultiplier="1.45"
             android:maxLines="4"
             android:ellipsize="end"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
-            tools:text="Una experiencia increíble. El templo es majestuoso y la historia detrás de cada piedra es fascinante. Recomiendo ir temprano por la mañana cuando la luz entra por las ventanas." />
+            tools:text="Una experiencia increible. El templo es majestuoso y la historia detras de cada piedra es fascinante. Recomiendo ir temprano por la manana cuando la luz entra por las ventanas." />
 
         <TextView
             android:id="@+id/see_more_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:paddingHorizontal="16dp"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/community_see_more"
             android:textColor="?attr/colorPrimary"
             android:textSize="13sp"
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <!-- Foto única o grid 2x2 -->
+        <!-- Foto unica o grid 2x2 -->
         <FrameLayout
             android:id="@+id/photos_container"
             android:layout_width="match_parent"
@@ -115,11 +130,11 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <!-- 1 foto -->
+            <!-- 1 foto: borde redondeado, sin margen lateral para efecto edge-to-edge -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_single"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="210dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/community_photo_a11y"
                 android:visibility="gone"
@@ -127,7 +142,7 @@
                 tools:visibility="visible"
                 tools:src="@drawable/bg_hero_placeholder" />
 
-            <!-- 2-4 fotos: grid -->
+            <!-- 2-4 fotos: grid compacto -->
             <GridLayout
                 android:id="@+id/photo_grid"
                 android:layout_width="match_parent"
@@ -192,32 +207,37 @@
                         android:gravity="center"
                         android:background="#99000000"
                         android:textColor="@android:color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-medium"
                         android:visibility="gone"
                         tools:text="+2" />
                 </FrameLayout>
             </GridLayout>
         </FrameLayout>
 
-        <!-- Chip de lugar etiquetado -->
+        <!-- Chip lugar etiquetado -->
         <com.google.android.material.chip.Chip
             android:id="@+id/tagged_place_chip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="14dp"
             android:layout_marginTop="10dp"
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
             style="@style/Widget.Material3.Chip.Assist"
             app:chipIcon="@drawable/ic_location"
+            app:chipBackgroundColor="@color/md_theme_light_secondaryContainer"
+            app:chipIconTint="@color/md_theme_light_secondary"
+            android:textColor="@color/md_theme_light_onSecondaryContainer"
             tools:text="Plaza de Armas"
             tools:visibility="visible" />
 
-        <!-- Separador -->
+        <!-- Separador sutil -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="12dp"
             android:background="?attr/colorOutlineVariant"
             android:importantForAccessibility="no" />
@@ -225,45 +245,51 @@
         <!-- Footer: like + comentarios -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_height="48dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="4dp">
 
             <ImageButton
                 android:id="@+id/like_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/community_like_a11y"
-                android:src="@drawable/ic_thumb_up_outline" />
+                android:src="@drawable/ic_thumb_up_outline"
+                android:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/like_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="13sp"
                 tools:text="12" />
 
             <ImageButton
                 android:id="@+id/comment_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="16dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/community_comment_a11y"
-                android:src="@drawable/ic_comment" />
+                android:src="@drawable/ic_comment"
+                android:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/comment_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="13sp"
                 tools:text="3" />
         </LinearLayout>
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

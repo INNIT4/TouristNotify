@@ -43,7 +43,8 @@ All source under `app/src/main/java/com/joseibarra/TrazaGo/`:
 | `wizard/` | 4-step route preferences wizard (`RouteWizardActivity` + `PreferencesViewModel` + 4 Step fragments) |
 | `routegen/` | AI route generation pipeline V2: `RouteGenerationCoordinator` → `CandidatePreFilter` → `PromptBuilderV2` → `RouteGeneratorV2` → `RouteValidator` → `RouteOptimizer` → `RouteEnricher` |
 | `result/` | Post-generation screen (`RouteResultActivity`) with 4 tabs: Map, Itinerary, Editor (drag-drop), Regen/Share |
-| `admin/` | Admin tools: `AdminPlaceEditorActivity` (9-tab place editor), `EnrichmentService` (Gemini bulk enrichment), `PlaceMigrationCoordinator` + `AdminMigrationActivity` (backup/wipe/repopulate) |
+| `AdminBlogActivity.kt` | Admin Android: CRUD de blog posts en Firestore |
+| `AdminReportsActivity.kt` | Admin Android: moderación de reportes de comunidad |
 | `model/` | Shared data models: `GeneratedRoute`, `RouteStop`, `RouteMetrics`, `UserRoutePreferences`, `OpeningHours` |
 | `*Adapter.kt` (14 files) | RecyclerView adapters for lists/grids |
 | `*Activity.kt` (18 total) | Feature screens (events, blog, photos, admin, etc.) |
@@ -89,9 +90,13 @@ Debug builds have `ENABLE_SKIP_LOGIN=true`. Release builds enable ProGuard/R8 mi
 | `eventos` | Eventos | nombre, fecha, descripcion |
 | `blog_posts` | Posts del blog | titulo, contenido, categoria |
 | `checkIns` | Registros de check-in | userId, placeId, checkInTime |
-| `resenas` | Reseñas de lugares | userId, placeId, rating, comment |
-| `fotos` | Fotos de lugares | placeId, imageUrl, userId |
-| `admin` | Config de admin | — |
+| `lugares/{id}/reviews` | Reseñas (subcollection) | userId, userName, rating (Float 1-5), comment, timestamp |
+| `publicaciones_comunidad` | Posts de comunidad | authorId, title, content, **hidden** (Bool), likeCount, reportCount |
+| `reportes_publicaciones` | Reportes de posts | postId, reporterId, reason, status ("pending"/"resolved") |
+| `services` | Directorio de servicios | name, phoneNumber, category (ServiceCat), priority (Int) |
+| `emergency_contacts` | Contactos de emergencia | name, phoneNumber, description |
+| `themed_routes` | Rutas temáticas curadas admin | name, theme, placeIds, difficulty, isFeatured |
+| `place_photos` | Fotos subidas por usuarios | placeId, imageUrl, uploadedBy, likes |
 
 **Nota**: Usar `FirestoreCollections.*` constants para evitar strings sueltos. Ver `AppConstants.kt`.
 
@@ -104,6 +109,16 @@ Debug builds have `ENABLE_SKIP_LOGIN=true`. Release builds enable ProGuard/R8 mi
 - **Spanish-first UI**: Field names in Firestore use Spanish (`nombre`, `descripcion`, `ubicacion`)
 - **Dual auth model**: `AuthManager.isGuest()` gates features; guests can browse but not write
 - **Deep links**: `TrazaGo://place/{id}` and `https://TrazaGo.app/place/{id}` -> PlaceDetailsActivity
+
+## Gotchas Críticos
+
+- **Kotlin Boolean + Firestore**: Nunca usar `val isXxx: Boolean` — el getter `isXxx()` hace que Firestore serialice el campo como `xxx` (sin prefijo `is`). Usar `val xxx: Boolean`. Afecta `whereEqualTo()`, security rules y deserialización.
+- **Firestore rules deploy**: Cambiar `firestore.rules` o `firestore.indexes.json` localmente no tiene efecto hasta `firebase deploy --only firestore:rules,firestore:indexes`.
+- **VectorDrawable pathData vacío**: `android:pathData=""` causa `IllegalArgumentException` fatal en runtime. Eliminar el `<path>` completo si no tiene datos.
+
+## Companion Website
+
+Next.js 15 marketing site en `C:\Users\josei\pagina-trazago-v2` (GitHub: `INNIT4/pagina-trazago-v2`, Vercel). Comparte el mismo proyecto Firebase. Admin web en construcción en `/admin`.
 
 ## Additional Documentation
 

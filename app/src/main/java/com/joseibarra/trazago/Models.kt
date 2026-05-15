@@ -177,7 +177,7 @@ data class CommunityPost(
     val likeCount: Int = 0,
     val commentCount: Int = 0,
     val reportCount: Int = 0,
-    val isHidden: Boolean = false
+    val hidden: Boolean = false
 ) : Parcelable
 
 data class PostComment(

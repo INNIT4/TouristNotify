@@ -50,9 +50,7 @@ class CommunityFeedActivity : BaseActivity() {
     }
 
     private fun setupAdapter() {
-        adapter = CommunityPostAdapter(
-            currentUserId = currentUserId,
-            isAdmin = isAdmin,
+        val callbacks = CommunityPostCallbacks(
             onPostClick = { post ->
                 startActivity(Intent(this, CommunityPostDetailActivity::class.java)
                     .putExtra(CommunityPostDetailActivity.EXTRA_POST_ID, post.id))
@@ -82,6 +80,11 @@ class CommunityFeedActivity : BaseActivity() {
                         .show(supportFragmentManager, ReportPostBottomSheet.TAG)
                 }
             },
+        )
+        adapter = CommunityPostAdapter(
+            currentUserId = currentUserId,
+            isAdmin = isAdmin,
+            callbacks = callbacks,
         )
     }
 

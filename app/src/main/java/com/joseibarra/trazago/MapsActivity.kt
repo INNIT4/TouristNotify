@@ -504,6 +504,16 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         if (::markerRenderer.isInitialized) markerRenderer.destroy()
         if (::routePolylineManager.isInitialized) routePolylineManager.cancel()
+        if (::mMap.isInitialized) {
+            mMap.clear()
+            mMap.setOnMarkerClickListener(null)
+            mMap.setOnCameraIdleListener(null)
+            mMap.setOnMapClickListener(null)
+        }
+        // Remover el fragment explícitamente para que el Maps SDK libere sus views internas
+        supportFragmentManager.findFragmentById(R.id.map)?.let { frag ->
+            supportFragmentManager.beginTransaction().remove(frag).commitAllowingStateLoss()
+        }
         super.onDestroy()
     }
 }

@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-medium"
-        android:text="📝 Blog de Consejos"
+        android:text="@string/blog_title"
         android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -104,28 +104,28 @@
                             style="@style/Widget.Material3.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💡 Consejos" />
+                            android:text="@string/blog_chip_tips" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/filter_history_chip"
                             style="@style/Widget.Material3.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📜 Historia" />
+                            android:text="@string/blog_chip_history" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/filter_food_chip"
                             style="@style/Widget.Material3.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🍽️ Gastronomía" />
+                            android:text="@string/blog_chip_food" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/filter_culture_chip"
                             style="@style/Widget.Material3.Chip.Filter"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🎭 Cultura" />
+                            android:text="@string/blog_chip_culture" />
                     </com.google.android.material.chip.ChipGroup>
                 </HorizontalScrollView>
 
@@ -204,7 +204,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="Agregar post"
+        android:contentDescription="@string/admin_blog_add_cd"
         android:src="@android:drawable/ic_input_add"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -77,7 +77,7 @@ class EventsAdapter(
             // Dates
             val startStr = event.startDate?.let { dateFormat.format(it) } ?: ""
             val endStr = event.endDate?.let { dateFormat.format(it) }
-            binding.eventDates.text = if (endStr != null && endStr != startStr) "📅 $startStr - $endStr"
+            binding.eventDates.text = if (endStr != null && endStr != startStr) "📅 " + context.getString(R.string.event_date_range, startStr, endStr)
             else "📅 $startStr"
 
             // Location

@@ -38,8 +38,8 @@ class RouteAdapter(
     inner class RouteViewHolder(private val binding: ListItemRouteBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(route: Route, position: Int) {
             binding.routeNameTextView.text = route.nombre_ruta
-            binding.routeDescriptionTextView.text = route.descripcion.ifBlank { "Sin descripción" }
-            binding.routeInfoTextView.text = "${route.pdis_incluidos.size} paradas"
+            binding.routeDescriptionTextView.text = route.descripcion.ifBlank { binding.root.context.getString(R.string.route_no_description) }
+            binding.routeInfoTextView.text = binding.root.context.getString(R.string.route_stops_count, route.pdis_incluidos.size)
 
             route.fecha_creacion?.let { date ->
                 val now = System.currentTimeMillis()
@@ -48,9 +48,9 @@ class RouteAdapter(
                     now,
                     DateUtils.DAY_IN_MILLIS
                 )
-                binding.routeDateTextView.text = "Creada $timeAgo"
+                binding.routeDateTextView.text = binding.root.context.getString(R.string.route_created_format, timeAgo)
             } ?: run {
-                binding.routeDateTextView.text = "Fecha desconocida"
+                binding.routeDateTextView.text = binding.root.context.getString(R.string.route_unknown_date_label)
             }
 
             binding.root.setOnClickListener {
@@ -59,19 +59,19 @@ class RouteAdapter(
 
             binding.buttonShareRoute.setOnClickListener {
                 val context = binding.root.context
-                val shareText = buildString {
-                    append("🗺️ ${route.nombre_ruta}\n\n")
-                    append("${route.descripcion}\n\n")
-                    append("📍 ${route.pdis_incluidos.size} paradas incluidas\n")
-                    append("\n¡Descubre Álamos con TrazaGo!")
-                }
+                val shareText = binding.root.context.getString(
+                    R.string.route_share_body,
+                    route.nombre_ruta,
+                    route.descripcion,
+                    route.pdis_incluidos.size
+                )
 
                 val shareIntent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, shareText)
                     type = "text/plain"
                 }
-                context.startActivity(Intent.createChooser(shareIntent, "Compartir ruta"))
+                context.startActivity(Intent.createChooser(shareIntent, binding.root.context.getString(R.string.route_share_title)))
             }
 
             binding.buttonDeleteRoute.setOnClickListener {

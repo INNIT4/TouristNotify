@@ -43,7 +43,7 @@ class BlogPostDetailActivity : BaseActivity() {
             displayPost(post)
         } else {
             postId = intent.getStringExtra("POST_ID") ?: ""
-            val postTitle = intent.getStringExtra("POST_TITLE") ?: "Post"
+            val postTitle = intent.getStringExtra("POST_TITLE") ?: getString(R.string.post_title)
             supportActionBar?.title = postTitle
             if (postId.isNotEmpty()) loadPostDetails() else finish()
         }
@@ -56,8 +56,8 @@ class BlogPostDetailActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (isAdmin) {
-            menu.add(Menu.NONE, MENU_EDIT, Menu.NONE, "Editar")
-            menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Eliminar")
+            menu.add(Menu.NONE, MENU_EDIT, Menu.NONE, getString(R.string.edit_label))
+            menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, getString(R.string.delete_label))
         }
         return true
     }
@@ -84,19 +84,19 @@ class BlogPostDetailActivity : BaseActivity() {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.blog_admin_delete_confirm_title))
             .setMessage(getString(R.string.blog_admin_delete_confirm_message))
-            .setPositiveButton("Eliminar") { _, _ -> deletePost() }
-            .setNegativeButton("Cancelar", null)
+            .setPositiveButton(getString(R.string.delete_label)) { _, _ -> deletePost() }
+            .setNegativeButton(getString(R.string.cancel_label), null)
             .show()
     }
 
     private fun deletePost() {
         db.collection("blog_posts").document(postId).delete()
             .addOnSuccessListener {
-                NotificationHelper.success(binding.root, "Post eliminado")
+                NotificationHelper.success(binding.root, getString(R.string.blog_post_deleted))
                 finish()
             }
             .addOnFailureListener {
-                NotificationHelper.error(binding.root, "Error al eliminar")
+                NotificationHelper.error(binding.root, getString(R.string.blog_delete_error))
             }
     }
 
@@ -115,7 +115,7 @@ class BlogPostDetailActivity : BaseActivity() {
                 }
             }
             .addOnFailureListener {
-                NotificationHelper.error(binding.root, "Error al cargar el post")
+                NotificationHelper.error(binding.root, getString(R.string.blog_post_load_error))
                 finish()
             }
     }
@@ -127,16 +127,16 @@ class BlogPostDetailActivity : BaseActivity() {
 
         binding.postTitleTextView.text = post.title
         binding.postCategoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
-        binding.postAuthorTextView.text = "Por ${post.authorName}"
+        binding.postAuthorTextView.text = getString(R.string.blog_by_author_format, post.authorName)
 
         binding.postDateTextView.text = if (post.publishedAt != null) {
-            SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale("es", "MX")).format(post.publishedAt)
+            SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.getDefault()).format(post.publishedAt)
         } else {
-            "Fecha no disponible"
+            getString(R.string.blog_date_unavailable)
         }
 
-        binding.postLikesTextView.text = "❤️ ${post.likes}"
-        binding.postViewsTextView.text = "👁️ ${post.viewCount}"
+        binding.postLikesTextView.text = getString(R.string.blog_likes_format, post.likes)
+        binding.postViewsTextView.text = getString(R.string.blog_views_format, post.viewCount)
         binding.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE
 
         val markwon = Markwon.create(this)
@@ -161,7 +161,7 @@ class BlogPostDetailActivity : BaseActivity() {
             }
         }
 
-        binding.relatedCategoryTextView.text = "Ver más de ${post.category}"
+        binding.relatedCategoryTextView.text = getString(R.string.blog_related_label, post.category)
         binding.relatedCategoryCard.setOnClickListener { finish() }
     }
 

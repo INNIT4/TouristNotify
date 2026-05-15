@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-medium"
-        android:text="🔔 Notificaciones"
+        android:text="@string/proximity_title"
         android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -193,7 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    android:text="⚠️ Radios &lt; 100 m pueden ser poco fiables por la precisión del GPS."
+                    android:text="@string/proximity_gps_warning"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp" />
 
@@ -242,7 +242,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💡 ¿Cómo funciona?"
+                            android:text="@string/proximity_how_it_works_title"
                             android:textColor="?attr/colorOnSecondaryContainer"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -251,7 +251,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="• Detecta automáticamente cuando te acercas a un lugar turístico\n• Muestra una notificación con información del lugar\n• Funciona incluso cuando la app está cerrada\n• Ahorra batería usando geofences inteligentes"
+                            android:text="@string/proximity_how_it_works_desc"
                             android:textColor="?attr/colorOnSecondaryContainer"
                             android:textSize="13sp" />
                     </LinearLayout>

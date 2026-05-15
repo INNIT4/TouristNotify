@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 enum class MenuItemId {
     GENERATE_ROUTE, THEMED_ROUTES, MY_ROUTES, VIEW_MAP,
     CONTACTS, SERVICES, TOP_PLACES, FAVORITES,
-    EVENTS, BLOG, PROXIMITY
+    EVENTS, BLOG, PROXIMITY, COMMUNITY_POSTS
 }
 
 enum class MenuColorScheme { PRIMARY, SECONDARY, TERTIARY }

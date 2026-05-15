@@ -12,9 +12,9 @@
         android:title="@string/nav_map" />
 
     <item
-        android:id="@+id/nav_favorites"
-        android:icon="@android:drawable/btn_star_big_on"
-        android:title="@string/nav_favorites" />
+        android:id="@+id/nav_community"
+        android:icon="@drawable/ic_comment"
+        android:title="@string/menu_card_community" />
 
     <item
         android:id="@+id/nav_profile"

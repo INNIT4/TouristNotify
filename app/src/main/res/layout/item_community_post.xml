@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/post_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    style="@style/Widget.TrazaGo.CardView"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header: avatar + nombre + timestamp + overflow -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/author_avatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:importantForAccessibility="no"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.Circle"
+                tools:src="@drawable/bg_profile_avatar" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp"
+                    tools:text="María García" />
+
+                <TextView
+                    android:id="@+id/post_timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp"
+                    tools:text="Hace 2 horas" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/overflow_menu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/community_overflow_a11y"
+                android:src="@drawable/ic_more_vert"
+                android:tint="?attr/colorOnSurfaceVariant" />
+        </LinearLayout>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/post_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Mi visita al Templo de la Purísima" />
+
+        <!-- Contenido (colapsable) -->
+        <TextView
+            android:id="@+id/post_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp"
+            tools:text="Una experiencia increíble. El templo es majestuoso y la historia detrás de cada piedra es fascinante. Recomiendo ir temprano por la mañana cuando la luz entra por las ventanas." />
+
+        <TextView
+            android:id="@+id/see_more_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/community_see_more"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- Foto única o grid 2x2 -->
+        <FrameLayout
+            android:id="@+id/photos_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <!-- 1 foto -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo_single"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/community_photo_a11y"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.RoundedSmall"
+                tools:visibility="visible"
+                tools:src="@drawable/bg_hero_placeholder" />
+
+            <!-- 2-4 fotos: grid -->
+            <GridLayout
+                android:id="@+id/photo_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/photo_grid_1"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="2dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/community_photo_a11y"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.RoundedSmall" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/photo_grid_2"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="2dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/community_photo_a11y"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.RoundedSmall" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/photo_grid_3"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="2dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/community_photo_a11y"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.RoundedSmall" />
+
+                <FrameLayout
+                    android:id="@+id/photo_grid_4_container"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="2dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/photo_grid_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/community_photo_a11y"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.TrazaGo.RoundedSmall" />
+
+                    <TextView
+                        android:id="@+id/more_photos_overlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:background="#99000000"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:text="+2" />
+                </FrameLayout>
+            </GridLayout>
+        </FrameLayout>
+
+        <!-- Chip de lugar etiquetado -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/tagged_place_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            style="@style/Widget.Material3.Chip.Assist"
+            app:chipIcon="@drawable/ic_location"
+            tools:text="Plaza de Armas"
+            tools:visibility="visible" />
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="?attr/colorOutlineVariant"
+            android:importantForAccessibility="no" />
+
+        <!-- Footer: like + comentarios -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/like_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/community_like_a11y"
+                android:src="@drawable/ic_thumb_up_outline" />
+
+            <TextView
+                android:id="@+id/like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+                tools:text="12" />
+
+            <ImageButton
+                android:id="@+id/comment_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/community_comment_a11y"
+                android:src="@drawable/ic_comment" />
+
+            <TextView
+                android:id="@+id/comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+                tools:text="3" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

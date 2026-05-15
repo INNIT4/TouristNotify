@@ -88,8 +88,8 @@ class ProfileActivity : BaseActivity() {
                     finish()
                     true
                 }
-                R.id.nav_favorites -> {
-                    startActivity(Intent(this, FavoritesActivity::class.java))
+                R.id.nav_community -> {
+                    startActivity(Intent(this, CommunityFeedActivity::class.java))
                     overridePendingTransition(0, 0)
                     finish()
                     true

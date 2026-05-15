@@ -25,7 +25,10 @@ class ContactsAdapter(private val contacts: List<Contact>) : RecyclerView.Adapte
         fun bind(contact: Contact) {
             binding.textViewContactName.text = contact.name
             binding.textViewContactPhone.text = contact.phoneNumber
-            binding.textViewContactCategory.text = contact.category
+            binding.textViewContactCategory.text = when (contact.category) {
+                "Emergencia" -> binding.root.context.getString(R.string.contact_category_emergency)
+                else -> contact.category
+            }
             binding.textViewContactDescription.text = contact.description
 
             // Ambos el botón y el card completo inician la llamada

@@ -22,7 +22,7 @@ object FirestoreErrorHandler {
      * @param operation Descripción de la operación (ej: "guardar favorito")
      * @return Mensaje amigable para mostrar al usuario
      */
-    fun getErrorMessage(exception: Exception, operation: String = "realizar esta acción"): String {
+    fun getErrorMessage(exception: Throwable, operation: String = "realizar esta acción"): String {
         return when (exception) {
             is FirebaseFirestoreException -> {
                 when (exception.code) {
@@ -99,7 +99,7 @@ object FirestoreErrorHandler {
     /**
      * Verifica si un error es de tipo PERMISSION_DENIED
      */
-    fun isPermissionDenied(exception: Exception): Boolean {
+    fun isPermissionDenied(exception: Throwable): Boolean {
         return exception is FirebaseFirestoreException &&
                exception.code == Code.PERMISSION_DENIED
     }
@@ -107,7 +107,7 @@ object FirestoreErrorHandler {
     /**
      * Verifica si un error es de tipo UNAUTHENTICATED
      */
-    fun isUnauthenticated(exception: Exception): Boolean {
+    fun isUnauthenticated(exception: Throwable): Boolean {
         return exception is FirebaseFirestoreException &&
                exception.code == Code.UNAUTHENTICATED
     }
@@ -115,7 +115,7 @@ object FirestoreErrorHandler {
     /**
      * Verifica si un error requiere que el usuario inicie sesión
      */
-    fun requiresAuthentication(exception: Exception): Boolean {
+    fun requiresAuthentication(exception: Throwable): Boolean {
         return isPermissionDenied(exception) || isUnauthenticated(exception)
     }
 
@@ -131,7 +131,7 @@ object FirestoreErrorHandler {
     fun handleError(
         context: Context,
         view: android.view.View,
-        exception: Exception,
+        exception: Throwable,
         operation: String = "realizar esta acción",
         onAuthRequired: (() -> Unit)? = null
     ) {
@@ -157,7 +157,7 @@ object FirestoreErrorHandler {
     /**
      * Log detallado de error para debugging
      */
-    fun logDetailedError(exception: Exception, operation: String, context: Map<String, Any?> = emptyMap()) {
+    fun logDetailedError(exception: Throwable, operation: String, context: Map<String, Any?> = emptyMap()) {
         Log.e(TAG, """
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             Firestore Error Details
@@ -186,7 +186,7 @@ fun <T> com.google.android.gms.tasks.Task<T>.onFirestoreError(
     view: android.view.View,
     operation: String,
     onAuthRequired: (() -> Unit)? = null,
-    additionalHandler: ((Exception) -> Unit)? = null
+    additionalHandler: ((Throwable) -> Unit)? = null
 ): com.google.android.gms.tasks.Task<T> {
     return this.addOnFailureListener { exception ->
         FirestoreErrorHandler.handleError(

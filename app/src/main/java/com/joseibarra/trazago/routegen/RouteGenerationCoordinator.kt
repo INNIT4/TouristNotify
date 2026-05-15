@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.joseibarra.trazago.AppConstants
 import com.joseibarra.trazago.ConfigManager
 import com.joseibarra.trazago.FirestoreCollections
+import com.joseibarra.trazago.R
 import com.joseibarra.trazago.TouristSpot
 import com.joseibarra.trazago.model.GeneratedRoute
 import com.joseibarra.trazago.model.UserRoutePreferences
@@ -37,6 +38,7 @@ object RouteGenerationCoordinator {
     }
 
     data class GenerationRequest(
+        val context: android.content.Context,
         val prefs: UserRoutePreferences,
         val climateBrief: String = "",
         val isRaining: Boolean = false,
@@ -98,7 +100,7 @@ object RouteGenerationCoordinator {
             }
         } else {
             throw IllegalStateException(
-                "No hay API key de Gemini disponible. Verifica la configuración en Remote Config."
+                request.context.getString(R.string.ai_error_no_api_key)
             )
         }
 
@@ -107,8 +109,7 @@ object RouteGenerationCoordinator {
         if (!validation.isValid) {
             Log.e(TAG, "Route validation errors: ${validation.errors}")
             throw IllegalStateException(
-                "La IA generó una ruta con errores: ${validation.errors.joinToString(". ")}. " +
-                "Intenta regenerar la ruta."
+                request.context.getString(R.string.ai_error_validation, validation.errors.joinToString(". "))
             )
         }
         validation.warnings.forEach { Log.w(TAG, "Route warning: $it") }

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.joseibarra.trazago.databinding.FragmentStep1WhoWhenBinding
 import com.joseibarra.trazago.model.TipoViaje
+import com.joseibarra.trazago.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -24,7 +25,7 @@ class Step1WhoWhenFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: PreferencesViewModel by activityViewModels()
 
-    private val dateFormat = SimpleDateFormat("EEE d MMM yyyy", Locale("es", "MX"))
+    private val dateFormat = SimpleDateFormat("EEE d MMM yyyy", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     override fun onCreateView(
@@ -160,9 +161,9 @@ class Step1WhoWhenFragment : Fragment() {
     private fun updateDuracionLabel() {
         val h = viewModel.duracionHoras
         binding.tvDuracionLabel.text = when {
-            h < 1f -> "${(h * 60).toInt()} min"
-            h == 1f -> "1 hora"
-            h % 1f == 0f -> "${h.toInt()} horas"
+            h < 1f -> getString(R.string.wizard_duration_min, (h * 60).toInt())
+            h == 1f -> getString(R.string.step_duration_hour)
+            h % 1f == 0f -> getString(R.string.step_duration_hours, h.toInt().toString())
             else -> "${h.toInt()}h ${((h % 1f) * 60).toInt()}min"
         }
     }

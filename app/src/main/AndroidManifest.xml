@@ -214,6 +214,22 @@
             android:enabled="true"
             android:exported="false" />
 
+        <!-- Comunidad -->
+        <activity
+            android:name=".CommunityFeedActivity"
+            android:label="@string/community_feed_title" />
+        <activity
+            android:name=".CreateCommunityPostActivity"
+            android:label="@string/community_share_title"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".CommunityPostDetailActivity"
+            android:label="@string/community_comments_title"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".AdminReportsActivity"
+            android:label="@string/community_admin_reports_title" />
+
     </application>
 
 </manifest>

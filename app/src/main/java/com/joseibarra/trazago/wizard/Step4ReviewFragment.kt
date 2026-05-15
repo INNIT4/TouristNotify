@@ -54,7 +54,7 @@ class Step4ReviewFragment : Fragment() {
 
         // Viajeros
         val ninosStr = if (prefs.numNiños > 0) " + ${prefs.numNiños} ${getString(R.string.step_children).lowercase()}" else ""
-        binding.tvResumenViajeros.text = "${prefs.tipoViaje.label()} · ${prefs.numAdultos} ${getString(R.string.step_adults).lowercase()}$ninosStr"
+        binding.tvResumenViajeros.text = "${prefs.tipoViaje.label(requireContext())} · ${prefs.numAdultos} ${getString(R.string.step_adults).lowercase()}$ninosStr"
 
         // Fecha y hora
         val cal = Calendar.getInstance().apply { timeInMillis = prefs.fechaViajeMs }
@@ -79,7 +79,7 @@ class Step4ReviewFragment : Fragment() {
             getString(R.string.unspecified)
 
         // Ritmo
-        binding.tvResumenRitmo.text = prefs.ritmo.label()
+        binding.tvResumenRitmo.text = prefs.ritmo.label(requireContext())
     }
 
     private fun loadWeather() {
@@ -150,6 +150,7 @@ class Step4ReviewFragment : Fragment() {
                 }
                 val (route, spots) = RouteGenerationCoordinator.generate(
                     request = RouteGenerationCoordinator.GenerationRequest(
+                        context = requireContext(),
                         prefs = prefs,
                         climateBrief = climateDesc,
                         isRaining = isRaining
@@ -159,9 +160,9 @@ class Step4ReviewFragment : Fragment() {
                             if (_binding != null) {
                                 binding.tvGeneratingStatus.text = when (state) {
                                     is RouteGenerationCoordinator.GenerationState.LoadingPlaces ->
-                                        "Cargando lugares de interés..."
+                                        getString(R.string.ai_progress_loading_places)
                                     is RouteGenerationCoordinator.GenerationState.FilteringCandidates ->
-                                        "Filtrando candidatos..."
+                                        getString(R.string.ai_progress_filtering)
                                     is RouteGenerationCoordinator.GenerationState.CallingAI ->
                                         getString(R.string.ai_progress_calling)
                                     is RouteGenerationCoordinator.GenerationState.Optimizing ->

@@ -126,6 +126,7 @@ dependencies {
 
     // ViewPager2 para galería de fotos
     implementation(libs.androidx.viewpager2)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation(libs.fragment.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.savedstate)

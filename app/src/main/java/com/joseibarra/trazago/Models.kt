@@ -2,6 +2,7 @@ package com.joseibarra.trazago
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.google.firebase.firestore.ServerTimestamp
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
@@ -158,3 +159,50 @@ data class PlacePhoto(
     val height: Int = 0
 )
 
+// ── Comunidad ─────────────────────────────────────────────────────────────────
+
+@Parcelize
+@TypeParceler<Date?, DateParceler>
+data class CommunityPost(
+    val id: String = "",
+    val authorId: String = "",
+    val authorName: String = "",
+    val authorPhotoUrl: String = "",
+    val title: String = "",
+    val content: String = "",
+    val photoUrls: List<String> = emptyList(),
+    val taggedPlaceId: String = "",
+    val taggedPlaceName: String = "",
+    @ServerTimestamp val createdAt: Date? = null,
+    val likeCount: Int = 0,
+    val commentCount: Int = 0,
+    val reportCount: Int = 0,
+    val isHidden: Boolean = false
+) : Parcelable
+
+data class PostComment(
+    val id: String = "",
+    val postId: String = "",
+    val authorId: String = "",
+    val authorName: String = "",
+    val authorPhotoUrl: String = "",
+    val content: String = "",
+    @ServerTimestamp val createdAt: Date? = null
+)
+
+data class PostReport(
+    val id: String = "",
+    val postId: String = "",
+    val reporterId: String = "",
+    val reason: String = "",
+    val detail: String = "",
+    @ServerTimestamp val createdAt: Date? = null,
+    val status: String = "pending"
+)
+
+enum class ReportReason(val key: String, @StringRes val labelRes: Int) {
+    SPAM("SPAM", R.string.report_reason_spam),
+    OFFENSIVE("OFFENSIVE", R.string.report_reason_offensive),
+    FAKE_INFO("FAKE_INFO", R.string.report_reason_fake),
+    OTHER("OTHER", R.string.report_reason_other)
+}

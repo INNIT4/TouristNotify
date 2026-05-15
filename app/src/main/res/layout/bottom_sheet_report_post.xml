@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/community_report_title"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:importantForAccessibility="no" />
+
+    <RadioGroup
+        android:id="@+id/report_reason_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/reason_spam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/report_reason_spam"
+            android:minHeight="48dp" />
+
+        <RadioButton
+            android:id="@+id/reason_offensive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/report_reason_offensive"
+            android:minHeight="48dp" />
+
+        <RadioButton
+            android:id="@+id/reason_fake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/report_reason_fake"
+            android:minHeight="48dp" />
+
+        <RadioButton
+            android:id="@+id/reason_other"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/report_reason_other"
+            android:minHeight="48dp" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/report_detail_layout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="@string/community_report_detail_hint"
+        app:counterEnabled="true"
+        app:counterMaxLength="200">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/report_detail_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:maxLength="200" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_send_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:minHeight="48dp"
+        android:text="@string/community_report_send" />
+</LinearLayout>

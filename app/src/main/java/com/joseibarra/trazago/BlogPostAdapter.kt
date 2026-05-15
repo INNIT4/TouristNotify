@@ -29,24 +29,25 @@ class BlogPostAdapter(
             binding.postTitleTextView.text = post.title
             binding.postCategoryTextView.text = CategoryUtils.getCategoryEmoji(post.category) + " " + post.category
 
+            val context = binding.root.context
             binding.postContentPreviewTextView.text = if (post.content.length > 150) {
-                post.content.substring(0, 150) + "..."
+                post.content.substring(0, 150) + context.getString(R.string.ellipsis)
             } else {
                 post.content
             }
 
-            binding.postAuthorTextView.text = "Por ${post.authorName}"
+            binding.postAuthorTextView.text = context.getString(R.string.blog_by_author_format, post.authorName)
 
             binding.postDateTextView.text = if (post.publishedAt != null) {
-                formatDate(post.publishedAt)
+                formatDate(context, post.publishedAt)
             } else {
-                "Hace poco"
+                context.getString(R.string.blog_time_just_now)
             }
 
-            binding.postLikesTextView.text = "❤️ ${post.likes}"
-            binding.postLikesTextView.contentDescription = "${post.likes} me gusta"
-            binding.postViewsTextView.text = "👁️ ${post.viewCount}"
-            binding.postViewsTextView.contentDescription = "${post.viewCount} vistas"
+            binding.postLikesTextView.text = context.getString(R.string.blog_likes_format, post.likes)
+            binding.postLikesTextView.contentDescription = context.getString(R.string.blog_likes_a11y, post.likes)
+            binding.postViewsTextView.text = context.getString(R.string.blog_views_format, post.viewCount)
+            binding.postViewsTextView.contentDescription = context.getString(R.string.blog_views_a11y, post.viewCount)
 
             binding.featuredBadge.visibility = if (post.isFeatured) View.VISIBLE else View.GONE
 
@@ -84,22 +85,21 @@ class BlogPostAdapter(
         submitList(newPosts)
     }
 
-    private fun formatDate(date: Date): String {
+    private fun formatDate(context: android.content.Context, date: Date): String {
         val now = System.currentTimeMillis()
         val diff = now - date.time
 
         return when {
-            diff < 60000 -> "Hace un momento"
-            diff < 3600000 -> "Hace ${diff / 60000} min"
-            diff < 86400000 -> "Hace ${diff / 3600000}h"
-            diff < 604800000 -> "Hace ${diff / 86400000} días"
-            // PERF-011: instancia compartida — SimpleDateFormat es costoso de crear por ítem
+            diff < 60000 -> context.getString(R.string.blog_time_just_now)
+            diff < 3600000 -> context.getString(R.string.blog_time_minutes, diff / 60000)
+            diff < 86400000 -> context.getString(R.string.blog_time_hours, diff / 3600000)
+            diff < 604800000 -> context.getString(R.string.blog_time_days, diff / 86400000)
             else -> DATE_FORMAT.format(date)
         }
     }
 
     companion object {
-        private val DATE_FORMAT = SimpleDateFormat("dd MMM yyyy", Locale("es", "MX"))
+        private val DATE_FORMAT = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     }
 
     class BlogPostDiffCallback : DiffUtil.ItemCallback<BlogPost>() {

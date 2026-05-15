@@ -84,6 +84,7 @@ class RouteRegenShareFragment : Fragment() {
             try {
                 val (newRoute, newSpots) = RouteGenerationCoordinator.generate(
                     request = RouteGenerationCoordinator.GenerationRequest(
+                        context = requireContext(),
                         prefs = buildCurrentPrefs(),
                         prevRoute = activity.currentRoute,
                         feedback = feedback

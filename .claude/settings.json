@@ -50,7 +50,10 @@
       "PowerShell(gcloud services api-keys update projects/1090772296348/locations/global/keys/7b756fcb-59e0-41ab-ac47-f72376cfd4ff --project touristnotify-db --allowed-application=\"package_name=com.joseibarra.touristnotify,sha1_fingerprint=906af5bc2a416cec4a9e971393df9143d026abb1\" --allowed-application=\"package_name=com.joseibarra.trazago,sha1_fingerprint=906af5bc2a416cec4a9e971393df9143d026abb1\" 2>&1)",
       "Bash(Get-ChildItem -Path \"e:\\\\josei\\\\Desktop\\\\Codigos\\\\LUPITA\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
-      "Bash(find /e/josei/Desktop/Codigos/LUPITA/app/src/main/res/drawable* -type f)"
+      "Bash(find /e/josei/Desktop/Codigos/LUPITA/app/src/main/res/drawable* -type f)",
+      "PowerShell(head -30)",
+      "Bash(New-Item -ItemType Directory -Force \"e:\\\\josei\\\\Desktop\\\\Codigos\\\\LUPITA\\\\app\\\\src\\\\main\\\\res\\\\values-en\")",
+      "Bash(Out-Null)"
     ],
     "additionalDirectories": [
       "e:\\josei\\Desktop\\Codigos\\LUPITA\\.claude",

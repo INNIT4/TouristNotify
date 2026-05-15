@@ -147,7 +147,7 @@ class MyRoutesActivity : BaseActivity() {
             }
             .addOnFailureListener { e ->
                 showEmptyState()
-                NotificationHelper.error(binding.root, "Error: ${e.message}")
+                NotificationHelper.error(binding.root, getString(R.string.route_error_generic, e.message ?: ""))
             }
     }
 }

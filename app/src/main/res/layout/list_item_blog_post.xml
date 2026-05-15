@@ -24,7 +24,7 @@
             android:layout_height="160dp"
             android:scaleType="centerCrop"
             android:visibility="gone"
-            android:contentDescription="Imagen de portada" />
+            android:contentDescription="@string/blog_cover_image_cd" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="8dp"
             android:paddingBottom="4dp"
-            android:text="⭐ Destacado"
+            android:text="@string/blog_featured_badge"
             android:textColor="?attr/colorOnPrimaryContainer"
             android:textSize="11sp"
             android:textStyle="bold"
@@ -157,7 +157,7 @@
                 android:id="@+id/like_button"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="Me gusta"
+                android:contentDescription="@string/blog_like_cd"
                 android:src="@android:drawable/btn_star"
                 android:tint="?attr/colorPrimary" />
 
@@ -187,7 +187,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Leer más →"
+                android:text="@string/blog_read_more"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="13sp"
                 android:textStyle="bold" />

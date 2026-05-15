@@ -33,6 +33,8 @@ class TrazaGoApplication : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
+        LeakCanarySetup.configure()
+
         // Aplicar tema guardado
         applyTheme()
 

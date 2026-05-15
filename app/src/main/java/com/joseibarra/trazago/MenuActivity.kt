@@ -56,8 +56,8 @@ class MenuActivity : BaseActivity() {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                     true
                 }
-                R.id.nav_favorites -> {
-                    startActivity(Intent(this, FavoritesActivity::class.java))
+                R.id.nav_community -> {
+                    startActivity(Intent(this, CommunityFeedActivity::class.java))
                     overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
                     true
                 }
@@ -158,6 +158,15 @@ class MenuActivity : BaseActivity() {
                 showArrow = true,
                 requiresAuth = AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS,
                 a11yDescRes = R.string.a11y_card_proximity
+            ),
+            MenuItemData(
+                id = MenuItemId.COMMUNITY_POSTS,
+                titleRes = R.string.menu_card_community,
+                iconEmoji = "🌵",
+                colorScheme = MenuColorScheme.SECONDARY,
+                isLarge = true,
+                showArrow = true,
+                a11yDescRes = R.string.a11y_card_community
             )
         ).toMutableList()
 
@@ -211,6 +220,10 @@ class MenuActivity : BaseActivity() {
             }
             MenuItemId.PROXIMITY -> AuthManager.requireAuth(this, AuthManager.AuthRequired.PROXIMITY_NOTIFICATIONS) {
                 startActivity(Intent(this, ProximityNotificationsActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
+            }
+            MenuItemId.COMMUNITY_POSTS -> {
+                startActivity(Intent(this, CommunityFeedActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out)
             }
             else -> { /* VIEW_MAP y TOP_PLACES eliminados del menú */ }

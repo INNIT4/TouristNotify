@@ -1,5 +1,8 @@
 package com.joseibarra.trazago.model
 
+import android.content.Context
+import com.joseibarra.trazago.R
+
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.util.Date
@@ -62,8 +65,8 @@ data class UserRoutePreferences(
         return if (horaFinMin > 720) 720 else horaFinMin - 30
     }
 
-    fun toSummaryString(): String = buildString {
-        appendLine("${tipoViaje.label()} · ${numAdultos + numNiños} personas · ${duracionHoras}h")
+    fun toSummaryString(ctx: android.content.Context): String = buildString {
+        appendLine("${tipoViaje.label(ctx)} · ${numAdultos + numNiños} personas · ${duracionHoras}h")
         appendLine("Inicio: $horaInicioStr · Presupuesto: $$presupuestoMxn MXN")
         if (intereses.isNotEmpty()) appendLine("Intereses: ${intereses.joinToString(", ")}")
         if (restriccionesDieteticas.isNotEmpty())
@@ -82,6 +85,12 @@ enum class TipoViaje {
         FAMILIA -> "Familia con niños"
         AMIGOS -> "Grupo de amigos"
     }
+    fun label(ctx: android.content.Context): String = when (this) {
+        SOLO -> ctx.getString(R.string.trip_type_solo)
+        PAREJA -> ctx.getString(R.string.trip_type_couple)
+        FAMILIA -> ctx.getString(R.string.trip_type_family_kids)
+        AMIGOS -> ctx.getString(R.string.trip_type_friends)
+    }
 }
 
 enum class Ritmo {
@@ -91,6 +100,11 @@ enum class Ritmo {
         MODERADO -> "Moderado (equilibrado)"
         INTENSO -> "Intenso (máximo aprovechamiento)"
     }
+    fun label(ctx: android.content.Context): String = when (this) {
+        RELAJADO -> ctx.getString(R.string.pace_relaxed_desc)
+        MODERADO -> ctx.getString(R.string.pace_moderate_desc)
+        INTENSO -> ctx.getString(R.string.pace_intense_desc)
+    }
 }
 
 enum class Movilidad {
@@ -99,6 +113,11 @@ enum class Movilidad {
         A_PIE -> "A pie"
         AUTO -> "Auto propio"
         MIXTO -> "Mixto (caminar + transporte)"
+    }
+    fun label(ctx: android.content.Context): String = when (this) {
+        A_PIE -> ctx.getString(R.string.mobility_walking_full)
+        AUTO -> ctx.getString(R.string.mobility_car_full)
+        MIXTO -> ctx.getString(R.string.mobility_mixed_full)
     }
 }
 

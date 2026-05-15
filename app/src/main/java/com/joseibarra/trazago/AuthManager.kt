@@ -151,6 +151,10 @@ object AuthManager {
         const val MY_ROUTES = "ver tus rutas guardadas"
         const val MY_FAVORITES = "ver tus favoritos"
         const val THEMED_ROUTES = "acceder a rutas predeterminadas"
+        const val SHARE_POSTS = "publicar experiencias"
+        const val COMMENT_POSTS = "comentar publicaciones"
+        const val LIKE_POSTS = "dar me gusta a publicaciones"
+        const val REPORT_POSTS = "reportar publicaciones"
     }
 
     /**

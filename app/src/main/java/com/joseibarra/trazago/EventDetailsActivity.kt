@@ -36,7 +36,7 @@ class EventDetailsActivity : BaseActivity() {
     private lateinit var db: FirebaseFirestore
     private var event: Event? = null
     private var eventId: String? = null
-    private val dateFormat = SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale("es", "MX"))
+    private val dateFormat = SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +74,7 @@ class EventDetailsActivity : BaseActivity() {
                 eventId = id
                 loadFromFirestore(id)
             } else {
-                Toast.makeText(this, "Evento no encontrado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.event_not_found), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -90,11 +90,11 @@ class EventDetailsActivity : BaseActivity() {
                     eventId = e.id
                     renderEvent(e)
                 } else {
-                    Toast.makeText(this@EventDetailsActivity, "Evento no encontrado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EventDetailsActivity, getString(R.string.event_not_found), Toast.LENGTH_SHORT).show()
                     finish()
                 }
             } catch (ex: Exception) {
-                Toast.makeText(this@EventDetailsActivity, "Error al cargar el evento", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EventDetailsActivity, getString(R.string.event_load_error), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -279,7 +279,7 @@ class EventDetailsActivity : BaseActivity() {
         if (EventReminderManager.isScheduled(this, event.id)) {
             EventReminderManager.cancelReminder(this, event.id)
             updateReminderButton(event)
-            Toast.makeText(this, "Recordatorio cancelado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.event_reminder_cancelled), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -331,7 +331,7 @@ class EventDetailsActivity : BaseActivity() {
         try {
             startActivity(intent)
         } catch (_: Exception) {
-            Toast.makeText(this, "No se pudo abrir el calendario", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.event_calendar_error), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -60,14 +60,14 @@ class RouteNavigationController(
     fun updatePanel(binding: ActivityMapsBinding) {
         if (spots.isEmpty()) return
         val spot = spots[currentIndex]
-        binding.routeProgressText.text = "Lugar ${currentIndex + 1} de ${spots.size}"
+        binding.routeProgressText.text = binding.root.context.getString(R.string.route_nav_step, currentIndex + 1, spots.size)
         val estimatedMinutes = calculateEstimatedTime(spots.size)
         val hours = estimatedMinutes / 60
         val minutes = estimatedMinutes % 60
         binding.routeTimeEstimateText.text = if (hours > 0) {
-            "⏱️ Tiempo estimado: ${hours}h ${minutes}min"
+            binding.root.context.getString(R.string.route_nav_time_hm, hours, minutes)
         } else {
-            "⏱️ Tiempo estimado: ${minutes}min"
+            binding.root.context.getString(R.string.route_nav_time_m, minutes)
         }
         binding.currentPlaceName.text = spot.nombre
         binding.currentPlaceCategory.text =

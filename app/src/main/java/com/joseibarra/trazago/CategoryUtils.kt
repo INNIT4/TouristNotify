@@ -53,7 +53,7 @@ object CategoryUtils {
             2 -> "$$"
             3 -> "$$$"
             4 -> "$$$$"
-            else -> "No especificado"
+            else -> ""
         }
     }
 }

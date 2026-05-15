@@ -46,4 +46,10 @@ object FirestoreCollections {
 
     /** Geofences configuradas. */
     const val GEOFENCES = "geofences"
+
+    /** Publicaciones de la comunidad. */
+    const val COMMUNITY_POSTS = "publicaciones_comunidad"
+    const val POST_COMMENTS_SUBCOLLECTION = "comentarios"
+    const val POST_LIKES_SUBCOLLECTION = "likes"
+    const val POST_REPORTS = "reportes_publicaciones"
 }

@@ -63,7 +63,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📞 "
+                android:text="@string/contact_phone_prefix"
                 android:textSize="16sp" />
 
             <TextView
@@ -80,7 +80,7 @@
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="Llamar"
+                android:contentDescription="@string/contact_call_cd"
                 app:icon="@android:drawable/ic_menu_call"
                 app:iconTint="?attr/colorPrimary" />
 

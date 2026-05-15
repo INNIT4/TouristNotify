@@ -70,7 +70,7 @@ class ServicesAdapter(
                 }
                 try { binding.root.context.startActivity(intent) } catch (_: Exception) {}
             }
-            binding.buttonCall.contentDescription = "Llamar a ${service.name}"
+            binding.buttonCall.contentDescription = binding.root.context.getString(R.string.service_call_cd, service.name)
         }
     }
 }
